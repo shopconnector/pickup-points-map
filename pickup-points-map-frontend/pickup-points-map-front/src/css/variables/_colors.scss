@@ -1,0 +1,89 @@
+// Colors
+// ======
+// @LandonSchropp's approach of naming color variables.
+// - http://davidwalsh.name/sass-color-variables-dont-suck
+// - http://www.color-blindness.com/color-name-hue/
+
+// General colors palette
+$colors: (
+  transparent: transparent,
+  black: #191919,
+  white: #fff,
+  white-smoke: #f1f1f1,
+  gainsboro: #e0e0e0,
+  silver: #bdbdbd,
+  gray: #828282,
+  suva-gray: #c6c6c6,
+  matterhorn: #707070,
+  burnt-sienna: #9C1915,
+  buccaneer: #9C1915,
+  forest-green: #308c14,
+  // puerto-rico: #4dba87,
+  puerto-rico: #FF4200,
+  mine-shaft: #333,
+  primary-orange: #FF4200,
+  secondary-orange: #802410 
+);
+
+// Theme generic colors
+// Key: name of color
+// Value: color value or map with default, hover, focus color values
+$colors-theme: (
+  black: (
+    default: map-get($colors, black),
+    hover: map-get($colors, black)
+  ),
+  white: (
+    default: map-get($colors, white),
+    hover: map-get($colors, white)
+  ),
+  smoke: (
+    default: map-get($colors, white-smoke),
+    hover: map-get($colors, gainsboro)
+  ),
+  orange: (
+    default: map-get($colors, primary-orange),
+    hover: map-get($colors, secondary-orange)
+  ),
+  gray: (
+    default: map-get($colors, suva-gray),
+    hover: map-get($colors, black)
+  ),
+  primary: (
+    default: map-get($colors, matterhorn),
+    hover: map-get($colors, matterhorn)
+  ),
+  secondary: (
+    default: map-get($colors, gray),
+    hover: map-get($colors, matterhorn)
+  ),
+  accent: (
+    default: map-get($colors, matterhorn),
+    hover: map-get($colors, black),
+  ),
+  tertiary: ( 
+    default: map-get($colors, silver),
+    hover: map-get($colors, black)
+  ),
+  success: map-get($colors, puerto-rico),
+  warning: map-get($colors, buccaneer),
+  error: map-get($colors, burnt-sienna)
+);
+
+$colors-border: (
+  primary: map-get($colors, silver),
+  secondary: map-get($colors, gainsboro),
+);
+
+$colors-background: (
+  primary: (
+    default: map-get($colors, white),
+    hover: map-get($colors, silver)
+  ),
+  secondary: (
+    default: map-get($colors, white-smoke),
+    hover: map-get($colors, gainsboro)
+  ),
+  tertiary: map-get($colors, suva-gray),
+  primary-orange: map-get($colors, primary-orange)
+);
