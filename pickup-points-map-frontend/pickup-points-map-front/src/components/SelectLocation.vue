@@ -38,14 +38,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.location{
-  width: 40%;
-}
 .title{
   font-family: 'Lato', sans-serif;
   font-size: 22px;
   font-weight: 900;
-  margin-left: 7%;
   text-align: left;
 }
 .my-location{
@@ -84,6 +80,7 @@ export default {
   &:hover{
     background-color: #E5E5E5;
     color: #AAAAAA;
+    cursor: pointer;
   }
 }
 .input-tag{
