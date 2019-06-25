@@ -52,7 +52,7 @@ export default {
   justify-content: center;
   align-items: center;
   &:before{
-    content: url(../assets/gps24px.svg);
+    content: url(/assets/gps24px.svg);
     padding-right: 10px;
     width: 25px;
     height: 25px;
