@@ -81,7 +81,7 @@ export default {
       box-shadow: inset 0 0px 3px #FFFFFF, inset 0 0  0 7px #E5E5E5;
     }
     &:checked + label:before {
-      box-shadow: inset 0 0px 3px #FFFFFF, inset 0 0  0 7px #E54C69;
+      box-shadow: inset 0 0 0 #FFFFFF, inset 0 0  0 7px #E54C69;
     }
 }
 </style>

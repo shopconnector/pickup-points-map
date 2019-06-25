@@ -1,37 +1,33 @@
 <template>
-    <div class="home-page">
-      <leaflet-map/>
-      <div class="features">
-        <!-- Select Suppliers Component -->
-        <SelectSuppliers/>
-        <!-- Select Location Component -->
-        <SelectLocation/>
-        <!-- Filters Component -->
-        <Filters/>
-      </div>
+    <div>
+      <template v-if="isWidgetVersion">
+        <!-- First version of the widget -->
+        <WidgetView/>
+      </template>
+      <template v-else>
+        <!-- Second version of the widget -->
+        <WidgetViewV2/>
+      </template>
     </div>
 </template>
 
 <script>
 import router from 'vue-router'
 import vueHeadful from 'vue-headful'
-import SelectSuppliers from '@/components/SelectSuppliers.vue'
-import SelectLocation from '@/components/SelectLocation.vue'
-import Filters from '@/components/Filters.vue'
-import LeafletMap from '@/components/Map/LeafletMap.vue'
+import WidgetView from '@/components/WidgetView.vue'
+import WidgetViewV2 from '@/components/WidgetViewV2.vue'
 
 export default {
   name: 'Home',
   components: {
     router,
     vueHeadful,
-    SelectSuppliers,
-    SelectLocation,
-    Filters,
-    LeafletMap
+    WidgetView,
+    WidgetViewV2
   },
   data () {
     return {
+      isWidgetVersion: false
     }
   }
 }

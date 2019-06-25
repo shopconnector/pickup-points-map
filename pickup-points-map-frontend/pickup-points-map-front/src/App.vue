@@ -13,7 +13,7 @@ export default {
 <style>
 body{
   margin: 0;
-  overflow:hidden;
+  overflow-x:hidden;
 }
 #app {
   font-family: 'Lato', sans-serif;

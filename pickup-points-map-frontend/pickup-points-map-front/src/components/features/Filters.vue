@@ -115,37 +115,37 @@ export default {
   }
 }
 .custom-checkbox + .pozna:before{
-    background: url('../assets/ZEGAR.png');
+    background: url('../../assets/ZEGAR.png');
     background-position: center;
     background-repeat: no-repeat;
     background-size: contain;
 }
 .custom-checkbox + .sobota:before{
-    background: url('../assets/sobota.png');
+    background: url('../../assets/sobota.png');
     background-position: center;
     background-repeat: no-repeat;
     background-size: contain;
 }
 .custom-checkbox + .niedziela:before{
-    background: url('../assets/niedziela.png');
+    background: url('../../assets/niedziela.png');
     background-position: center;
     background-repeat: no-repeat;
     background-size: contain;
 }
 .custom-checkbox + .niepelnosprawni:before{
-    background: url('../assets/niepelnosprawni.png');
+    background: url('../../assets/niepelnosprawni.png');
     background-position: center;
     background-repeat: no-repeat;
     background-size: contain;
 }
 .custom-checkbox + .parking:before{
-    background: url('../assets/parking.png');
+    background: url('../../assets/parking.png');
     background-position: center;
     background-repeat: no-repeat;
     background-size: contain;
 }
 .custom-checkbox + .pobraniem:before{
-    background: url('../assets/za-pobraniem.png');
+    background: url('../../assets/za-pobraniem.png');
     background-position: center;
     background-repeat: no-repeat;
     background-size: contain;
