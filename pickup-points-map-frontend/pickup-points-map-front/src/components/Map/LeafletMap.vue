@@ -6,25 +6,29 @@
     </div>
     <transition name="fade">
       <template v-if="toogleMap">
+        <!-- <div class="list-title">Punkty odbioru w pobliżu Twojej lokalizacji</div> -->
         <div class="list-box">
           <div class="list-title">Punkty odbioru w pobliżu Twojej lokalizacji</div>
-          <div class="list-row"
-            v-for="marker in markers"
-            :key="marker.id">
-            <div class="list-elem">
-              image
-            </div>
-            <div class="list-elem">
-              <b>{{ marker.address1 }}</b>
-              {{ marker.address2 }}
-              {{ marker.address3 }}
-            </div>
-            <div class="list-elem">
-              <b>Godziny otwarcia:</b>
-              {{ marker.openTime }}
-            </div>
-            <div class="list-elem">
-              button
+          <div class="scroll-box">
+            <div class="list-row"
+              v-for="marker in markers"
+              :key="marker.id">
+              <div class="list-elem">
+                <img :src="logosUrl[marker.type]" width="auto" height="70px"/>
+              </div>
+              <div class="list-elem">
+                <b>{{ marker.address1 }}</b>
+                {{ marker.zip }}
+                {{ marker.address2 }}
+              </div>
+              <div class="list-elem">
+                <b>Godziny otwarcia:</b>
+                {{ marker.openTime }}<br>
+                {{ marker.openTime2 }}
+              </div>
+              <div class="list-elem">
+                <p class="list-button" @click="toogleTest = !toogleTest">Wybierz</p>
+              </div>
             </div>
           </div>
         </div>
@@ -50,45 +54,11 @@
                 :icon-url="iconUrl"
               /> -->
               <l-icon :icon-anchor="marker.iconAnchor" :icon-size="marker.iconSize" class-name="someExtraClass">
-                <template v-if="marker.type === 'dpd'">
-                  <img src="../../assets/dpd.png" width="52" height="52"/>
-                </template>
-                <template v-else-if="marker.type === 'zabka'">
-                  <img src="../../assets/zabka.png" width="52" height="52"/>
-                </template>
-                <template v-else-if="marker.type === 'inpost'">
-                  <img src="../../assets/inpost.png" width="52" height="52"/>
-                </template>
-                <template v-else-if="marker.type === 'poczta-polska'">
-                  <img src="../../assets/poczta-polska.png" width="52" height="52"/>
-                </template>
-                <template v-else-if="marker.type === 'fresh'">
-                  <img src="../../assets/fresh.png" width="52" height="52"/>
-                </template>
-                <template v-else-if="marker.type === 'dpdpickup'">
-                  <img src="../../assets/dpdpickup.png" width="52" height="52"/>
-                </template>
+                <img :src="pinsUrl[marker.type]" width="52" height="52"/>
               </l-icon>
               <l-popup>
                 <div class="popup-box">
-                  <template v-if="marker.type === 'dpd'">
-                    <img class="popup-marker" src="../../assets/dpd.png" width="102" height="102"/>
-                  </template>
-                  <template v-else-if="marker.type === 'zabka'">
-                    <img class="popup-marker" src="../../assets/zabka.png" width="102" height="102"/>
-                  </template>
-                  <template v-else-if="marker.type === 'inpost'">
-                    <img class="popup-marker" src="../../assets/inpost.png" width="102" height="102"/>
-                  </template>
-                  <template v-else-if="marker.type === 'poczta-polska'">
-                    <img class="popup-marker" src="../../assets/poczta-polska.png" width="102" height="102"/>
-                  </template>
-                  <template v-else-if="marker.type === 'fresh'">
-                    <img class="popup-marker" src="../../assets/fresh.png" width="102" height="102"/>
-                  </template>
-                  <template v-else-if="marker.type === 'dpdpickup'">
-                    <img class="popup-marker" src="../../assets/dpdpickup.png" width="102" height="102"/>
-                  </template>
+                  <img class="popup-marker" :src="pinsUrl[marker.type]" width="102" height="102"/>
                   <div class="popup-info">
                     <div class="popup-text-box">
                       <p class="popup-text">
@@ -96,34 +66,25 @@
                       </p>
                     </div>
                     <div class="popup-img" >
-                      <template v-if="marker.type === 'dpd'">
-                        <img src="../../assets/dpd-logo.png" width="100%" height="auto"/>
-                      </template>
-                      <template v-else-if="marker.type === 'zabka'">
-                        <img src="../../assets/żabka-logo.png" width="100%" height="auto"/>
-                      </template>
-                      <template v-else-if="marker.type === 'inpost'">
-                        <img src="../../assets/inpost-logo.png" width="100%" height="auto"/>
-                      </template>
-                      <template v-else-if="marker.type === 'poczta-polska'">
-                        <img src="../../assets/pocztapolska-logo.png" width="100%" height="auto"/>
-                      </template>
-                      <template v-else-if="marker.type === 'fresh'">
-                        <img src="../../assets/freshmarket-logo.png" width="100%" height="auto"/>
-                      </template>
-                      <template v-else-if="marker.type === 'dpdpickup'">
-                        <img src="../../assets/dpd-pickup-logo.png" width="100%" height="auto"/>
-                      </template>
+                      <img :src="logosUrl[marker.type]" width="100%" height="auto"/>
                     </div>
                   </div>
                   <div class="popup-action">
-                    <p class="popup-button">Wybierz</p>
+                    <p class="popup-button" @click="toogleTest = !toogleTest">Wybierz</p>
                   </div>
                 </div>
               </l-popup>
             </l-marker>
         </l-map>
       </template>
+    </transition>
+    <transition name="bounce">
+      <div class="testdiv" v-if="toogleTest">
+        <!-- {{ $store.state.geolocation }} -->
+        <!-- <p @click="useMyGeo()">use my geo</p> -->
+        asdasd
+        {{ geoCenter }}
+      </div>
     </transition>
   </div>
 </template>
@@ -151,12 +112,30 @@ export default {
   data () {
     return {
       toogleMap: false,
+      toogleTest: false,
       zoom: 14,
       center: latLng(52.235948, 21.030750),
+      geoCenter: '',
       url: 'http://{s}.tile.osm.org/{z}/{x}/{y}.png',
       attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
       text: 'my marker popup text',
       title: 'My marker popup title',
+      logosUrl: {
+        zabka: require('../../assets/żabka-logo.png'),
+        dpd: require('../../assets/dpd-logo.png'),
+        dpdPickup: require('../../assets/dpd-pickup-logo.png'),
+        fresh: require('../../assets/freshmarket-logo.png'),
+        inpost: require('../../assets/inpost-logo.png'),
+        pocztaPolska: require('../../assets/pocztapolska-logo.png')
+      },
+      pinsUrl: {
+        zabka: require('../../assets/zabka.png'),
+        dpd: require('../../assets/dpd.png'),
+        dpdPickup: require('../../assets/dpdpickup.png'),
+        fresh: require('../../assets/fresh.png'),
+        inpost: require('../../assets/inpost.png'),
+        pocztaPolska: require('../../assets/poczta-polska.png')
+      },
       markers: [
         {
           id: 'm1',
@@ -165,11 +144,12 @@ export default {
           address1: 'Mazowiecka 50A',
           address2: 'Warszawa',
           zip: '02776',
-          openTime: 'pn - pt: 8:00 - 18:00 so: 8:00 - 16:00',
+          openTime: 'pn - pt: 8:00 - 18:00',
+          openTime2: 'so: 8:00 - 16:00',
           visible: true,
           openSat: true,
           openSun: true,
-          OpenNight: true,
+          openNight: true,
           disabledPeople: true,
           parking: true,
           cashOnDelivery: true,
@@ -187,7 +167,8 @@ export default {
           address1: 'Mazowiecka 50A',
           address2: 'Warszawa',
           zip: '02776',
-          openTime: 'pn - pt: 8:00 - 18:00 so: 8:00 - 16:00',
+          openTime: 'pn - pt: 8:00 - 18:00',
+          openTime2: 'so: 8:00 - 16:00',
           visible: true,
           openSat: true,
           openSun: true,
@@ -209,7 +190,8 @@ export default {
           address1: 'Mazowiecka 50A',
           address2: 'Warszawa',
           zip: '02776',
-          openTime: 'pn - pt: 8:00 - 18:00 so: 8:00 - 16:00',
+          openTime: 'pn - pt: 8:00 - 18:00',
+          openTime2: 'so: 8:00 - 16:00',
           visible: true,
           openSat: true,
           openSun: true,
@@ -231,7 +213,8 @@ export default {
           address1: 'Mazowiecka 50A',
           address2: 'Warszawa',
           zip: '02776',
-          openTime: 'pn - pt: 8:00 - 18:00 so: 8:00 - 16:00',
+          openTime: 'pn - pt: 8:00 - 18:00',
+          openTime2: 'so: 8:00 - 16:00',
           visible: true,
           openSat: true,
           openSun: true,
@@ -239,7 +222,7 @@ export default {
           disabledPeople: true,
           parking: true,
           cashOnDelivery: true,
-          type: 'dpdpickup',
+          type: 'dpdPickup',
           icon: {
             iconUrl: '../../assets/dpdpickup.png',
             iconSize: [52, 52],
@@ -253,7 +236,8 @@ export default {
           address1: 'Mazowiecka 50A',
           address2: 'Warszawa',
           zip: '02776',
-          openTime: 'pn - pt: 8:00 - 18:00 so: 8:00 - 16:00',
+          openTime: 'pn - pt: 8:00 - 18:00',
+          openTime2: 'so: 8:00 - 16:00',
           visible: true,
           openSat: true,
           openSun: true,
@@ -275,7 +259,8 @@ export default {
           address1: 'Mazowiecka 50A',
           address2: 'Warszawa',
           zip: '02776',
-          openTime: 'pn - pt: 8:00 - 18:00 so: 8:00 - 16:00',
+          openTime: 'pn - pt: 8:00 - 18:00',
+          openTime2: 'so: 8:00 - 16:00',
           visible: true,
           openSat: true,
           openSun: true,
@@ -283,7 +268,7 @@ export default {
           disabledPeople: true,
           parking: true,
           cashOnDelivery: true,
-          type: 'poczta-polska',
+          type: 'pocztaPolska',
           icon: {
             iconUrl: '../../assets/poczta-polska.png',
             iconSize: [52, 52],
@@ -293,6 +278,11 @@ export default {
       ]
     }
   }
+  // methods: {
+  //   useMyGeo () {
+  //     this.geoCenter = this.$store.state.geolocation
+  //   }
+  // }
 }
 </script>
 
@@ -314,8 +304,9 @@ export default {
   .leaflet-popup-close-button {
     display: none;
   }
+  padding-right: 210px !important;
   bottom: -210px !important;
-  margin-left: 110px !important;
+  margin-left: 210px !important;
   margin-bottom: 0 !important;
  }
 </style>
@@ -324,6 +315,7 @@ export default {
 .map{
   width: 100%;
   height: 100vh;
+  overflow: hidden;
   max-height: 100vh;
 }
 .popup-info {
@@ -392,6 +384,16 @@ display: flex;
   }
   .list-row {
     .list-elem {
+      .list-button {
+        margin: 5px 0;
+        background-color: #E4405F;
+        padding: 5px 30px;
+        border-radius: 50px;
+        color: white;
+        display: inline;
+        text-align: center;
+        cursor: pointer;
+      }
       flex-basis: 25%;
       max-width: 25%;
       display: flex;
@@ -406,13 +408,65 @@ display: flex;
     flex-direction: row;
     flex-wrap: wrap;
   }
-  padding: 150px 80px 0 80px;
+  .scroll-box {
+    overflow-y: scroll;
+    height: 70vh;
+  }
+  margin-top: 150px;
+  padding: 0px 60px 0 60px;
   text-align: left;
 }
+.testdiv {
+  width: 40%;
+  height: 200px;
+  background-color: #E4405F;
+  border-radius: 50px;
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  z-index: 999;
+  transition: 0.3s all;
+}
+// transitions
 .fade-enter-active {
   transition: opacity .5s;
 }
 .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
   opacity: 0;
 }
+
+.bounce-enter-active {
+  animation: bounce-in .5s;
+  transition: all .3s ease;
+}
+.bounce-leave-active {
+  animation: bounce-out .5s reverse;
+}
+.bounce-enter {
+  transition: all .3s ease;
+  transform: translateY(20%);
+}
+@keyframes bounce-in {
+  0% {
+    // background-color: blue;
+    transform: scale(0);
+  }
+  100% {
+    bottom: 0;
+    right:0;
+    transform: scale(1);
+  }
+}
+@keyframes bounce-out {
+  0% {
+    transform: scale(0);
+  }
+  // 50% {
+  //   transform: scale(0.5);
+  // }
+  100% {
+    transform: scale(1);
+  }
+}
+
 </style>
