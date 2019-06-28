@@ -51,7 +51,7 @@ export default {
   },
   methods: {
     getImgUrl (pic) {
-      return require('../../assets/supp/' + pic)
+      return require('../../assets/logos/' + pic)
     }
   }
 }
@@ -60,24 +60,22 @@ export default {
 <style lang="scss" scoped>
 .title{
   text-align: left;
-  font-size: 24px;
+  font-size: 22px;
   color: #000000;
   font-weight: 900;
-  margin: 0;
+  margin: 5px 0;
 }
 .suppliers-menu{
   display: flex;
   flex-wrap: wrap;
-  margin-left: 60px;
 }
 .select-suppliers{
   display: flex;
   align-items: center;
   flex: 1 0 30%;
-  padding: 0 20px 0 0;
 }
 .img{
-  width: 87px;
+  width: 70px;
 }
 .styled-checkbox{
   position: absolute;

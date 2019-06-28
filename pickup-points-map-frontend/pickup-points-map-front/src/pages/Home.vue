@@ -27,7 +27,11 @@ export default {
   },
   data () {
     return {
-      isWidgetVersion: false
+    }
+  },
+  computed: {
+    isWidgetVersion () {
+      return this.$store.state.WidgetVersion
     }
   }
 }

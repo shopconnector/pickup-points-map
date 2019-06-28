@@ -7,7 +7,8 @@ export default new Vuex.Store({
   state: {
     status: '',
     places: {},
-    lastvisit: {}
+    lastvisit: {},
+    WidgetVersion: true
   },
   mutations: {},
   actions: {},

@@ -4,36 +4,40 @@
         <h1 class="title">Filtry</h1><p class="subtitle" @click="clearFilter()"><i class="material-icons clear">clear</i>Wyczyść filtry</p>
       </div>
       <div class="filters-menu">
-        <!-- 1 checkbox -->
-        <div class="checkbox-container">
-          <input class="custom-checkbox" type="checkbox" id="otwarteDoPozna" value="Otwarte do pozna" v-model="filters">
-          <label class="custom-icon pozna" for="otwarteDoPozna">Otwarte do póżna</label>
-        </div>
-        <!-- 2 checkbox -->
-        <div class="checkbox-container">
-          <input class="custom-checkbox" type="checkbox" id="otwarteWSobotu" value="Otwarte w soboty" v-model="filters">
-          <label class="custom-icon sobota" for="otwarteWSobotu">Otwarte w soboty</label>
-        </div>
-        <!-- 3 checkbox -->
-        <div class="checkbox-container">
-          <input class="custom-checkbox" type="checkbox" id="otwarteWNiedziele" value="Otwarte w niedziele" v-model="filters">
-          <label class="custom-icon niedziela" for="otwarteWNiedziele">Otwarte w niedziele</label>
-        </div>
-        <!-- 4 checkbox -->
-        <div class="checkbox-container">
-          <input class="custom-checkbox" type="checkbox" id="dlaOsobNiepelnosprawnych" value="Dla osob niepelnosprawnych" v-model="filters">
-          <label class="custom-icon niepelnosprawni" for="dlaOsobNiepelnosprawnych">Ułatwienie dla osób niepełnosprawnych</label>
-        </div>
-        <!-- 5 checkbox -->
-        <div class="checkbox-container">
-          <input class="custom-checkbox" type="checkbox" id="parking" value="Parking" v-model="filters">
-          <label class="custom-icon parking" for="parking">Parking</label>
-        </div>
-        <!-- 6 checkbox -->
-        <div class="checkbox-container">
-          <input class="custom-checkbox" type="checkbox" id="odbiorZaPobraniem" value="Odbior za pobraniem" v-model="filters">
-          <label class="custom-icon pobraniem" for="odbiorZaPobraniem">Odbiór za pobraniem</label>
-        </div>
+        <div class="first-half">
+          <!-- 1 checkbox -->
+          <div class="checkbox-container">
+            <input class="custom-checkbox" type="checkbox" id="otwarteDoPozna" value="Otwarte do pozna" v-model="filters">
+            <label class="custom-icon pozna" for="otwarteDoPozna">Otwarte do póżna</label>
+          </div>
+          <!-- 2 checkbox -->
+          <div class="checkbox-container">
+            <input class="custom-checkbox" type="checkbox" id="otwarteWSobotu" value="Otwarte w soboty" v-model="filters">
+            <label class="custom-icon sobota" for="otwarteWSobotu">Otwarte w soboty</label>
+          </div>
+          <!-- 3 checkbox -->
+          <div class="checkbox-container">
+            <input class="custom-checkbox" type="checkbox" id="otwarteWNiedziele" value="Otwarte w niedziele" v-model="filters">
+            <label class="custom-icon niedziela" for="otwarteWNiedziele">Otwarte w niedziele</label>
+          </div>
+       </div>
+       <div class="second-half">
+          <!-- 4 checkbox -->
+          <div class="checkbox-container">
+            <input class="custom-checkbox" type="checkbox" id="dlaOsobNiepelnosprawnych" value="Dla osob niepelnosprawnych" v-model="filters">
+            <label class="custom-icon niepelnosprawni" for="dlaOsobNiepelnosprawnych">Ułatwienie dla osób niepełnosprawnych</label>
+          </div>
+          <!-- 5 checkbox -->
+          <div class="checkbox-container">
+            <input class="custom-checkbox" type="checkbox" id="parking" value="Parking" v-model="filters">
+            <label class="custom-icon parking" for="parking">Parking</label>
+          </div>
+          <!-- 6 checkbox -->
+          <div class="checkbox-container">
+            <input class="custom-checkbox" type="checkbox" id="odbiorZaPobraniem" value="Odbior za pobraniem" v-model="filters">
+            <label class="custom-icon pobraniem" for="odbiorZaPobraniem">Odbiór za pobraniem</label>
+          </div>
+       </div>
       </div>
     </div>
 </template>
@@ -61,41 +65,48 @@ export default {
   align-items: center;
 }
 .title{
-  font-size: 24px;
+  font-size: 22px;
   font-weight: 900;
   color: #000000;
-  margin-bottom: 0;
+  margin: 0;
 }
 .subtitle{
   font-size: 16px;
   color: #000000;
   display: flex;
   align-items: center;
-  margin-bottom: 0;
+  margin: 0;
   &:hover{
     color: #989898;
     cursor: pointer;
   }
 }
 .clear{
-  padding: 2px;
+  padding-right: 5px;
 }
 .checkbox-container{
   width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  padding: 10px 0;
 }
 .filters-menu{
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  margin-left: 35px;
+}
+.first-half{
+  flex: 0 0 45%;
+}
+.second-half{
+  flex: 0 0 55%;
 }
 .custom-checkbox{
+  display: none;
   opacity: 0;
   position: relative;
   & +.custom-icon{
     position: relative;
-    padding-left: 25px;
-    width: 100%;
+    margin-left: 25px;
+    width: 90%;
     display: block;
     text-align: left;
     color:#000000;
@@ -104,16 +115,14 @@ export default {
       width: 17px;
       height: 17px;
       position: absolute;
-      left: -3px;
+      left: -25px;
     }
    &:after{
       content: '';
       position: absolute;
       width: 17px;
       height: 17px;
-      border-radius: 3px;
-      top: -20%;
-      right: 380px;
+      right: 6px;
       border: 3px solid #E4E4E4;
       border-radius: 50%;
    }

@@ -1,19 +1,17 @@
 <template>
     <div class="widget-view-v2">
       <div class="features">
-        <!-- SelectSuppliersView Component -->
-        <SelectSuppliersV2/>
         <!-- SelectLocationView Component -->
         <SelectLocationV2/>
+        <!-- SelectSuppliersView Component -->
+        <SelectSuppliersV2/>
         <!-- FiltersView Component -->
         <FiltersV2/>
         <!-- ModalDivView Component -->
-        <ModalDivV2/>
+        <!-- <ModalDivV2/> -->
       </div>
-      <div class="map">
-        <l-map :zoom="zoom" :center="center">
-           <l-tile-layer :url="url" :attribution="attribution" />
-        </l-map>
+      <div class="container-map">
+         <Map/>
       </div>
     </div>
 </template>
@@ -22,11 +20,8 @@
 import SelectSuppliersV2 from './features/SelectSuppliersV2.vue'
 import SelectLocationV2 from './features/SelectLocationV2.vue'
 import FiltersV2 from './features/FiltersV2.vue'
-import ModalDivV2 from './features/ModalDivV2.vue'
-// maps components
-import { LMap, LTileLayer, LMarker, LPopup, LTooltip } from 'vue2-leaflet'
-import { latLng } from 'leaflet'
-import 'leaflet/dist/leaflet.css'
+// import ModalDivV2 from './features/ModalDivV2.vue'
+import Map from './Map/LeafletMap.vue'
 
 export default {
   name: 'WidgetViewV2',
@@ -34,20 +29,11 @@ export default {
     SelectSuppliersV2,
     SelectLocationV2,
     FiltersV2,
-    ModalDivV2,
-    // maps components
-    LMap,
-    LTileLayer,
-    LMarker,
-    LPopup,
-    LTooltip
+    // ModalDivV2,
+    Map
   },
   data () {
     return {
-      zoom: 13,
-      center: latLng(52.229676, 21.012229),
-      url: 'http://{s}.tile.osm.org/{z}/{x}/{y}.png',
-      attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
     }
   }
 }
@@ -58,12 +44,10 @@ export default {
    display: flex;
 }
 .features{
-   width: 45%;
-   margin: 40px 80px 0 80px;
+   width: 55%;
+   margin: 20px 40px 0 40px;
  }
- .map{
-  width: 55%;
-  height: 100vh;
-  max-height: 100vh;
+ .container-map{
+  width: 45%;
 }
 </style>

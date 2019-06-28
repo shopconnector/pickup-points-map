@@ -41,23 +41,27 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.suppliers{
+  display: flex;
+  flex-direction: column;
+  margin: 0 20px;
+}
 .title{
   font-family: 'Lato', sans-serif;
-  font-size: 24px;
+  font-size: 22px;
   font-weight: 900;
   text-align: left;
+  margin-top: 0;
 }
 .suppliers-menu{
   display: flex;
   flex-wrap: wrap;
 }
 .selectSuppliers{
-  flex: 1 0 30%;
+  display: flex;
+  justify-content: end;
+  flex: 0 0 30%;
   padding: 10px 20px 10px 0;
-  //margin-left: 80px;
-  // &:first-child{
-  //   margin: 0;
-  // }
 }
 .styled-checkbox{
   position: absolute;

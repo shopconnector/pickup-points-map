@@ -1,15 +1,15 @@
 <template>
     <div class="widget-view">
-      <div class="map">
-        <l-map :zoom="zoom" :center="center">
-           <l-tile-layer :url="url" :attribution="attribution" />
-        </l-map>
+      <div class="header-view">
+        <!-- Select Location Component -->
+        <SelectLocation/>
+      </div>
+      <div class="container-map">
+        <Map/>
       </div>
       <div class="features">
         <!-- Select Suppliers Component -->
         <SelectSuppliers/>
-        <!-- Select Location Component -->
-        <SelectLocation/>
         <!-- Filters Component -->
         <Filters/>
       </div>
@@ -20,10 +20,7 @@
 import SelectSuppliers from './features/SelectSuppliers'
 import SelectLocation from './features/SelectLocation.vue'
 import Filters from './features/Filters.vue'
-// maps components
-import { LMap, LTileLayer, LMarker, LPopup, LTooltip } from 'vue2-leaflet'
-import { latLng } from 'leaflet'
-import 'leaflet/dist/leaflet.css'
+import Map from './Map/LeafletMap.vue'
 
 export default {
   name: 'WidgetView',
@@ -31,19 +28,10 @@ export default {
     SelectSuppliers,
     SelectLocation,
     Filters,
-    // maps components
-    LMap,
-    LTileLayer,
-    LMarker,
-    LPopup,
-    LTooltip
+    Map
   },
   data () {
     return {
-      zoom: 13,
-      center: latLng(52.229676, 21.012229),
-      url: 'http://{s}.tile.osm.org/{z}/{x}/{y}.png',
-      attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
     }
   }
 }
@@ -52,14 +40,18 @@ export default {
 <style lang="scss" scoped>
 .widget-view{
   display: flex;
+  flex-wrap: wrap;
 }
 .features{
-  margin: 60px 120px 120px 60px;
-  width: 40%;
+  width: 55%;
 }
-.map{
-  width: 60%;
-  height: 100vh;
-  max-height: 100vh;
+.container-map{
+  width: 45%;
+}
+.header-view{
+  width: 100%;
+  display: flex;
+  margin: 20px 20px 10px 20px;
+  height: 12vh;
 }
 </style>
