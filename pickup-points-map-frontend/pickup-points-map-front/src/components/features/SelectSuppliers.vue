@@ -41,23 +41,27 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.suppliers{
+  display: flex;
+  flex-direction: column;
+  margin: 0 20px;
+}
 .title{
   font-family: 'Lato', sans-serif;
-  font-size: 24px;
+  font-size: 22px;
   font-weight: 900;
   text-align: left;
+  margin-top: 0;
 }
 .suppliers-menu{
   display: flex;
   flex-wrap: wrap;
 }
 .selectSuppliers{
-  flex: 1 0 30%;
+  display: flex;
+  justify-content: end;
+  flex: 0 0 25%;
   padding: 10px 20px 10px 0;
-  //margin-left: 80px;
-  // &:first-child{
-  //   margin: 0;
-  // }
 }
 .styled-checkbox{
   position: absolute;
@@ -72,7 +76,7 @@ export default {
     & + label:before {
       content: '';
       position: absolute;
-      top: 50%;
+      top: 35%;
       left: 110%;
       border-radius: 50%;
       width: 30px;
@@ -81,7 +85,7 @@ export default {
       box-shadow: inset 0 0px 3px #FFFFFF, inset 0 0  0 7px #E5E5E5;
     }
     &:checked + label:before {
-      box-shadow: inset 0 0px 3px #FFFFFF, inset 0 0  0 7px #E54C69;
+      box-shadow: inset 0 0 0 #FFFFFF, inset 0 0  0 7px #E54C69;
     }
 }
 </style>

@@ -1,6 +1,9 @@
 <template>
   <div class="location">
-    <h1 class="title">Wybierz lokalizację</h1>
+    <div class="location-header">
+      <h1 class="title">Wybierz lokalizację</h1>
+      <p class="zamknij"><span class="clear">X</span>ZAMKNIJ</p>
+    </div>
     <div class="choose-location">
         <h3 class="my-location">Użyj mojej lokalizacji</h3>
         <p class="lub">lub</p>
@@ -38,39 +41,78 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.location{
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: end;
+}
+.location-header{
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.zamknij{
+  margin: 0;
+  color: #707070;
+  font-size: 14px;
+  cursor: pointer;
+  &:hover{
+    color: #E5E5E5;
+  }
+  .clear{
+    font-size: 16px;
+    padding-right: 10px;
+ }
+}
+
 .title{
   font-family: 'Lato', sans-serif;
   font-size: 22px;
   font-weight: 900;
   text-align: left;
+  margin: 0;
+}
+.choose-location{
+  display: flex;
+  align-items: center;
+  width: 100%;
 }
 .my-location{
+  flex: 0 0 18%;
   color: #000000;
   font-size: 18px;
   font-family: 'Lato', sans-serif;
   display: flex;
-  justify-content: center;
+  justify-content: end;
   align-items: center;
+  height: 46px;
+  margin: 10px 0;
+  cursor: pointer;
+  &:hover{
+    background-color: #E5E5E5;
+    border-radius: 3px;
+  }
   &:before{
-    content: url(/assets/gps24px.svg);
+    content: url(../../assets/gps24px.svg);
     padding-right: 10px;
     width: 25px;
     height: 25px;
   }
-}
-.choose-location{
-  display: flex;
-  flex-direction: column;
-  align-items: center;
 }
 .lub{
   font-size: 16px;
   font-family: 'Lato', sans-serif;
   color: #AAAAAA;
   margin: 0;
+  padding: 0 25px;
 }
 .inputs{
+  margin: 10px 0;
+  flex: 0 0 30%;
   border: 3px solid #E5E5E5;
+  border-radius: 3px;
   height: 40px;
   width: 74%;
   display: flex;
@@ -84,10 +126,12 @@ export default {
   }
 }
 .input-tag{
+  flex: 0 0 30%;
   border: 3px solid #E5E5E5;
+  border-radius: 3px;
   height: 38px;
   width: 72%;
-  margin: 18px 0;
+  margin: 10px 0;
   padding-left: 15px;
   font-family: 'Lato', sans-serif;
   color: #303030;

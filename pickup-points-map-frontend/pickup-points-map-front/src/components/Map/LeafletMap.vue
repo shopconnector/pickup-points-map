@@ -1,13 +1,12 @@
 <template>
-  <div class="map">
-    <div class="type-actions">
+  <div :class="isWidgetVersion ? 'map-v2' : 'map'">
+    <div :class="isWidgetVersion ? 'type-actions' : 'type-actions-v2'">
       <p class="button-action" :class="{ 'active' : !toogleMap }" @click="toogleMap = !toogleMap">Mapa</p>
       <p class="button-action" :class="{ 'active' : toogleMap }" @click="toogleMap = !toogleMap">Lista</p>
     </div>
     <transition name="fade">
       <template v-if="toogleMap">
-        <!-- <div class="list-title">Punkty odbioru w pobliżu Twojej lokalizacji</div> -->
-        <div class="list-box">
+        <div class="list-box" :class="{'listbox-margin-top' : isWidgetVersion}">
           <div class="list-title">Punkty odbioru w pobliżu Twojej lokalizacji</div>
           <div class="scroll-box">
             <div class="list-row"
@@ -21,13 +20,13 @@
                 {{ marker.zip }}
                 {{ marker.address2 }}
               </div>
-              <div class="list-elem">
+              <div class="list-elem hours-elem">
                 <b>Godziny otwarcia:</b>
                 {{ marker.openTime }}<br>
                 {{ marker.openTime2 }}
               </div>
-              <div class="list-elem">
-                <p class="list-button" @click="toogleTest = !toogleTest">Wybierz</p>
+              <div class="list-elem btn-elem">
+                <p class="list-button" @click="toogleModal = !toogleModal">Wybierz</p>
               </div>
             </div>
           </div>
@@ -39,8 +38,6 @@
         <l-map :zoom="zoom" :center="center" :options="{zoomControl: false}">
             <l-control-zoom position="topright"></l-control-zoom>
             <l-tile-layer :url="url" :attribution="attribution" />
-            <!-- <marker-popup :position="marker" :text="text" :title="title" />
-            <l-marker :lat-lng="marker1" /> -->
             <l-marker
               v-for="marker in markers"
               :key="marker.id"
@@ -48,11 +45,6 @@
               :lat-lng="marker.position"
               class-name="markertype"
             >
-              <!-- <l-icon
-                :icon-size="iconSize"
-                :icon-anchor="iconAnchor"
-                :icon-url="iconUrl"
-              /> -->
               <l-icon :icon-anchor="marker.iconAnchor" :icon-size="marker.iconSize" class-name="someExtraClass">
                 <img :src="pinsUrl[marker.type]" width="52" height="52"/>
               </l-icon>
@@ -70,7 +62,7 @@
                     </div>
                   </div>
                   <div class="popup-action">
-                    <p class="popup-button" @click="toogleTest = !toogleTest">Wybierz</p>
+                    <p class="popup-button" @click="toogleModal = !toogleModal">Wybierz</p>
                   </div>
                 </div>
               </l-popup>
@@ -79,11 +71,13 @@
       </template>
     </transition>
     <transition name="bounce">
-      <div class="testdiv" v-if="toogleTest">
-        <!-- {{ $store.state.geolocation }} -->
-        <!-- <p @click="useMyGeo()">use my geo</p> -->
-        asdasd
-        {{ geoCenter }}
+      <div class="modal-position" :class="{'modal-positionV2' : !isWidgetVersion}" v-if="toogleModal">
+        <template v-if="isWidgetVersion">
+           <ModalDiv/>
+        </template>
+        <template v-else>
+           <ModalDivV2/>
+        </template>
       </div>
     </transition>
   </div>
@@ -94,11 +88,14 @@ import { LMap, LTileLayer, LMarker, LPopup, LTooltip, LControlZoom, LIcon } from
 import { latLng } from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 
-import MarkerPopup from './MarkerPopup'
+import ModalDiv from '../features/ModalDiv.vue'
+import ModalDivV2 from '../features/ModalDivV2.vue'
 
 export default {
   name: 'Home',
   components: {
+    ModalDiv,
+    ModalDivV2,
     // maps components
     LMap,
     LTileLayer,
@@ -106,13 +103,12 @@ export default {
     LPopup,
     LTooltip,
     LControlZoom,
-    MarkerPopup,
     LIcon
   },
   data () {
     return {
       toogleMap: false,
-      toogleTest: false,
+      toogleModal: false,
       zoom: 14,
       center: latLng(52.235948, 21.030750),
       geoCenter: '',
@@ -121,12 +117,12 @@ export default {
       text: 'my marker popup text',
       title: 'My marker popup title',
       logosUrl: {
-        zabka: require('../../assets/żabka-logo.png'),
-        dpd: require('../../assets/dpd-logo.png'),
-        dpdPickup: require('../../assets/dpd-pickup-logo.png'),
-        fresh: require('../../assets/freshmarket-logo.png'),
-        inpost: require('../../assets/inpost-logo.png'),
-        pocztaPolska: require('../../assets/pocztapolska-logo.png')
+        zabka: require('../../assets/logos/żabka.png'),
+        dpd: require('../../assets/logos/dpd.png'),
+        dpdPickup: require('../../assets/logos/dpd-pickup.png'),
+        fresh: require('../../assets/logos/freshmarket.png'),
+        inpost: require('../../assets/logos/inpost.png'),
+        pocztaPolska: require('../../assets/logos/pocztapolska.png')
       },
       pinsUrl: {
         zabka: require('../../assets/zabka.png'),
@@ -277,6 +273,11 @@ export default {
         }
       ]
     }
+  },
+  computed: {
+    isWidgetVersion () {
+      return this.$store.state.WidgetVersion
+    }
   }
   // methods: {
   //   useMyGeo () {
@@ -287,13 +288,6 @@ export default {
 </script>
 
 <style lang="scss">
-// .leaflet-container .leaflet-marker-pane img {
-//   background-image: url(../../assets/dpd.png) !important;
-//   background-position: center !important;
-//   width: 33px !important;
-//   background-repeat: no-repeat !important;
-//   background-size: cover !important;
-// }
 .leaflet-popup {
   .leaflet-popup-content-wrapper {
     border: 3px solid #3F87F5;
@@ -318,13 +312,18 @@ export default {
   overflow: hidden;
   max-height: 100vh;
 }
+.map-v2{
+  width: 100%;
+  height: 84.3vh;
+  overflow: hidden;
+  max-height: 100vh;
+}
 .popup-info {
   width: 200px;
   .popup-text-box {
     width: 70%;
   .popup-text {
     margin: 0;
-    // padding: 0 10px;
   }
   }
   .popup-img {
@@ -340,7 +339,7 @@ export default {
   margin: 5px 0;
   background-color: #E4405F;
   padding: 10px 20px;
-  border-radius: 15px;
+  border-radius: 9px;
   text-transform: uppercase;
   color: white;
   display: inline;
@@ -370,24 +369,55 @@ display: flex;
   }
   position: absolute;
   z-index: 999;
-  left: 60px;
-  top: 60px;
+  left: 20px;
+  top: 140px;
   background-color: white;
   display: flex;
   border-radius: 15px;
   overflow: hidden;
 }
+.type-actions-v2{
+  .button-action {
+    &.active {
+      color: white;
+      background-color: #E54C69;
+    }
+    color: #AAAAAA;
+    background-color: #E5E5E5;
+    padding: 8px 40px 10px 40px;
+    margin: 0;
+    cursor: pointer;
+  }
+  position: absolute;
+  z-index: 999;
+  right: 60px;
+  top: 25px;
+  background-color: white;
+  display: flex;
+  border-radius: 15px;
+  overflow: hidden;
+}
+.hours-elem{
+  flex-basis: 30% !important;
+  max-width: 30% !important;
+  text-align: right !important;
+}
+.btn-elem{
+  flex-basis: 20% !important;
+  max-width: 20% !important;
+}
 .list-box {
   .list-title {
     font-weight: 700;
     font-size: 22px;
+    padding-bottom: 20px;
   }
   .list-row {
     .list-elem {
       .list-button {
         margin: 5px 0;
         background-color: #E4405F;
-        padding: 5px 30px;
+        padding: 5px 10px;
         border-radius: 50px;
         color: white;
         display: inline;
@@ -401,7 +431,7 @@ display: flex;
       align-items: center;
       justify-content: center;
     }
-    padding: 10px 0;
+    padding: 20px 0;
     border-bottom: 1px solid #AAAAAA;
     display: flex;
     flex: 0 1 auto;
@@ -411,21 +441,26 @@ display: flex;
   .scroll-box {
     overflow-y: scroll;
     height: 70vh;
+    border: 1px solid #AAAAAA;
   }
   margin-top: 150px;
-  padding: 0px 60px 0 60px;
+  padding: 0px 20px;
   text-align: left;
 }
-.testdiv {
-  width: 40%;
-  height: 200px;
-  background-color: #E4405F;
-  border-radius: 50px;
+.listbox-margin-top{
+  margin-top: 55px !important;
+}
+.modal-position {
+  width: 55%;
   position: absolute;
   right: 0;
   bottom: 0;
   z-index: 999;
   transition: 0.3s all;
+}
+.modal-positionV2{
+  left: 0;
+  width: 55%;
 }
 // transitions
 .fade-enter-active {
@@ -448,7 +483,6 @@ display: flex;
 }
 @keyframes bounce-in {
   0% {
-    // background-color: blue;
     transform: scale(0);
   }
   100% {
@@ -461,9 +495,6 @@ display: flex;
   0% {
     transform: scale(0);
   }
-  // 50% {
-  //   transform: scale(0.5);
-  // }
   100% {
     transform: scale(1);
   }
