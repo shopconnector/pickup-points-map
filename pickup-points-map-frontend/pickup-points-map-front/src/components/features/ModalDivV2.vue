@@ -72,13 +72,14 @@ p {
 }
 .img{
   width: 85px;
-  padding-right: 70px;
+  padding-right: 55px;
 }
 .content{
   background: #F5F5F5;
   padding-bottom: 15px;
 }
 .modal{
+  width: 100%;
   margin: 25px -35px 0px 0px;
   display: flex;
   flex-direction: column;
@@ -101,20 +102,20 @@ p {
 }
 .selected-supplier{
   display: flex;
+  justify-content: space-around
 }
 .col-1{
   display: flex;
   flex-direction: column;
   align-items: end;
-  padding-left: 40px;
-  flex: 0 0 45%;
+  flex: 0 0 40%;
 }
 .col-2{
   display: flex;
   flex-wrap: wrap;
   flex-direction: column;
   justify-content: space-between;
-  flex: 0 0 49%;
+  flex: 0 0 40%;
 }
 .logo{
   display: flex;
@@ -191,9 +192,6 @@ p {
   }
 }
 .zamknij{
-  // position: absolute;
-  // bottom: 0;
-  // left: 450px;
   background: #E4405F;
   height: 45px;
   display: flex;
@@ -202,7 +200,7 @@ p {
   justify-content: center;
   font-size: 18px;
   color: #FFFFFF;
-  padding: 0 30px;
+  padding: 0 20px;
   z-index: 999;
   cursor: pointer;
   margin-right: 10px;

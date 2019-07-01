@@ -68,6 +68,7 @@ export default {
   align-items: center;
 }
 .title{
+  margin: 14px 0 0 0;
   font-size: 22px;
   font-weight: 900;
 }
@@ -84,6 +85,8 @@ export default {
 }
 .checkbox-container{
   width: 100%;
+  // text-align: left;
+  // margin: 15px 0;
 }
 .filters-menu{
   display: flex;
@@ -95,14 +98,25 @@ export default {
   flex: 0 0 55%;
 }
 .custom-checkbox{
+  display: none;
   opacity: 0;
   position: relative;
   & +.custom-icon{
     position: relative;
+    // padding-left: 30px;
+    // max-width: 50%;
+    // margin: 15px 0;
     padding-left: 30px;
+    margin: 16px 0;
     width: 100%;
     display: block;
     text-align: left;
+    line-height: 30px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 70%;
+    padding-right: 40px;
     &:before{
       content: '';
       width: 17px;
@@ -117,8 +131,7 @@ export default {
       height: 30px;
       background-color:#E5E5E5;
       border-radius: 3px;
-      top: -50%;
-      right: 50px;
+      right: 0px;
    }
  }
   &:checked +.custom-icon:after{

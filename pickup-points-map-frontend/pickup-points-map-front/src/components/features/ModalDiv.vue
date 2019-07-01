@@ -40,6 +40,7 @@
           </div>
         </div>
         <div class="footer">
+          <span class="powrot"><i class="material-icons -">arrow_left</i>POWRÓT</span>
           <p>WYBIERZ DPD I ZAMKNIJ</p>
         </div>
     </div>
@@ -69,6 +70,7 @@ p {
   flex-direction: column;
   margin: 20px;
   border: 1px solid #E54C69;
+  background-color: white;
 }
 .title{
     padding-left: 40px;
@@ -134,8 +136,8 @@ p {
 }
 .footer{
     display: flex;
-    justify-content: flex-end;
-    margin: 20px 40px 20px 0;
+    justify-content: space-between;
+    margin: 20px 40px 20px 40px;
     p {
         background-color: #E4405F;
         border-radius: 3px;
@@ -145,5 +147,15 @@ p {
         padding: 10px 25px;
         cursor: pointer;
     }
+}
+.powrot{
+  display: flex;
+  height: fit-content;
+  font-size: 16px;
+  color: #ADADAD;
+  align-items: center;
+  i {
+    font-size: 35px;
+  }
 }
 </style>

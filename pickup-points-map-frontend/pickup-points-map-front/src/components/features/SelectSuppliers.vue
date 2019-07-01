@@ -60,7 +60,7 @@ export default {
 .selectSuppliers{
   display: flex;
   justify-content: end;
-  flex: 0 0 30%;
+  flex: 0 0 25%;
   padding: 10px 20px 10px 0;
 }
 .styled-checkbox{
@@ -76,7 +76,7 @@ export default {
     & + label:before {
       content: '';
       position: absolute;
-      top: 50%;
+      top: 35%;
       left: 110%;
       border-radius: 50%;
       width: 30px;

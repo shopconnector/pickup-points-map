@@ -88,6 +88,7 @@ export default {
   justify-content: end;
   align-items: center;
   height: 46px;
+  margin: 10px 0;
   cursor: pointer;
   &:hover{
     background-color: #E5E5E5;
@@ -108,6 +109,7 @@ export default {
   padding: 0 25px;
 }
 .inputs{
+  margin: 10px 0;
   flex: 0 0 30%;
   border: 3px solid #E5E5E5;
   border-radius: 3px;
@@ -129,7 +131,7 @@ export default {
   border-radius: 3px;
   height: 38px;
   width: 72%;
-  margin: 18px 0;
+  margin: 10px 0;
   padding-left: 15px;
   font-family: 'Lato', sans-serif;
   color: #303030;

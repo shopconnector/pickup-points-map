@@ -370,7 +370,7 @@ display: flex;
   position: absolute;
   z-index: 999;
   left: 20px;
-  top: 133px;
+  top: 140px;
   background-color: white;
   display: flex;
   border-radius: 15px;
@@ -460,6 +460,7 @@ display: flex;
 }
 .modal-positionV2{
   left: 0;
+  width: 55%;
 }
 // transitions
 .fade-enter-active {
