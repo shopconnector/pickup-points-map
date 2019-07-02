@@ -7,9 +7,7 @@
           <!-- SelectSuppliersView Component -->
           <SelectSuppliersV2/>
           <!-- FiltersView Component -->
-          <FiltersV2/>
-          <!-- ModalDivView Component -->
-          <!-- <ModalDivV2/> -->
+          <Filters/>
         </div>
       </div>
       <div class="container-map">
@@ -21,7 +19,7 @@
 <script>
 import SelectSuppliersV2 from './features/SelectSuppliersV2.vue'
 import SelectLocationV2 from './features/SelectLocationV2.vue'
-import FiltersV2 from './features/FiltersV2.vue'
+import Filters from './features/Filters.vue'
 import Map from './Map/LeafletMap.vue'
 
 export default {
@@ -29,12 +27,14 @@ export default {
   components: {
     SelectSuppliersV2,
     SelectLocationV2,
-    FiltersV2,
+    Filters,
     Map
   },
   data () {
     return {
     }
+  },
+  computed: {
   }
 }
 </script>
