@@ -62,6 +62,7 @@ export default {
   justify-content: end;
   flex: 0 0 25%;
   padding: 10px 20px 10px 0;
+  align-items: center;
 }
 .styled-checkbox{
   position: absolute;
@@ -76,7 +77,7 @@ export default {
     & + label:before {
       content: '';
       position: absolute;
-      top: 35%;
+      top: 50%;
       left: 110%;
       border-radius: 50%;
       width: 30px;
@@ -87,5 +88,24 @@ export default {
     &:checked + label:before {
       box-shadow: inset 0 0 0 #FFFFFF, inset 0 0  0 7px #E54C69;
     }
+}
+
+@media only screen and (max-width: 1000px) {
+ .title{
+   font-size: 20px;
+ }
+ label{
+   font-size: 14px;
+ }
+ .styled-checkbox{
+   & + label{
+     font-size: 14px;
+   }
+   & + label:before {
+     width: 25px;
+     height: 25px;
+     top: 60%;
+   }
+ }
 }
 </style>

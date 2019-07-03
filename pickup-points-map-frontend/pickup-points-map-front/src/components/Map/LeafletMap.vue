@@ -245,7 +245,7 @@ display: flex;
   position: absolute;
   z-index: 999;
   left: 20px;
-  top: 140px;
+  top: 150px;
   background-color: white;
   display: flex;
   border-radius: 15px;

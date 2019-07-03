@@ -159,6 +159,7 @@ export default {
 }
 .filters-menu{
   display: flex;
+  align-items: center;
 }
 .first-half{
   flex: 0 0 45%;

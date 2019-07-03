@@ -231,4 +231,19 @@ input::placeholder{
  font-size: 16px;
  font-family: 'Lato', sans-serif;
 }
+
+@media only screen and (max-width: 1000px) {
+ .title {
+   font-size: 20px;
+ }
+ .my-location{
+   font-size: 16px;
+ }
+ .inputs{
+   font-size: 16px;
+ }
+ .lub{
+   font-size: 14px;
+ }
+}
 </style>
