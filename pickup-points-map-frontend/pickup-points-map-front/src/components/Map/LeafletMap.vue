@@ -10,7 +10,7 @@
           <div class="list-title">Punkty odbioru w pobliżu Twojej lokalizacji</div>
           <div class="scroll-box">
             <div class="list-row"
-              v-for="marker in markers"
+              v-for="(marker, index) in markers"
               :key="marker.id">
               <div class="list-elem">
                 <img :src="logosUrl[marker.type]" width="auto" height="70px"/>
@@ -26,7 +26,7 @@
                 {{ marker.openTime2 }}
               </div>
               <div class="list-elem btn-elem">
-                <p class="list-button" @click="toogleModal = !toogleModal">Wybierz</p>
+                <p class="list-button" @click="selectedPopup(index)">Wybierz</p>
               </div>
             </div>
           </div>
@@ -39,7 +39,7 @@
             <l-control-zoom position="topright"></l-control-zoom>
             <l-tile-layer :url="url" :attribution="attribution" />
             <l-marker
-              v-for="marker in markers"
+              v-for="(marker, index) in markers"
               :key="marker.id"
               :visible="marker.visible"
               :lat-lng="marker.position"
@@ -62,7 +62,7 @@
                     </div>
                   </div>
                   <div class="popup-action">
-                    <p class="popup-button" @click="toogleModal = !toogleModal">Wybierz</p>
+                    <p class="popup-button" @click="selectedPopup(index)">Wybierz</p>
                   </div>
                 </div>
               </l-popup>
@@ -72,12 +72,7 @@
     </transition>
     <transition name="bounce">
       <div class="modal-position" :class="{'modal-positionV2' : !isWidgetVersion}" v-if="toogleModal">
-        <template v-if="isWidgetVersion">
-           <ModalDiv/>
-        </template>
-        <template v-else>
-           <ModalDivV2/>
-        </template>
+        <ModalDiv :parentData="selectedMarker" :toogleModal="toogleModal" @close="onCloseChild"/>
       </div>
     </transition>
   </div>
@@ -87,15 +82,14 @@
 import { LMap, LTileLayer, LMarker, LPopup, LTooltip, LControlZoom, LIcon } from 'vue2-leaflet'
 import { latLng } from 'leaflet'
 import 'leaflet/dist/leaflet.css'
+import { mapState } from 'vuex'
 
 import ModalDiv from '../features/ModalDiv.vue'
-import ModalDivV2 from '../features/ModalDivV2.vue'
 
 export default {
   name: 'Home',
   components: {
     ModalDiv,
-    ModalDivV2,
     // maps components
     LMap,
     LTileLayer,
@@ -112,10 +106,10 @@ export default {
       zoom: 14,
       center: latLng(52.235948, 21.030750),
       geoCenter: '',
+      // markers: null,
+      selectedMarker: {},
       url: 'http://{s}.tile.osm.org/{z}/{x}/{y}.png',
       attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
-      text: 'my marker popup text',
-      title: 'My marker popup title',
       logosUrl: {
         zabka: require('../../assets/logos/żabka.png'),
         dpd: require('../../assets/logos/dpd.png'),
@@ -131,159 +125,40 @@ export default {
         fresh: require('../../assets/fresh.png'),
         inpost: require('../../assets/inpost.png'),
         pocztaPolska: require('../../assets/poczta-polska.png')
-      },
-      markers: [
-        {
-          id: 'm1',
-          position: { lat: 52.229676, lng: 21.012229 },
-          tooltip: 'tooltip for marker1',
-          address1: 'Mazowiecka 50A',
-          address2: 'Warszawa',
-          zip: '02776',
-          openTime: 'pn - pt: 8:00 - 18:00',
-          openTime2: 'so: 8:00 - 16:00',
-          visible: true,
-          openSat: true,
-          openSun: true,
-          openNight: true,
-          disabledPeople: true,
-          parking: true,
-          cashOnDelivery: true,
-          type: 'zabka',
-          icon: {
-            iconUrl: '../../assets/zabka.png',
-            iconSize: [52, 52],
-            iconAnchor: [26, 52]
-          }
-        },
-        {
-          id: 'm2',
-          position: { lat: 52.239050, lng: 21.046113 },
-          tooltip: 'tooltip for marker2',
-          address1: 'Mazowiecka 50A',
-          address2: 'Warszawa',
-          zip: '02776',
-          openTime: 'pn - pt: 8:00 - 18:00',
-          openTime2: 'so: 8:00 - 16:00',
-          visible: true,
-          openSat: true,
-          openSun: true,
-          OpenNight: true,
-          disabledPeople: true,
-          parking: true,
-          cashOnDelivery: true,
-          type: 'dpd',
-          icon: {
-            iconUrl: '../../assets/dpd.png',
-            iconSize: [52, 52],
-            iconAnchor: [26, 52]
-          }
-        },
-        {
-          id: 'm3',
-          position: { lat: 52.228740, lng: 21.033668 },
-          tooltip: 'tooltip for marker3',
-          address1: 'Mazowiecka 50A',
-          address2: 'Warszawa',
-          zip: '02776',
-          openTime: 'pn - pt: 8:00 - 18:00',
-          openTime2: 'so: 8:00 - 16:00',
-          visible: true,
-          openSat: true,
-          openSun: true,
-          OpenNight: true,
-          disabledPeople: true,
-          parking: true,
-          cashOnDelivery: true,
-          type: 'inpost',
-          icon: {
-            iconUrl: '../../assets/inpost.png',
-            iconSize: [52, 52],
-            iconAnchor: [26, 52]
-          }
-        },
-        {
-          id: 'm4',
-          position: { lat: 52.235238, lng: 21.008434 },
-          tooltip: 'tooltip for marker4',
-          address1: 'Mazowiecka 50A',
-          address2: 'Warszawa',
-          zip: '02776',
-          openTime: 'pn - pt: 8:00 - 18:00',
-          openTime2: 'so: 8:00 - 16:00',
-          visible: true,
-          openSat: true,
-          openSun: true,
-          OpenNight: true,
-          disabledPeople: true,
-          parking: true,
-          cashOnDelivery: true,
-          type: 'dpdPickup',
-          icon: {
-            iconUrl: '../../assets/dpdpickup.png',
-            iconSize: [52, 52],
-            iconAnchor: [26, 52]
-          }
-        },
-        {
-          id: 'm5',
-          position: { lat: 52.233949, lng: 21.017360 },
-          tooltip: 'tooltip for marker5',
-          address1: 'Mazowiecka 50A',
-          address2: 'Warszawa',
-          zip: '02776',
-          openTime: 'pn - pt: 8:00 - 18:00',
-          openTime2: 'so: 8:00 - 16:00',
-          visible: true,
-          openSat: true,
-          openSun: true,
-          OpenNight: true,
-          disabledPeople: true,
-          parking: true,
-          cashOnDelivery: true,
-          type: 'fresh',
-          icon: {
-            iconUrl: '../../assets/fresh.png',
-            iconSize: [52, 52],
-            iconAnchor: [26, 52]
-          }
-        },
-        {
-          id: 'm6',
-          position: { lat: 52.234949, lng: 21.015360 },
-          tooltip: 'tooltip for marker6',
-          address1: 'Mazowiecka 50A',
-          address2: 'Warszawa',
-          zip: '02776',
-          openTime: 'pn - pt: 8:00 - 18:00',
-          openTime2: 'so: 8:00 - 16:00',
-          visible: true,
-          openSat: true,
-          openSun: true,
-          OpenNight: true,
-          disabledPeople: true,
-          parking: true,
-          cashOnDelivery: true,
-          type: 'pocztaPolska',
-          icon: {
-            iconUrl: '../../assets/poczta-polska.png',
-            iconSize: [52, 52],
-            iconAnchor: [26, 52]
-          }
-        }
-      ]
+      }
     }
   },
   computed: {
     isWidgetVersion () {
       return this.$store.state.WidgetVersion
+    },
+    // now you can read it by using this.markets
+    ...mapState(['markers'])
+  },
+  // watch: {
+  //   markers () {
+  //     // if data change update the store
+  //     this.$store.commit('updateMarkers', this.markers)
+  //   }
+  // },
+  // created () {
+  //   this.markers = this.$store.state.markers
+  // },
+  methods: {
+    selectedPopup (index) {
+      this.toogleModal = false
+      setTimeout(() => this.toogleMethod(index), 500)
+    },
+    toogleMethod (index) {
+      this.toogleModal = true
+      if (this.toogleModal === true) {
+        this.selectedMarker = this.markers[index]
+      }
+    },
+    onCloseChild (value) {
+      this.toogleModal = value
     }
   }
-  // methods: {
-  //   useMyGeo () {
-  //     this.geoCenter = this.$store.state.geolocation
-  //   }
-  // }
 }
 </script>
 

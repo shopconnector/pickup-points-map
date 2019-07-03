@@ -1,5 +1,9 @@
 <template>
-    <div class="widget-view">
+  <div>
+    <div v-if="isMobileDevice()">
+      <h1>This is Mobile</h1>
+    </div>
+    <div class="widget-view" v-if="!isMobileDevice()">
       <div class="header-view">
         <!-- Select Location Component -->
         <SelectLocation/>
@@ -14,6 +18,7 @@
         <Filters/>
       </div>
     </div>
+  </div>
 </template>
 
 <script>
@@ -32,6 +37,11 @@ export default {
   },
   data () {
     return {
+    }
+  },
+  methods: {
+    isMobileDevice () {
+      return (typeof window.orientation !== 'undefined') || (navigator.userAgent.indexOf('IEMobile') !== -1)
     }
   }
 }

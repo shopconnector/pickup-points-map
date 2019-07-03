@@ -5,10 +5,10 @@
         <h3 class="my-location">Użyj mojej lokalizacji</h3>
         <p class="lub">lub</p>
         <h3 class="inputs" v-show="myInputs[0]" @click="myInputsControl(0)">Wpisz adres</h3>
-        <input class="input-tag" v-show="!myInputs[0]" v-model="address" placeholder="Wpisz adres"/>
+        <input  class="input-tag" v-show="!myInputs[0]" @blur="myInputs[0] = true" v-model="address" placeholder="Wpisz adres">
         <p class="lub">lub</p>
         <h3 class="inputs" v-show="myInputs[1]" @click="myInputsControl(1)">Wpisz punkt odbioru</h3>
-        <input class="input-tag" v-show="!myInputs[1]" v-model="pointCode" placeholder="Wpisz punkt odbioru"/>
+        <input class="input-tag" v-show="!myInputs[1]" @blur="myInputs[1] = true" v-model="pointCode" placeholder="Wpisz punkt odbioru">
     </div>
   </div>
 </template>

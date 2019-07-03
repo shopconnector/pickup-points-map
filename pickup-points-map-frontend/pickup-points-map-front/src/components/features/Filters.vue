@@ -1,40 +1,41 @@
 <template>
-    <div class="filters">
+    <div :class="isWidgetVersion ? 'filters' : 'filtersV2'">
       <div class="header">
-        <h1 class="title">Filtry</h1><p class="subtitle" @click="clearFilter()">Wyczyść filtry<span class="clear">X</span></p>
+        <h1 :class="isWidgetVersion ? 'title' : 'titleV2'">Filtry {{ openNightFilter }}</h1><p :class="isWidgetVersion ? 'subtitle' : 'subtitleV2'" @click="clearFilter()">
+            Wyczyść filtry<span :class="isWidgetVersion ? 'clear' : 'clearV2'">X</span></p>
       </div>
       <div class="filters-menu">
         <div class="first-half">
           <!-- 1 checkbox -->
           <div class="checkbox-container">
-            <input class="custom-checkbox" type="checkbox" id="otwarteDoPozna" value="Otwarte do pozna" v-model="filters">
+            <input class="custom-checkbox" :class="{'custom-checkboxV2' : !isWidgetVersion}" type="checkbox" id="otwarteDoPozna" value="openNight" v-model="filters">
             <label class="custom-icon pozna" for="otwarteDoPozna">Otwarte do póżna</label>
           </div>
           <!-- 2 checkbox -->
           <div class="checkbox-container">
-            <input class="custom-checkbox" type="checkbox" id="otwarteWSobotu" value="Otwarte w soboty" v-model="filters">
+            <input class="custom-checkbox" :class="{'custom-checkboxV2' : !isWidgetVersion}" type="checkbox" id="otwarteWSobotu" value="openSat" v-model="filters">
             <label class="custom-icon sobota" for="otwarteWSobotu">Otwarte w soboty</label>
           </div>
           <!-- 3 checkbox -->
           <div class="checkbox-container">
-            <input class="custom-checkbox" type="checkbox" id="otwarteWNiedziele" value="Otwarte w niedziele" v-model="filters">
+            <input class="custom-checkbox" :class="{'custom-checkboxV2' : !isWidgetVersion}" type="checkbox" id="otwarteWNiedziele" value="openSun" v-model="filters">
             <label class="custom-icon niedziela" for="otwarteWNiedziele">Otwarte w niedziele</label>
           </div>
         </div>
         <div class="second-half">
           <!-- 4 checkbox -->
           <div class="checkbox-container">
-            <input class="custom-checkbox" type="checkbox" id="dlaOsobNiepelnosprawnych" value="Dla osob niepelnosprawnych" v-model="filters">
+            <input class="custom-checkbox" :class="{'custom-checkboxV2' : !isWidgetVersion}" type="checkbox" id="dlaOsobNiepelnosprawnych" value="disabledPeople" v-model="filters">
             <label class="custom-icon niepelnosprawni" for="dlaOsobNiepelnosprawnych">Ułatwienie dla osób niepełnosprawnych</label>
           </div>
           <!-- 5 checkbox -->
           <div class="checkbox-container">
-            <input class="custom-checkbox" type="checkbox" id="parking" value="Parking" v-model="filters">
+            <input class="custom-checkbox" :class="{'custom-checkboxV2' : !isWidgetVersion}" type="checkbox" id="parking" value="parking" v-model="filters">
             <label class="custom-icon parking" for="parking">Parking</label>
           </div>
           <!-- 6 checkbox -->
           <div class="checkbox-container">
-            <input class="custom-checkbox" type="checkbox" id="odbiorZaPobraniem" value="Odbior za pobraniem" v-model="filters">
+            <input class="custom-checkbox" :class="{'custom-checkboxV2' : !isWidgetVersion}" type="checkbox" id="odbiorZaPobraniem" value="cashOnDelivery" v-model="filters">
             <label class="custom-icon pobraniem" for="odbiorZaPobraniem">Odbiór za pobraniem</label>
           </div>
         </div>
@@ -47,8 +48,35 @@ export default {
   name: 'Filters',
   data () {
     return {
-      filters: []
+      filters: [],
+      markers: null
     }
+  },
+  computed: {
+    isWidgetVersion () {
+      return this.$store.state.WidgetVersion
+    },
+    openNightFilter () {
+      if (this.filters.includes('openNight')) {
+        return this.$store.getters.openNightMarkers
+      } else if (this.filters.includes('disabledPeople')) {
+        return this.$store.getters.disabledPeopleMarkers
+      }
+    }
+    // openNightFilter () {
+    //   if (this.filters.includes('openNight')) {
+    //     const filtered = this.markers.filter(marker => marker.openNight)
+    //     return filtered
+    //   }
+    // }
+    // openNightFilter () {
+    //   if (this.filters.includes('openNight')) {
+    //     return this.$store.dispatch['myFilters']
+    //   }
+    // }
+  },
+  created () {
+    this.markers = this.$store.state.markers
   },
   methods: {
     clearFilter () {
@@ -58,7 +86,7 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang='scss' scoped>
 .filters{
   margin: 0 20px;
 }
@@ -72,6 +100,12 @@ export default {
   font-size: 22px;
   font-weight: 900;
 }
+.titleV2{
+  font-size: 22px;
+  font-weight: 900;
+  color: #000000;
+  margin: 0;
+}
 .subtitle{
   margin: 0 2% 0 0;
   font-size: 18px;
@@ -80,13 +114,25 @@ export default {
     cursor: pointer;
   }
 }
+.subtitleV2{
+  font-size: 16px;
+  color: #000000;
+  display: flex;
+  align-items: center;
+  margin: 0;
+  &:hover{
+    color: #989898;
+    cursor: pointer;
+  }
+}
 .clear{
   padding: 10px;
 }
+.clearV2{
+  padding: 5px;
+}
 .checkbox-container{
-  width: 100%;
-  // text-align: left;
-  // margin: 15px 0;
+  display: flex;
 }
 .filters-menu{
   display: flex;
@@ -103,20 +149,14 @@ export default {
   position: relative;
   & +.custom-icon{
     position: relative;
-    // padding-left: 30px;
-    // max-width: 50%;
-    // margin: 15px 0;
     padding-left: 30px;
-    margin: 16px 0;
-    width: 100%;
-    display: block;
+    margin: 12px 0;
+    width: 70%;
+    display: flex;
     text-align: left;
-    line-height: 30px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 70%;
+    line-height: 20px;
     padding-right: 40px;
+    align-items: center;
     &:before{
       content: '';
       width: 17px;
@@ -131,12 +171,32 @@ export default {
       height: 30px;
       background-color:#E5E5E5;
       border-radius: 3px;
-      right: 0px;
+      right: 10px;
    }
  }
   &:checked +.custom-icon:after{
     background-color: #E54C69;
   }
+}
+
+.custom-checkboxV2{
+    & + .custom-icon{
+        &:after{
+          content: '';
+          position: absolute;
+          width: 17px;
+          height: 17px;
+          right: 15px;
+          border: 3px solid #E4E4E4;
+          border-radius: 50%;
+          background-color: transparent;
+        }
+    }
+    &:checked + .custom-icon:after{
+      background-color: #3F87F5;
+      box-shadow: inset 0 0px 3px #FFFFFF, inset 0 0 0 2px #FFFFFF;
+      border-color:  #3F87F5;
+    }
 }
 .custom-checkbox + .pozna:before{
     background: url('../../assets/ZEGAR.png');
