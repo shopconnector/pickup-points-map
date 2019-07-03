@@ -1,7 +1,7 @@
 <template>
     <div :class="isWidgetVersion ? 'filters' : 'filtersV2'">
       <div class="header">
-        <h1 :class="isWidgetVersion ? 'title' : 'titleV2'">Filtry {{openNightFilter}}</h1><p :class="isWidgetVersion ? 'subtitle' : 'subtitleV2'" @click="clearFilter()">
+        <h1 :class="isWidgetVersion ? 'title' : 'titleV2'">Filtry {{ openNightFilter }}</h1><p :class="isWidgetVersion ? 'subtitle' : 'subtitleV2'" @click="clearFilter()">
             Wyczyść filtry<span :class="isWidgetVersion ? 'clear' : 'clearV2'">X</span></p>
       </div>
       <div class="filters-menu">
@@ -48,7 +48,8 @@ export default {
   name: 'Filters',
   data () {
     return {
-      filters: []
+      filters: [],
+      markers: null
     }
   },
   computed: {
@@ -58,20 +59,29 @@ export default {
     openNightFilter () {
       if (this.filters.includes('openNight')) {
         return this.$store.getters.openNightMarkers
-        // return this.$store.dispatch('openNightMarkers')
+      } else if (this.filters.includes('disabledPeople')) {
+        return this.$store.getters.disabledPeopleMarkers
       }
     }
+    // openNightFilter () {
+    //   if (this.filters.includes('openNight')) {
+    //     const filtered = this.markers.filter(marker => marker.openNight)
+    //     return filtered
+    //   }
+    // }
+    // openNightFilter () {
+    //   if (this.filters.includes('openNight')) {
+    //     return this.$store.dispatch['myFilters']
+    //   }
+    // }
+  },
+  created () {
+    this.markers = this.$store.state.markers
   },
   methods: {
     clearFilter () {
       this.filters = []
     }
-    // openNightFilter () {
-    //   if (this.filters.includes('openNight')) {
-    //     return this.$store.getters.openNightMarkers
-    // return this.$store.dispatch('openNightMarkers')
-    // }
-    // }
   }
 }
 </script>

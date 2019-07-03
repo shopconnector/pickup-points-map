@@ -54,17 +54,18 @@ export default {
   align-items: center;
 }
 .zamknij{
-  margin: 0;
-  color: #707070;
-  font-size: 14px;
-  cursor: pointer;
-  &:hover{
-    color: #E5E5E5;
-  }
-  .clear{
-    font-size: 16px;
-    padding-right: 10px;
- }
+  display: none;
+//   margin: 0;
+//   color: #707070;
+//   font-size: 14px;
+//   cursor: pointer;
+//   &:hover{
+//     color: #E5E5E5;
+//   }
+//   .clear{
+//     font-size: 16px;
+//     padding-right: 10px;
+//  }
 }
 
 .title{

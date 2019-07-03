@@ -122,7 +122,7 @@ p {
   align-items: center;
 }
 .footerV2{
-  justify-content: flex-end;
+  justify-content: space-between;
 }
 .title{
   padding-left: 40px;
@@ -249,7 +249,8 @@ p {
   }
 }
 .powrot-v2{
-  display: none;
+  // display: none;
+  padding-left: 10px;
 }
 .zamknij{
   background: #E4405F;

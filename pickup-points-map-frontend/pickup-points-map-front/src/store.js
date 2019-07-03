@@ -25,7 +25,7 @@ export default new Vuex.Store({
         openSat: true,
         openSun: true,
         openNight: true,
-        disabledPeople: true,
+        disabledPeople: false,
         parking: true,
         cashOnDelivery: true,
         type: 'zabka',
@@ -51,7 +51,7 @@ export default new Vuex.Store({
         openSat: true,
         openSun: true,
         openNight: true,
-        disabledPeople: true,
+        disabledPeople: false,
         parking: true,
         cashOnDelivery: true,
         type: 'dpd',
@@ -77,7 +77,7 @@ export default new Vuex.Store({
         openSat: true,
         openSun: true,
         openNight: false,
-        disabledPeople: true,
+        disabledPeople: false,
         parking: true,
         cashOnDelivery: true,
         type: 'inpost',
@@ -103,7 +103,7 @@ export default new Vuex.Store({
         openSat: true,
         openSun: true,
         openNight: false,
-        disabledPeople: true,
+        disabledPeople: false,
         parking: true,
         cashOnDelivery: true,
         type: 'dpdPickup',
@@ -168,10 +168,19 @@ export default new Vuex.Store({
       }
     ]
   },
-  mutations: {},
+  mutations: {
+    updateMarkers (state, value) {
+      state.markers = value
+    }
+  },
   actions: {
-    openNightMarkers ({getters}) {
+    myFilters ({getters}, payload) {
       getters('openNightMarkers')
+      getters('openSatMarkers')
+      getters('openSunMarkers')
+      getters('disabledPeopleMarkers')
+      getters('parkingMarkers')
+      getters('cashOnDeliveryMarkers')
     }
   },
   getters: {

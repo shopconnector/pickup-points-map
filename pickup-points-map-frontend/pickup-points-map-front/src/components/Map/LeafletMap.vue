@@ -106,6 +106,7 @@ export default {
       zoom: 14,
       center: latLng(52.235948, 21.030750),
       geoCenter: '',
+      // markers: null,
       selectedMarker: {},
       url: 'http://{s}.tile.osm.org/{z}/{x}/{y}.png',
       attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
@@ -134,10 +135,22 @@ export default {
     // now you can read it by using this.markets
     ...mapState(['markers'])
   },
+  // watch: {
+  //   markers () {
+  //     // if data change update the store
+  //     this.$store.commit('updateMarkers', this.markers)
+  //   }
+  // },
+  // created () {
+  //   this.markers = this.$store.state.markers
+  // },
   methods: {
     selectedPopup (index) {
       this.toogleModal = false
-      this.newMethod()
+      setTimeout(() => this.toogleMethod(index), 500)
+    },
+    toogleMethod (index) {
+      this.toogleModal = true
       if (this.toogleModal === true) {
         this.selectedMarker = this.markers[index]
       }
