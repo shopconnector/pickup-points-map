@@ -1,7 +1,16 @@
 <template>
     <div :class="isWidgetVersion ? 'filters' : 'filtersV2'">
+      <div class="suppliers">
+        <h1 class="title">Wybierz dostawców</h1>
+        <div class="suppliers-menu">
+          <div class="selectSuppliers" v-for="supp in suppliers" :key="supp.id">
+            <input class="styled-checkbox" type="checkbox" :id="supp.id" :value="supp.name" v-model="checkedSuppliers">
+            <label :for="supp.id">{{supp.name}}</label>
+          </div>
+        </div>
+      </div>
       <div class="header">
-        <h1 :class="isWidgetVersion ? 'title' : 'titleV2'">Filtry {{ openNightFilter }}</h1><p :class="isWidgetVersion ? 'subtitle' : 'subtitleV2'" @click="clearFilter()">
+        <h1 :class="isWidgetVersion ? 'title' : 'titleV2'">Filtry</h1><p :class="isWidgetVersion ? 'subtitle' : 'subtitleV2'" @click="clearFilter()">
             Wyczyść filtry<span :class="isWidgetVersion ? 'clear' : 'clearV2'">X</span></p>
       </div>
       <div class="filters-menu">
@@ -48,6 +57,26 @@ export default {
   name: 'Filters',
   data () {
     return {
+      checkedSuppliers: [],
+      suppliers: [{
+        'id': 1,
+        'name': 'pocztaPolska'
+      }, {
+        'id': 2,
+        'name': 'dpd'
+      }, {
+        'id': 3,
+        'name': 'dpdPickup'
+      }, {
+        'id': 4,
+        'name': 'zabka'
+      }, {
+        'id': 5,
+        'name': 'fresh'
+      }, {
+        'id': 6,
+        'name': 'inpost'
+      }],
       filters: [],
       markers: null
     }
@@ -56,24 +85,17 @@ export default {
     isWidgetVersion () {
       return this.$store.state.WidgetVersion
     },
-    openNightFilter () {
-      if (this.filters.includes('openNight')) {
-        return this.$store.getters.openNightMarkers
-      } else if (this.filters.includes('disabledPeople')) {
-        return this.$store.getters.disabledPeopleMarkers
+    activeFilter () {
+      if (this.filters.length > 0 || this.checkedSuppliers.length > 0) {
+        return this.$store.getters.filterMarkers(this.filters, this.checkedSuppliers)
+      } else if (this.filters.length === 0) {
+        return this.$store.getters.clearFilters
       }
     }
-    // openNightFilter () {
-    //   if (this.filters.includes('openNight')) {
-    //     const filtered = this.markers.filter(marker => marker.openNight)
-    //     return filtered
-    //   }
-    // }
-    // openNightFilter () {
-    //   if (this.filters.includes('openNight')) {
-    //     return this.$store.dispatch['myFilters']
-    //   }
-    // }
+  },
+  watch: {
+    activeFilter (val) {
+    }
   },
   created () {
     this.markers = this.$store.state.markers
@@ -81,6 +103,7 @@ export default {
   methods: {
     clearFilter () {
       this.filters = []
+      return this.$store.getters.clearFilters
     }
   }
 }
@@ -233,5 +256,52 @@ export default {
     background-position: center;
     background-repeat: no-repeat;
     background-size: contain;
+}
+.suppliers{
+  display: flex;
+  flex-direction: column;
+  margin: 0 20px;
+}
+.title{
+  font-family: 'Lato', sans-serif;
+  font-size: 22px;
+  font-weight: 900;
+  text-align: left;
+  margin-top: 0;
+}
+.suppliers-menu{
+  display: flex;
+  flex-wrap: wrap;
+}
+.selectSuppliers{
+  display: flex;
+  justify-content: end;
+  flex: 0 0 25%;
+  padding: 10px 20px 10px 0;
+}
+.styled-checkbox{
+  position: absolute;
+  opacity: 0;
+    & + label {
+      font-family: 'Lato', sans-serif;
+      font-size: 16px;
+      position: relative;
+      cursor: pointer;
+      padding: 0;
+    }
+    & + label:before {
+      content: '';
+      position: absolute;
+      top: 35%;
+      left: 110%;
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      margin: -15px 0 0;
+      box-shadow: inset 0 0px 3px #FFFFFF, inset 0 0  0 7px #E5E5E5;
+    }
+    &:checked + label:before {
+      box-shadow: inset 0 0 0 #FFFFFF, inset 0 0  0 7px #E54C69;
+  }
 }
 </style>

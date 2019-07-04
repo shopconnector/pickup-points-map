@@ -9,6 +9,10 @@ export default new Vuex.Store({
     places: {},
     lastvisit: {},
     WidgetVersion: true,
+    zoom: 7,
+    lat: 53.0409,
+    lng: 19.2850,
+    filteredMarkers: [],
     markers: [
       {
         id: 'm1',
@@ -52,7 +56,7 @@ export default new Vuex.Store({
         openSun: true,
         openNight: true,
         disabledPeople: false,
-        parking: true,
+        parking: false,
         cashOnDelivery: true,
         type: 'dpd',
         icon: {
@@ -75,7 +79,7 @@ export default new Vuex.Store({
         openTime2: 'so: 8:00 - 16:00',
         visible: true,
         openSat: true,
-        openSun: true,
+        openSun: false,
         openNight: false,
         disabledPeople: false,
         parking: true,
@@ -100,7 +104,7 @@ export default new Vuex.Store({
         openTime: 'pn - pt: 8:00 - 18:00',
         openTime2: 'so: 8:00 - 16:00',
         visible: true,
-        openSat: true,
+        openSat: false,
         openSun: true,
         openNight: false,
         disabledPeople: false,
@@ -169,38 +173,33 @@ export default new Vuex.Store({
     ]
   },
   mutations: {
-    updateMarkers (state, value) {
-      state.markers = value
+    updatePosition (state, position) {
+      state.zoom = 14
+      state.lat = position.y
+      state.lng = position.x
+    },
+    updatePosition1 (state, position) {
+      state.zoom = 14
+      state.lat = position.lat
+      state.lng = position.lng
     }
   },
   actions: {
-    myFilters ({getters}, payload) {
-      getters('openNightMarkers')
-      getters('openSatMarkers')
-      getters('openSunMarkers')
-      getters('disabledPeopleMarkers')
-      getters('parkingMarkers')
-      getters('cashOnDeliveryMarkers')
-    }
   },
   getters: {
-    openNightMarkers: state => {
-      return state.markers.filter(marker => marker.openNight)
+    filterMarkers: (state) => (filters, suppliers) => {
+      state.filteredMarkers = state.markers
+      for (var filter of filters) {
+        state.filteredMarkers = state.filteredMarkers.filter(marker => marker[filter])
+      }
+      for (var supply of suppliers) {
+        state.filteredMarkers = state.filteredMarkers.filter(marker => marker.type === supply)
+      }
+      return state.filteredMarkers
     },
-    openSatMarkers: state => {
-      return state.markers.filter(marker => marker.openSat)
-    },
-    openSunMarkers: state => {
-      return state.markers.filter(marker => marker.openSun)
-    },
-    disabledPeopleMarkers: state => {
-      return state.markers.filter(marker => marker.disabledPeople)
-    },
-    parkingMarkers: state => {
-      return state.markers.filter(marker => marker.parking)
-    },
-    cashOnDeliveryMarkers: state => {
-      return state.markers.filter(marker => marker.cashOnDelivery)
+    clearFilters: state => {
+      state.filteredMarkers = []
+      return state.filteredMarkers
     }
   }
 })

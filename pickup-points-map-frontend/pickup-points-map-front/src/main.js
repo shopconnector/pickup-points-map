@@ -7,6 +7,11 @@ import VeeValidate, { Validator } from 'vee-validate'
 import pl from 'vee-validate/dist/locale/pl'
 import store from './store'
 import VuexGeolocation from 'vuex-geolocation'
+import VueResource from 'vue-resource'
+import VueAutosuggest from 'vue-autosuggest'
+
+Vue.use(VueResource)
+Vue.use(VueAutosuggest)
 
 const vuexGeolocation = VuexGeolocation.sync(store)
 Vue.use(vuexGeolocation)
