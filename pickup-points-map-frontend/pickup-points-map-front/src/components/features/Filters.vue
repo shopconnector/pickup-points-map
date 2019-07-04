@@ -116,7 +116,10 @@ export default {
 .header{
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  margin-bottom: 10px;
+}
+.headerV2{
+  align-items: baseline;
 }
 .title{
   margin: 14px 0 0 0;
@@ -159,7 +162,6 @@ export default {
 }
 .filters-menu{
   display: flex;
-  align-items: center;
 }
 .first-half{
   flex: 0 0 45%;
@@ -178,7 +180,8 @@ export default {
     width: 70%;
     display: flex;
     text-align: left;
-    line-height: 20px;
+    line-height: 16px;
+    height: 20px;
     padding-right: 40px;
     align-items: center;
     &:before{
@@ -304,5 +307,37 @@ export default {
     &:checked + label:before {
       box-shadow: inset 0 0 0 #FFFFFF, inset 0 0  0 7px #E54C69;
   }
+
+@media only screen and (max-width: 1000px) {
+ .title{
+   font-size: 20px;
+ }
+ .titleV2{
+   font-size: 20px
+ }
+ .subtitle{
+   font-size: 16px;
+ }
+ .subtitleV2{
+   font-size: 14px;
+ }
+ .custom-checkbox{
+   & + .custom-icon{
+     font-size: 14px;
+      &:after{
+        width: 25px;
+        height: 25px;
+      }
+   }
+ }
+ .custom-checkboxV2{
+   & + .custom-icon{
+     font-size: 14px;
+      &:after{
+        width: 15px;
+        height: 15px;
+      }
+   }
+ }
 }
 </style>

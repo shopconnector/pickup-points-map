@@ -125,7 +125,7 @@ p {
   justify-content: space-between;
 }
 .title{
-  padding-left: 40px;
+  padding-left: 27px;
   h3 {
     margin: 0;
     text-align: left;
@@ -144,14 +144,16 @@ p {
 }
 .selected-supplier{
   display: flex;
-  justify-content: space-around
+  justify-content: space-around;
+  align-items: center;
 }
 .selected-supplierV2{
    display: flex;
    justify-content: space-between;
    padding-bottom: 15px;
    border-bottom: 1px solid #E5E5E5;
-   margin: 0 30px
+   margin: 0 30px;
+   align-items: center;
 }
 .col-1{
   display: flex;
@@ -268,12 +270,61 @@ p {
 }
 .zamknij-v2{
   margin-right: 25px;
-  font-size: 16px;
   padding: 0 15px;
 }
-@media only screen and (max-width: 1100px) {
+@media only screen and (max-width: 1000px) {
  .titleV2 h3 {
-   font-size: 10px;
+   font-size: 20px;
+ }
+ .title h3{
+   font-size: 20px;
+ }
+ .address{
+    h4, p {
+      font-size: 14px;
+    }
+ }
+ .shop{
+   p {
+     font-size: 12px;
+   }
+ }
+ .hours-title{
+   p {
+     font-size: 14px;
+   }
+ }
+ .first-half{
+   p{
+     font-size: 14px;
+   }
+ }
+ .second-half{
+   p{
+     font-size: 14px;
+   }
+ }
+ .road{
+   p{
+     font-size: 12px;
+     i {
+       font-size: 22px;
+     }
+   }
+ }
+ .img{
+   width: 75px;
+   padding-right: 40px;
+ }
+ .powrot{
+   font-size: 15px;
+   i {
+     font-size: 40px;
+   }
+ }
+ .zamknij{
+   font-size: 14px;
+   height: 40px;
  }
 }
 </style>

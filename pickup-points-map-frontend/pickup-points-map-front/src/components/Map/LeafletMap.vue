@@ -8,7 +8,7 @@
       <template v-if="toogleMap">
         <div class="list-box" :class="{'listbox-margin-top' : isWidgetVersion}">
           <div class="list-title">Punkty odbioru w pobliżu Twojej lokalizacji</div>
-          <div class="scroll-box">
+          <div class="scroll-box" :class="{'change-vh' : !isWidgetVersion}">
             <div class="list-row"
               v-for="(marker, index) in markers"
               :key="marker.id">
@@ -178,6 +178,31 @@ export default {
   margin-left: 210px !important;
   margin-bottom: 0 !important;
  }
+.leaflet-right .leaflet-control {
+  margin-right: 0;
+}
+.leaflet-bottom .leaflet-control {
+  margin-bottom: 0;
+}
+.leaflet-control-attribution, .leaflet-control-scale-line {
+  font-size: 11px;
+  background: rgba(255, 255, 255, 0.7);
+  margin: 0;
+}
+.leaflet-control-attribution a {
+  color: #0078A8;
+}
+ @media only screen and (max-width: 1100px) {
+   .leaflet-touch .leaflet-bar a {
+     width: 25px;
+     height: 25px;
+     line-height: 25px;
+   }
+   .leaflet-touch .leaflet-control-zoom-in,
+   .leaflet-touch .leaflet-control-zoom-out {
+     font-size: 19px;
+   }
+}
 </style>
 
 <style lang="scss" scoped>
@@ -245,7 +270,7 @@ display: flex;
   position: absolute;
   z-index: 999;
   left: 20px;
-  top: 150px;
+  top: 140px;
   background-color: white;
   display: flex;
   border-radius: 15px;
@@ -285,7 +310,7 @@ display: flex;
   .list-title {
     font-weight: 700;
     font-size: 22px;
-    padding-bottom: 20px;
+    padding: 10px 0;
   }
   .list-row {
     .list-elem {
@@ -318,7 +343,7 @@ display: flex;
     height: 70vh;
     border: 1px solid #AAAAAA;
   }
-  margin-top: 150px;
+  margin-top: 105px;
   padding: 0px 20px;
   text-align: left;
 }
@@ -336,6 +361,9 @@ display: flex;
 .modal-positionV2{
   left: 0;
   width: 55%;
+}
+.change-vh{
+  min-height: 79vh !important;
 }
 // transitions
 .fade-enter-active {
@@ -375,4 +403,43 @@ display: flex;
   }
 }
 
+@media only screen and (max-width: 1100px) {
+ .type-actions{
+   top: 135px;
+   .button-action{
+     font-size: 14px;
+     padding: 8px 30px 8px 30px;
+   }
+ }
+.type-actions-v2{
+   .button-action{
+     font-size: 14px;
+     padding: 8px 30px 8px 30px;
+   }
+ }
+ .list-box{
+   padding: 0 10px;
+   .list-title{
+     font-size: 17px;
+   }
+   .list-row{
+     .list-elem{
+       font-size: 14px;
+       img{
+         height: 65px;
+       }
+       .list-button{
+         font-size: 14px;
+         padding: 5px 6px;
+       }
+     }
+   }
+ }
+ .popup-action{
+   .popup-button{
+     font-size: 11px;
+     padding: 8px 15px;
+   }
+ }
+}
 </style>

@@ -102,4 +102,13 @@ export default {
       border-color: #3F87F5;
     }
 }
+
+@media only screen and (max-width: 1000px) {
+.title{
+  font-size: 20px;
+ }
+.img {
+  width: 65px;
+ }
+}
 </style>

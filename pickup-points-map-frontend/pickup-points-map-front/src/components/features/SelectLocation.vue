@@ -1,6 +1,6 @@
 <template>
-  <div class="location">
-    <div class="location-header">
+  <div :class="isWidgetVersion ? 'location' : 'locationV2'">
+    <div :class="isWidgetVersion ? 'location-header' : 'location-headerV2'">
       <h1 class="title">Wybierz lokalizację</h1>
       <p class="zamknij"><span class="clear">X</span>ZAMKNIJ</p>
     </div>
@@ -48,6 +48,11 @@ export default {
         0: true,
         1: true
       }
+    }
+  },
+  computed: {
+    isWidgetVersion () {
+      return this.$store.state.WidgetVersion
     }
   },
   methods: {
@@ -133,11 +138,17 @@ export default {
   flex-direction: column;
   align-items: end;
 }
+.locationV2{
+  display: block;
+}
 .location-header{
   width: 100%;
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+.location-headerV2{
+  display: block;
 }
 .zamknij{
   display: none;
@@ -188,12 +199,47 @@ export default {
     height: 25px;
   }
 }
+.my-locationV2{
+  flex-basis: 30%;
+  color: #989898;
+  font-size: 14px;
+  font-family: 'Lato', sans-serif;
+  display: flex;
+  justify-content: end;
+  align-items: center;
+  background-color: #E4E4E4;
+  height: 35px;
+  border-radius: 9px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: right;
+  position: relative;
+  &:before{
+    content: url(../../assets/gps24px.svg);
+    padding-right: 10px;
+    width: 17px;
+    height: 25px;
+    filter: opacity(0.4)
+  }
+  &:hover{
+    background-color: #3F87F5;
+    color:#FFFFFF;
+    cursor: pointer;
+  }
+}
 .lub{
   font-size: 16px;
   font-family: 'Lato', sans-serif;
   color: #AAAAAA;
   margin: 0;
   padding: 0 25px;
+}
+.lubV2{
+  font-size: 14px;
+  font-family: 'Lato', sans-serif;
+  color: #989898;
+  margin: 0px 20px;
 }
 .inputs{
   margin: 10px 0;
@@ -212,6 +258,26 @@ export default {
   //   cursor: pointer;
   // }
 }
+.inputsV2{
+  flex-basis: 30%;
+  background-color: #E4E4E4;
+  border-radius: 9px;
+  color: #989898;
+  height: 35px;
+  display: flex;
+  justify-content: end;
+  padding-left: 10px;
+  align-items: center;
+  font-size: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  &:hover{
+    background-color: #3F87F5;
+    color:#FFFFFF;
+    cursor: pointer;
+  }
+}
 .input-tag{
   flex: 0 0 43%;
   background-color: #E5E5E5;
@@ -225,6 +291,20 @@ export default {
   font-family: 'Lato', sans-serif;
   color: #303030;
   font-size: 16px;
+}
+.input-tagV2{
+  flex-basis: 30%;
+  border: 3px solid #E5E5E5;
+  border-radius: 9px;
+  height: 29px;
+  margin: 14px 0;
+  font-family: 'Lato', sans-serif;
+  color: #303030;
+  font-size: 16px;
+  padding-left: 10px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 input::placeholder{
  color: #AAAAAA;
@@ -244,6 +324,10 @@ input::placeholder{
  }
  .lub{
    font-size: 14px;
+ }
+ .lubV2{
+   font-size: 13px;
+   margin: 0 15px;
  }
 }
 </style>
