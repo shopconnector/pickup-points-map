@@ -36,7 +36,7 @@
     <transition name="fade">
       <template v-if="!toogleMap">
         <l-map :zoom="zoom" :center="center" :options="{zoomControl: false}">
-            <l-control-zoom position="topright"></l-control-zoom>
+            <l-control-zoom position="bottomleft"></l-control-zoom>
             <l-tile-layer :url="url" :attribution="attribution" />
             <l-marker
               v-for="(marker, index) in markers"
@@ -82,7 +82,7 @@
 import { LMap, LTileLayer, LMarker, LPopup, LTooltip, LControlZoom, LIcon } from 'vue2-leaflet'
 import { latLng } from 'leaflet'
 import 'leaflet/dist/leaflet.css'
-import { mapState } from 'vuex'
+// import { mapState } from 'vuex'
 
 import ModalDiv from '../features/ModalDiv.vue'
 
@@ -103,8 +103,6 @@ export default {
     return {
       toogleMap: false,
       toogleModal: false,
-      zoom: 14,
-      center: latLng(52.235948, 21.030750),
       geoCenter: '',
       // markers: null,
       selectedMarker: {},
@@ -129,21 +127,23 @@ export default {
     }
   },
   computed: {
+    zoom () {
+      return this.$store.state.zoom
+    },
+    center () {
+      return latLng(this.$store.state.lat, this.$store.state.lng)
+    },
+    markers () {
+      if (this.$store.state.filteredMarkers.length > 0) {
+        return this.$store.state.filteredMarkers
+      } else {
+        return this.$store.state.markers
+      }
+    },
     isWidgetVersion () {
       return this.$store.state.WidgetVersion
-    },
-    // now you can read it by using this.markets
-    ...mapState(['markers'])
+    }
   },
-  // watch: {
-  //   markers () {
-  //     // if data change update the store
-  //     this.$store.commit('updateMarkers', this.markers)
-  //   }
-  // },
-  // created () {
-  //   this.markers = this.$store.state.markers
-  // },
   methods: {
     selectedPopup (index) {
       this.toogleModal = false
