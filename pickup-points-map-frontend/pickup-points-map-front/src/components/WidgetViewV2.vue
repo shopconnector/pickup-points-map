@@ -3,9 +3,7 @@
       <div class="features">
           <div class="padd">
           <!-- SelectLocationView Component -->
-          <SelectLocationV2/>
-          <!-- SelectSuppliersView Component -->
-          <SelectSuppliersV2/>
+          <SelectLocation/>
           <!-- FiltersView Component -->
           <Filters/>
         </div>
@@ -17,16 +15,14 @@
 </template>
 
 <script>
-import SelectSuppliersV2 from './features/SelectSuppliersV2.vue'
-import SelectLocationV2 from './features/SelectLocationV2.vue'
+import SelectLocation from './features/SelectLocation'
 import Filters from './features/Filters.vue'
 import Map from './Map/LeafletMap.vue'
 
 export default {
   name: 'WidgetViewV2',
   components: {
-    SelectSuppliersV2,
-    SelectLocationV2,
+    SelectLocation,
     Filters,
     Map
   },

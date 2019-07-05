@@ -1,4 +1,5 @@
 <template>
+<div>
   <div :class="isWidgetVersion ? 'map-v2' : 'map'">
     <div :class="isWidgetVersion ? 'type-actions' : 'type-actions-v2'">
       <p class="button-action" :class="{ 'active' : !toogleMap }" @click="toogleMap = !toogleMap">Mapa</p>
@@ -8,7 +9,7 @@
       <template v-if="toogleMap">
         <div class="list-box" :class="{'listbox-margin-top' : isWidgetVersion}">
           <div class="list-title">Punkty odbioru w pobliżu Twojej lokalizacji</div>
-          <div class="scroll-box">
+          <div class="scroll-box" :class="{'change-vh' : !isWidgetVersion}">
             <div class="list-row"
               v-for="(marker, index) in markers"
               :key="marker.id">
@@ -38,43 +39,48 @@
         <l-map :zoom="zoom" :center="center" :options="{zoomControl: false}">
             <l-control-zoom position="bottomleft"></l-control-zoom>
             <l-tile-layer :url="url" :attribution="attribution" />
-            <l-marker
-              v-for="(marker, index) in markers"
-              :key="marker.id"
-              :visible="marker.visible"
-              :lat-lng="marker.position"
-              class-name="markertype"
-            >
-              <l-icon :icon-anchor="marker.iconAnchor" :icon-size="marker.iconSize" class-name="someExtraClass">
-                <img :src="pinsUrl[marker.type]" width="52" height="52"/>
-              </l-icon>
-              <l-popup>
-                <div class="popup-box">
-                  <img class="popup-marker" :src="pinsUrl[marker.type]" width="102" height="102"/>
-                  <div class="popup-info">
-                    <div class="popup-text-box">
-                      <p class="popup-text">
-                        <b>Mniszew 25 </b><br> 26910 Magnuszew, <br>PL13883
-                      </p>
+            <template v-if="markers[0] !== 'empty'">
+              <l-marker
+                v-for="(marker, index) in markers"
+                :key="marker.id"
+                :visible="marker.visible"
+                :lat-lng="marker.position"
+                class-name="markertype"
+              >
+                <l-icon :icon-anchor="marker.iconAnchor" :icon-size="marker.iconSize" class-name="someExtraClass">
+                  <img :src="pinsUrl[marker.type]" width="52" height="52"/>
+                </l-icon>
+                <l-popup>
+                  <div class="popup-box">
+                    <img class="popup-marker" :src="pinsUrl[marker.type]" width="102" height="102"/>
+                    <div class="popup-info">
+                      <div class="popup-text-box">
+                        <p class="popup-text">
+                          <b>Mniszew 25 </b><br> 26910 Magnuszew, <br>PL13883
+                        </p>
+                      </div>
+                      <div class="popup-img" >
+                        <img :src="logosUrl[marker.type]" width="100%" height="auto"/>
+                      </div>
                     </div>
-                    <div class="popup-img" >
-                      <img :src="logosUrl[marker.type]" width="100%" height="auto"/>
+                    <div class="popup-action">
+                      <p class="popup-button" @click="selectedPopup(index)">Wybierz</p>
                     </div>
                   </div>
-                  <div class="popup-action">
-                    <p class="popup-button" @click="selectedPopup(index)">Wybierz</p>
-                  </div>
-                </div>
-              </l-popup>
-            </l-marker>
+                </l-popup>
+              </l-marker>
+            </template>
         </l-map>
       </template>
     </transition>
-    <transition name="bounce">
-      <div class="modal-position" :class="{'modal-positionV2' : !isWidgetVersion}" v-if="toogleModal">
-        <ModalDiv :parentData="selectedMarker" :toogleModal="toogleModal" @close="onCloseChild"/>
-      </div>
-    </transition>
+  </div>
+    <div>
+      <transition name="bounce">
+        <div class="modal-position" :class="{'modal-positionV2' : !isWidgetVersion}" v-if="toogleModal">
+          <ModalDiv :parentData="selectedMarker" :toogleModal="toogleModal" @close="onCloseChild"/>
+        </div>
+      </transition>
+    </div>
   </div>
 </template>
 
@@ -178,6 +184,31 @@ export default {
   margin-left: 210px !important;
   margin-bottom: 0 !important;
  }
+.leaflet-right .leaflet-control {
+  margin-right: 0;
+}
+.leaflet-bottom .leaflet-control {
+  margin-bottom: 0;
+}
+.leaflet-control-attribution, .leaflet-control-scale-line {
+  font-size: 11px;
+  background: rgba(255, 255, 255, 0.7);
+  margin: 0;
+}
+.leaflet-control-attribution a {
+  color: #0078A8;
+}
+ @media only screen and (max-width: 1100px) {
+   .leaflet-touch .leaflet-bar a {
+     width: 25px;
+     height: 25px;
+     line-height: 25px;
+   }
+   .leaflet-touch .leaflet-control-zoom-in,
+   .leaflet-touch .leaflet-control-zoom-out {
+     font-size: 19px;
+   }
+}
 </style>
 
 <style lang="scss" scoped>
@@ -188,8 +219,9 @@ export default {
   max-height: 100vh;
 }
 .map-v2{
+  position: relative;
   width: 100%;
-  height: 84.3vh;
+  height: 85.4vh;
   overflow: hidden;
   max-height: 100vh;
 }
@@ -245,7 +277,7 @@ display: flex;
   position: absolute;
   z-index: 999;
   left: 20px;
-  top: 140px;
+  top: 25px;
   background-color: white;
   display: flex;
   border-radius: 15px;
@@ -265,7 +297,7 @@ display: flex;
   }
   position: absolute;
   z-index: 999;
-  right: 60px;
+  right: 20px;
   top: 25px;
   background-color: white;
   display: flex;
@@ -285,7 +317,7 @@ display: flex;
   .list-title {
     font-weight: 700;
     font-size: 22px;
-    padding-bottom: 20px;
+    padding: 10px 0;
   }
   .list-row {
     .list-elem {
@@ -318,7 +350,7 @@ display: flex;
     height: 70vh;
     border: 1px solid #AAAAAA;
   }
-  margin-top: 150px;
+  margin-top: 105px;
   padding: 0px 20px;
   text-align: left;
 }
@@ -336,6 +368,9 @@ display: flex;
 .modal-positionV2{
   left: 0;
   width: 55%;
+}
+.change-vh{
+  min-height: 79vh !important;
 }
 // transitions
 .fade-enter-active {
@@ -375,4 +410,42 @@ display: flex;
   }
 }
 
+@media only screen and (max-width: 1100px) {
+ .type-actions{
+   .button-action{
+     font-size: 14px;
+     padding: 8px 30px 8px 30px;
+   }
+ }
+.type-actions-v2{
+   .button-action{
+     font-size: 14px;
+     padding: 8px 30px 8px 30px;
+   }
+ }
+ .list-box{
+   padding: 0 10px;
+   .list-title{
+     font-size: 17px;
+   }
+   .list-row{
+     .list-elem{
+       font-size: 14px;
+       img{
+         height: 65px;
+       }
+       .list-button{
+         font-size: 14px;
+         padding: 5px 6px;
+       }
+     }
+   }
+ }
+ .popup-action{
+   .popup-button{
+     font-size: 11px;
+     padding: 8px 15px;
+   }
+ }
+}
 </style>

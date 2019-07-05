@@ -12,9 +12,6 @@
         <Map/>
       </div>
       <div class="features">
-        <!-- Select Suppliers Component -->
-        <!-- <SelectSuppliers/> -->
-        <!-- Filters Component -->
         <Filters/>
       </div>
     </div>
@@ -22,7 +19,6 @@
 </template>
 
 <script>
-import SelectSuppliers from './features/SelectSuppliers'
 import SelectLocation from './features/SelectLocation.vue'
 import Filters from './features/Filters.vue'
 import Map from './Map/LeafletMap.vue'
@@ -30,7 +26,6 @@ import Map from './Map/LeafletMap.vue'
 export default {
   name: 'WidgetView',
   components: {
-    SelectSuppliers,
     SelectLocation,
     Filters,
     Map
@@ -40,9 +35,9 @@ export default {
     }
   },
   methods: {
-    isMobileDevice () {
-      return (typeof window.orientation !== 'undefined') || (navigator.userAgent.indexOf('IEMobile') !== -1)
-    }
+    // isMobileDevice () {
+    //   return (typeof window.orientation !== 'undefined') || (navigator.userAgent.indexOf('IEMobile') !== -1)
+    // }
   }
 }
 </script>
@@ -61,8 +56,7 @@ export default {
 .header-view{
   width: 100%;
   display: flex;
-  margin: 20px 20px 10px 20px;
-  // height: 12vh;
+  margin: 14px 20px 10px 20px;
   z-index: 999;
 }
 </style>
