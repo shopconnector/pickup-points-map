@@ -13,7 +13,7 @@ export default {
 <style>
 body{
   margin: 0;
-  overflow-x:hidden;
+  /* overflow-x:hidden; */
 }
 #app {
   font-family: 'Lato', sans-serif;
@@ -24,5 +24,37 @@ body{
 }
 input {
   outline:none;
+}
+/* width */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 3px;
+}
+/* Track */
+::-webkit-scrollbar-track {
+  background: #ffffff;
+  /* background: #e0e0e0; */
+}
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #E54C69;
+}
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #E54C69;
+}
+.visible-xs {
+  display: none;
+}
+.hidden-xs {
+  display: block;
+}
+@media (max-width: 767px) {
+  .visible-xs {
+    display: block
+  }
+  .hidden-xs {
+    display: none;
+  }
 }
 </style>

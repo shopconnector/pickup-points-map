@@ -37,7 +37,7 @@
     <transition name="fade">
       <template v-if="!toogleMap">
         <l-map :zoom="zoom" :center="center" :options="{zoomControl: false}">
-            <l-control-zoom position="bottomleft"></l-control-zoom>
+            <!-- <l-control-zoom position="bottomleft"></l-control-zoom> -->
             <l-tile-layer :url="url" :attribution="attribution" />
             <template v-if="markers[0] !== 'empty'">
               <l-marker
