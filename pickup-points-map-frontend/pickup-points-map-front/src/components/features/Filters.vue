@@ -1,52 +1,34 @@
 <template>
     <div :class="isWidgetVersion ? 'filters' : 'filtersV2'">
-      <div class="suppliers">
+      <!-- Select suppliers first version -->
+      <div class="suppliers" v-if="isWidgetVersion">
         <h1 class="title">Wybierz dostawców</h1>
         <div class="suppliers-menu">
           <div class="selectSuppliers" v-for="supp in suppliers" :key="supp.id">
-            <input class="styled-checkbox" type="checkbox" :id="supp.id" :value="supp.name" v-model="checkedSuppliers">
+            <input class="styled-checkbox" type="checkbox" :id="supp.id" :value="supp.value" v-model="checkedSuppliers">
             <label :for="supp.id">{{supp.name}}</label>
           </div>
         </div>
       </div>
+      <!-- Select suppliers second version -->
+      <div v-if="!isWidgetVersion">
+        <h1 class="title-dostawcow">Wybierz dostawców</h1>
+        <div class="suppliers-menu-dostawcow">
+          <div class="select-suppliers-dostawcow" v-for="supp in suppliers" :key="supp.id">
+            <input class="styled-checkbox-dostawcow" type="checkbox" :id="supp.id" :value="supp.value" v-model="checkedSuppliers">
+            <label :for="supp.id"><img :src="getImgUrl(supp.src)" :alt="supp.alt" class="img-dostawcow"></label>
+          </div>
+        </div>
+      </div>
+      <!-- Filters Menu -->
       <div class="header">
         <h1 :class="isWidgetVersion ? 'title' : 'titleV2'">Filtry</h1><p :class="isWidgetVersion ? 'subtitle' : 'subtitleV2'" @click="clearFilter()">
             Wyczyść filtry<span :class="isWidgetVersion ? 'clear' : 'clearV2'">X</span></p>
       </div>
       <div class="filters-menu">
-        <div class="first-half">
-          <!-- 1 checkbox -->
-          <div class="checkbox-container">
-            <input class="custom-checkbox" :class="{'custom-checkboxV2' : !isWidgetVersion}" type="checkbox" id="otwarteDoPozna" value="openNight" v-model="filters">
-            <label class="custom-icon pozna" for="otwarteDoPozna">Otwarte do póżna</label>
-          </div>
-          <!-- 2 checkbox -->
-          <div class="checkbox-container">
-            <input class="custom-checkbox" :class="{'custom-checkboxV2' : !isWidgetVersion}" type="checkbox" id="otwarteWSobotu" value="openSat" v-model="filters">
-            <label class="custom-icon sobota" for="otwarteWSobotu">Otwarte w soboty</label>
-          </div>
-          <!-- 3 checkbox -->
-          <div class="checkbox-container">
-            <input class="custom-checkbox" :class="{'custom-checkboxV2' : !isWidgetVersion}" type="checkbox" id="otwarteWNiedziele" value="openSun" v-model="filters">
-            <label class="custom-icon niedziela" for="otwarteWNiedziele">Otwarte w niedziele</label>
-          </div>
-        </div>
-        <div class="second-half">
-          <!-- 4 checkbox -->
-          <div class="checkbox-container">
-            <input class="custom-checkbox" :class="{'custom-checkboxV2' : !isWidgetVersion}" type="checkbox" id="dlaOsobNiepelnosprawnych" value="disabledPeople" v-model="filters">
-            <label class="custom-icon niepelnosprawni" for="dlaOsobNiepelnosprawnych">Ułatwienie dla osób niepełnosprawnych</label>
-          </div>
-          <!-- 5 checkbox -->
-          <div class="checkbox-container">
-            <input class="custom-checkbox" :class="{'custom-checkboxV2' : !isWidgetVersion}" type="checkbox" id="parking" value="parking" v-model="filters">
-            <label class="custom-icon parking" for="parking">Parking</label>
-          </div>
-          <!-- 6 checkbox -->
-          <div class="checkbox-container">
-            <input class="custom-checkbox" :class="{'custom-checkboxV2' : !isWidgetVersion}" type="checkbox" id="odbiorZaPobraniem" value="cashOnDelivery" v-model="filters">
-            <label class="custom-icon pobraniem" for="odbiorZaPobraniem">Odbiór za pobraniem</label>
-          </div>
+        <div class="checkbox-container" v-for="box in checkboxes" :key="box.id">
+          <input class="custom-checkbox" :class="{'custom-checkboxV2' : !isWidgetVersion}" type="checkbox" :id="box.id" :value="box.value" v-model="filters">
+          <label class="custom-icon" :class="box.icon" :for="box.id">{{box.info}}</label>
         </div>
       </div>
     </div>
@@ -59,23 +41,72 @@ export default {
     return {
       checkedSuppliers: [],
       suppliers: [{
-        'id': 1,
-        'name': 'pocztaPolska'
+        id: 'Poczta Polska',
+        value: 'pocztaPolska',
+        name: 'Poczta Polska',
+        src: 'pocztapolska.png',
+        alt: 'Poczta Polska img'
       }, {
-        'id': 2,
-        'name': 'dpd'
+        id: 'Kurier DPD',
+        value: 'dpd',
+        name: 'Kurier DPD',
+        src: 'dpd.png',
+        alt: 'DPD img'
       }, {
-        'id': 3,
-        'name': 'dpdPickup'
+        id: 'DPD Pickup',
+        value: 'dpdPickup',
+        name: 'DPD Pickup',
+        src: 'dpd-pickup.png',
+        alt: 'DPD pickup img'
       }, {
-        'id': 4,
-        'name': 'zabka'
+        id: 'Zabka',
+        value: 'zabka',
+        name: 'Żabka',
+        src: 'żabka.png',
+        alt: 'Żabka png'
       }, {
-        'id': 5,
-        'name': 'fresh'
+        id: 'Fresh',
+        value: 'fresh',
+        name: 'Fresh',
+        src: 'freshmarket.png',
+        alt: 'Fresh png'
       }, {
-        'id': 6,
-        'name': 'inpost'
+        id: 'Paczkomaty In-post',
+        value: 'inpost',
+        name: 'Paczkomaty In-Post',
+        src: 'inpost.png',
+        alt: 'Paczkomaty In-Post img'
+      }],
+      checkboxes: [{
+        id: 'otwarteDoPozna',
+        value: 'openNight',
+        info: 'Otwarte do póżna',
+        icon: 'pozna'
+      }, {
+        id: 'otwarteWSobotu',
+        value: 'openSat',
+        info: 'Otwarte w soboty',
+        icon: 'sobota'
+      }, {
+        id: 'otwarteWNiedziele',
+        value: 'openSun',
+        info: 'Otwarte w niedziele',
+        icon: 'niedziela'
+      }, {
+        id: 'dlaOsobNiepelnosprawnych',
+        value: 'disabledPeople',
+        info: 'Ułatwienie dla osób niepełnosprawnych',
+        icon: 'niepelnosprawni'
+      }, {
+        id: 'parking',
+        value: 'parking',
+        info: 'Parking',
+        icon: 'parking'
+      }, {
+        id: 'odbiorZaPobraniem',
+        value: 'cashOnDelivery',
+        info: 'Odbiór za pobraniem',
+        icon: 'pobraniem'
       }],
       filters: [],
       markers: null
@@ -102,8 +133,12 @@ export default {
   },
   methods: {
     clearFilter () {
+      this.checkedSuppliers = []
       this.filters = []
       return this.$store.getters.clearFilters
+    },
+    getImgUrl (pic) {
+      return require('../../assets/logos/' + pic)
     }
   }
 }
@@ -116,7 +151,7 @@ export default {
 .header{
   display: flex;
   justify-content: space-between;
-  margin-bottom: 10px;
+  margin: 7px 0;
 }
 .headerV2{
   align-items: baseline;
@@ -159,15 +194,13 @@ export default {
 }
 .checkbox-container{
   display: flex;
+  width: 50%;
 }
 .filters-menu{
   display: flex;
-}
-.first-half{
-  flex: 0 0 45%;
-}
-.second-half{
-  flex: 0 0 55%;
+  flex-direction: column;
+  flex-wrap: wrap;
+  height: 135px;
 }
 .custom-checkbox{
   display: none;
@@ -177,7 +210,7 @@ export default {
     position: relative;
     padding-left: 30px;
     margin: 12px 0;
-    width: 70%;
+    width: 65%;
     display: flex;
     text-align: left;
     line-height: 16px;
@@ -264,7 +297,6 @@ export default {
 .suppliers{
   display: flex;
   flex-direction: column;
-  margin: 0 20px;
 }
 .title{
   font-family: 'Lato', sans-serif;
@@ -280,23 +312,28 @@ export default {
 .selectSuppliers{
   display: flex;
   justify-content: end;
-  flex: 0 0 25%;
+  flex: 0 0 30%;
   padding: 10px 20px 10px 0;
+  align-items: center;
 }
 .styled-checkbox{
   position: absolute;
-  opacity: 0;
+  display: none;
     & + label {
       font-family: 'Lato', sans-serif;
       font-size: 16px;
       position: relative;
-      cursor: pointer;
       padding: 0;
+      width: 100px;
+      display: flex;
+      height: 20px;
+      line-height: 16px;
+      align-items: center;
     }
     & + label:before {
       content: '';
       position: absolute;
-      top: 35%;
+      top: 45%;
       left: 110%;
       border-radius: 50%;
       width: 30px;
@@ -307,7 +344,50 @@ export default {
     &:checked + label:before {
       box-shadow: inset 0 0 0 #FFFFFF, inset 0 0  0 7px #E54C69;
   }
-
+}
+.title-dostawcow{
+  text-align: left;
+  font-size: 22px;
+  color: #000000;
+  font-weight: 900;
+  margin: 5px 0;
+}
+.suppliers-menu-dostawcow{
+  display: flex;
+  flex-wrap: wrap;
+}
+.select-suppliers-dostawcow{
+  display: flex;
+  align-items: center;
+  flex: 1 0 30%;
+}
+.img-dostawcow{
+  width: 70px;
+}
+.styled-checkbox-dostawcow{
+  position: absolute;
+  opacity: 0;
+    & + label {
+      position: relative;
+      padding-left: 45px
+    }
+    & + label:before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 0;
+      border-radius: 50%;
+      width: 17px;
+      height: 17px;
+      margin: -15px 0 0;
+      border: 3px solid #E4E4E4;
+    }
+    &:checked + label:before {
+      background-color: #3F87F5;
+      box-shadow: inset 0 0px 3px #FFFFFF, inset 0 0 0 2px #FFFFFF;
+      border-color: #3F87F5;
+    }
+}
 @media only screen and (max-width: 1000px) {
  .title{
    font-size: 20px;
@@ -338,6 +418,33 @@ export default {
         height: 15px;
       }
    }
+  }
+  .styled-checkbox{
+    & + label {
+      font-size: 14px;
+    }
+    & + label:before {
+      width: 25px;
+      height: 25px;
+      top: 60%;
+      box-shadow: inset 0 0px 3px #FFFFFF, inset 0 0  0 6px #E5E5E5;
+    }
+     &:checked + label:before {
+      box-shadow: inset 0 0 0 #FFFFFF, inset 0 0  0 6px #E54C69;
+   }
+  }
+  .title-dostawcow{
+  font-size: 20px;
+  }
+  .img-dostawcow {
+  width: 65px;
+  }
  }
-}
+ @media only screen and (max-width: 850px) {
+ .styled-checkbox{
+   & + label {
+     width: 80px;
+   }
+  }
+ }
 </style>

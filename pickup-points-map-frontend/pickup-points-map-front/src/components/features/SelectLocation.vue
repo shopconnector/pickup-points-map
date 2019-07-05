@@ -2,13 +2,13 @@
   <div :class="isWidgetVersion ? 'location' : 'locationV2'">
     <div :class="isWidgetVersion ? 'location-header' : 'location-headerV2'">
       <h1 class="title">Wybierz lokalizację</h1>
-      <p class="zamknij"><span class="clear">X</span>ZAMKNIJ</p>
     </div>
     <div class="choose-location">
-        <h3 class="my-location" @click="currentPos()">Użyj mojej lokalizacji</h3>
+        <h3 :class="isWidgetVersion ? 'my-location' : 'my-locationV2'" @click="currentPos()">Użyj mojej lokalizacji</h3>
         <p class="lub">lub</p>
         <vue-autosuggest
-            class="input-tag"
+            class='input-tag'
+            :class="{'input-tagV2' : !isWidgetVersion}"
             :limit="10"
             v-model="locitAddress"
             @input="locitAdres()"
@@ -18,16 +18,11 @@
             :input-props="{id:'autosuggest__input', placeholder:'Zacznij wpisywać adres'}"
         >
           <template slot-scope="{suggestion}">
-            {{ suggestion.item.city + ', ' + suggestion.item.prefix + ' ' + suggestion.item.street + ' ' + suggestion.item.building + ' ' + suggestion.item.zip }}
+            {{ suggestion.item.city + ', ' + suggestion.item.prefix + ' ' + suggestion.item.street + ' ' + suggestion.item.building + ', ' + suggestion.item.zip }}
             <small>({{ suggestion.item.voiv + ' ' + suggestion.item.pov + ' ' + suggestion.item.mun }})</small>
           </template>
         </vue-autosuggest>
-        <span @click="locitAddress = ''">clear</span>
-        <!-- <h3 class="inputs" v-show="myInputs[0]" @click="myInputsControl(0)">Zacznij wpisywać adres</h3>
-        <input class="input-tag" v-show="!myInputs[0]" @blur="myInputs[0] = true" v-model="address" placeholder="Wpisz adres"/> -->
-        <!-- <p class="lub">lub</p>
-        <h3 class="inputs" v-show="myInputs[1]" @click="myInputsControl(1)">Wpisz kod punktu odbioru</h3>
-        <input class="input-tag" v-show="!myInputs[1]" @blur="myInputs[1] = true" v-model="pointCode" placeholder="Wpisz kod punktu odbioru"/> -->
+        <!-- <span @click="locitAddress = ''"><i class="material-icons clear-input">clear</i></span> -->
     </div>
   </div>
 </template>
@@ -116,6 +111,10 @@ export default {
  font-size: 16px;
  font-family: 'Lato', sans-serif;
 }
+.input-tagV2 input{
+ font-size: 14px;
+ background-color: transparent;
+}
 .autosuggest__results-container {
   position: absolute;
   background-color: white;
@@ -129,9 +128,6 @@ export default {
 </style>
 
 <style lang="scss" scoped>
-.input-tag {
-  position: relative;
-}
 .location{
   width: 100%;
   display: flex;
@@ -150,20 +146,15 @@ export default {
 .location-headerV2{
   display: block;
 }
-.zamknij{
-  display: none;
-//   margin: 0;
-//   color: #707070;
-//   font-size: 14px;
+// .clear-input{
+//   padding-left: 5px;
+//   color: #b4b1b1;
+//   font-size: 35px;
 //   cursor: pointer;
 //   &:hover{
-//     color: #E5E5E5;
+//     color: black;
 //   }
-//   .clear{
-//     font-size: 16px;
-//     padding-right: 10px;
-//  }
-}
+// }
 
 .title{
   font-family: 'Lato', sans-serif;
@@ -176,22 +167,23 @@ export default {
   display: flex;
   align-items: center;
   width: 100%;
+  justify-content: center;
 }
 .my-location{
-  flex: 0 0 43%;
+  flex: 0 0 25%;
   color: #000000;
   font-size: 18px;
   font-family: 'Lato', sans-serif;
   display: flex;
-  justify-content: end;
+  justify-content: center;
   align-items: center;
   height: 46px;
   margin: 10px 0;
   cursor: pointer;
-  // &:hover{
-  //   background-color: #E5E5E5;
-  //   border-radius: 3px;
-  // }
+  &:hover{
+    background-color: #E5E5E5;
+    border-radius: 3px;
+  }
   &:before{
     content: url(../../assets/gps24px.svg);
     padding-right: 10px;
@@ -205,7 +197,7 @@ export default {
   font-size: 14px;
   font-family: 'Lato', sans-serif;
   display: flex;
-  justify-content: end;
+  justify-content: center;
   align-items: center;
   background-color: #E4E4E4;
   height: 35px;
@@ -241,70 +233,36 @@ export default {
   color: #989898;
   margin: 0px 20px;
 }
-.inputs{
-  margin: 10px 0;
-  flex: 0 0 30%;
-  border: 3px solid #E5E5E5;
-  border-radius: 3px;
-  height: 40px;
-  width: 74%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 18px;
-  // &:hover{
-  //   background-color: #E5E5E5;
-  //   color: #AAAAAA;
-  //   cursor: pointer;
-  // }
-}
-.inputsV2{
-  flex-basis: 30%;
-  background-color: #E4E4E4;
-  border-radius: 9px;
-  color: #989898;
-  height: 35px;
-  display: flex;
-  justify-content: end;
-  padding-left: 10px;
-  align-items: center;
-  font-size: 14px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  &:hover{
-    background-color: #3F87F5;
-    color:#FFFFFF;
-    cursor: pointer;
-  }
-}
 .input-tag{
-  flex: 0 0 43%;
+  position: relative;
+  flex: 0 0 40%;
   background-color: #E5E5E5;
   border: 3px solid #E5E5E5;
   border-radius: 3px;
-  // height: 38px;
   width: 72%;
-  margin: 10px 0;
+  margin: 9px 0;
   padding: 10px;
-  // padding-left: 15px;
   font-family: 'Lato', sans-serif;
   color: #303030;
-  font-size: 16px;
+  &:after{
+    content: url('../../assets/clear.png');
+    position: absolute;
+    right: 5px;
+    top: 5px;
+    filter: opacity(0.4)
+  }
 }
 .input-tagV2{
-  flex-basis: 30%;
+  flex: 0 0 45%;
   border: 3px solid #E5E5E5;
+  background-color: transparent;
   border-radius: 9px;
-  height: 29px;
   margin: 14px 0;
-  font-family: 'Lato', sans-serif;
-  color: #303030;
-  font-size: 16px;
-  padding-left: 10px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  padding: 6px;
+  &::after{
+    top: 0;
+    right: 0;
+  }
 }
 input::placeholder{
  color: #AAAAAA;
@@ -317,9 +275,6 @@ input::placeholder{
    font-size: 20px;
  }
  .my-location{
-   font-size: 16px;
- }
- .inputs{
    font-size: 16px;
  }
  .lub{

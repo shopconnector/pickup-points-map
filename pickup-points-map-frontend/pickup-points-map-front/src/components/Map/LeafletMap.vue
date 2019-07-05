@@ -1,4 +1,5 @@
 <template>
+<div>
   <div :class="isWidgetVersion ? 'map-v2' : 'map'">
     <div :class="isWidgetVersion ? 'type-actions' : 'type-actions-v2'">
       <p class="button-action" :class="{ 'active' : !toogleMap }" @click="toogleMap = !toogleMap">Mapa</p>
@@ -38,43 +39,48 @@
         <l-map :zoom="zoom" :center="center" :options="{zoomControl: false}">
             <l-control-zoom position="bottomleft"></l-control-zoom>
             <l-tile-layer :url="url" :attribution="attribution" />
-            <l-marker
-              v-for="(marker, index) in markers"
-              :key="marker.id"
-              :visible="marker.visible"
-              :lat-lng="marker.position"
-              class-name="markertype"
-            >
-              <l-icon :icon-anchor="marker.iconAnchor" :icon-size="marker.iconSize" class-name="someExtraClass">
-                <img :src="pinsUrl[marker.type]" width="52" height="52"/>
-              </l-icon>
-              <l-popup>
-                <div class="popup-box">
-                  <img class="popup-marker" :src="pinsUrl[marker.type]" width="102" height="102"/>
-                  <div class="popup-info">
-                    <div class="popup-text-box">
-                      <p class="popup-text">
-                        <b>Mniszew 25 </b><br> 26910 Magnuszew, <br>PL13883
-                      </p>
+            <template v-if="markers[0] !== 'empty'">
+              <l-marker
+                v-for="(marker, index) in markers"
+                :key="marker.id"
+                :visible="marker.visible"
+                :lat-lng="marker.position"
+                class-name="markertype"
+              >
+                <l-icon :icon-anchor="marker.iconAnchor" :icon-size="marker.iconSize" class-name="someExtraClass">
+                  <img :src="pinsUrl[marker.type]" width="52" height="52"/>
+                </l-icon>
+                <l-popup>
+                  <div class="popup-box">
+                    <img class="popup-marker" :src="pinsUrl[marker.type]" width="102" height="102"/>
+                    <div class="popup-info">
+                      <div class="popup-text-box">
+                        <p class="popup-text">
+                          <b>Mniszew 25 </b><br> 26910 Magnuszew, <br>PL13883
+                        </p>
+                      </div>
+                      <div class="popup-img" >
+                        <img :src="logosUrl[marker.type]" width="100%" height="auto"/>
+                      </div>
                     </div>
-                    <div class="popup-img" >
-                      <img :src="logosUrl[marker.type]" width="100%" height="auto"/>
+                    <div class="popup-action">
+                      <p class="popup-button" @click="selectedPopup(index)">Wybierz</p>
                     </div>
                   </div>
-                  <div class="popup-action">
-                    <p class="popup-button" @click="selectedPopup(index)">Wybierz</p>
-                  </div>
-                </div>
-              </l-popup>
-            </l-marker>
+                </l-popup>
+              </l-marker>
+            </template>
         </l-map>
       </template>
     </transition>
-    <transition name="bounce">
-      <div class="modal-position" :class="{'modal-positionV2' : !isWidgetVersion}" v-if="toogleModal">
-        <ModalDiv :parentData="selectedMarker" :toogleModal="toogleModal" @close="onCloseChild"/>
-      </div>
-    </transition>
+  </div>
+    <div>
+      <transition name="bounce">
+        <div class="modal-position" :class="{'modal-positionV2' : !isWidgetVersion}" v-if="toogleModal">
+          <ModalDiv :parentData="selectedMarker" :toogleModal="toogleModal" @close="onCloseChild"/>
+        </div>
+      </transition>
+    </div>
   </div>
 </template>
 
@@ -213,8 +219,9 @@ export default {
   max-height: 100vh;
 }
 .map-v2{
+  position: relative;
   width: 100%;
-  height: 84.3vh;
+  height: 85.4vh;
   overflow: hidden;
   max-height: 100vh;
 }
@@ -270,7 +277,7 @@ display: flex;
   position: absolute;
   z-index: 999;
   left: 20px;
-  top: 140px;
+  top: 25px;
   background-color: white;
   display: flex;
   border-radius: 15px;
@@ -290,7 +297,7 @@ display: flex;
   }
   position: absolute;
   z-index: 999;
-  right: 60px;
+  right: 20px;
   top: 25px;
   background-color: white;
   display: flex;
@@ -405,7 +412,6 @@ display: flex;
 
 @media only screen and (max-width: 1100px) {
  .type-actions{
-   top: 135px;
    .button-action{
      font-size: 14px;
      padding: 8px 30px 8px 30px;
