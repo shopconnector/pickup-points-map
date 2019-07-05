@@ -38,35 +38,37 @@
         <l-map :zoom="zoom" :center="center" :options="{zoomControl: false}">
             <l-control-zoom position="bottomleft"></l-control-zoom>
             <l-tile-layer :url="url" :attribution="attribution" />
-            <l-marker
-              v-for="(marker, index) in markers"
-              :key="marker.id"
-              :visible="marker.visible"
-              :lat-lng="marker.position"
-              class-name="markertype"
-            >
-              <l-icon :icon-anchor="marker.iconAnchor" :icon-size="marker.iconSize" class-name="someExtraClass">
-                <img :src="pinsUrl[marker.type]" width="52" height="52"/>
-              </l-icon>
-              <l-popup>
-                <div class="popup-box">
-                  <img class="popup-marker" :src="pinsUrl[marker.type]" width="102" height="102"/>
-                  <div class="popup-info">
-                    <div class="popup-text-box">
-                      <p class="popup-text">
-                        <b>Mniszew 25 </b><br> 26910 Magnuszew, <br>PL13883
-                      </p>
+            <template v-if="markers[0] !== 'empty'">
+              <l-marker
+                v-for="(marker, index) in markers"
+                :key="marker.id"
+                :visible="marker.visible"
+                :lat-lng="marker.position"
+                class-name="markertype"
+              >
+                <l-icon :icon-anchor="marker.iconAnchor" :icon-size="marker.iconSize" class-name="someExtraClass">
+                  <img :src="pinsUrl[marker.type]" width="52" height="52"/>
+                </l-icon>
+                <l-popup>
+                  <div class="popup-box">
+                    <img class="popup-marker" :src="pinsUrl[marker.type]" width="102" height="102"/>
+                    <div class="popup-info">
+                      <div class="popup-text-box">
+                        <p class="popup-text">
+                          <b>Mniszew 25 </b><br> 26910 Magnuszew, <br>PL13883
+                        </p>
+                      </div>
+                      <div class="popup-img" >
+                        <img :src="logosUrl[marker.type]" width="100%" height="auto"/>
+                      </div>
                     </div>
-                    <div class="popup-img" >
-                      <img :src="logosUrl[marker.type]" width="100%" height="auto"/>
+                    <div class="popup-action">
+                      <p class="popup-button" @click="selectedPopup(index)">Wybierz</p>
                     </div>
                   </div>
-                  <div class="popup-action">
-                    <p class="popup-button" @click="selectedPopup(index)">Wybierz</p>
-                  </div>
-                </div>
-              </l-popup>
-            </l-marker>
+                </l-popup>
+              </l-marker>
+            </template>
         </l-map>
       </template>
     </transition>

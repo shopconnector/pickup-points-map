@@ -189,13 +189,19 @@ export default new Vuex.Store({
   getters: {
     filterMarkers: (state) => (filters, suppliers) => {
       state.filteredMarkers = state.markers
+      for (var supply of suppliers) {
+        console.log(supply)
+        state.filteredMarkers = state.filteredMarkers.filter(marker => suppliers.includes(marker.type))
+      }
       for (var filter of filters) {
         state.filteredMarkers = state.filteredMarkers.filter(marker => marker[filter])
       }
-      for (var supply of suppliers) {
-        state.filteredMarkers = state.filteredMarkers.filter(marker => marker.type === supply)
+      if (state.filteredMarkers.length > 0) {
+        return state.filteredMarkers
+      } else {
+        state.filteredMarkers = ['empty']
+        return state.filteredMarkers
       }
-      return state.filteredMarkers
     },
     clearFilters: state => {
       state.filteredMarkers = []

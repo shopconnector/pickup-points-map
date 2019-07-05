@@ -102,6 +102,7 @@ export default {
   },
   methods: {
     clearFilter () {
+      this.checkedSuppliers = []
       this.filters = []
       return this.$store.getters.clearFilters
     }
