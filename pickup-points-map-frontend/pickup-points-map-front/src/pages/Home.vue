@@ -4,11 +4,10 @@
       <select-location/>
     </div>
     <div class="container-map">
-      <div class="mobile-header visible-xs">header</div>
+      <div class="mobile-header visible-xs"></div>
       <Map/>
       <div class="mobile-footer visible-xs">
-        footer
-        <button @click="open = 1">&times;</button>
+        <span @click="openFooterModal">open</span>
       </div>
     </div>
     <div class="features-div hidden-xs" :class="{ 'first' : !$store.state.WidgetVersion }">
@@ -17,11 +16,11 @@
         <filters/>
       </div>
     </div>
-     <vue-over-body :dim="false" :open="open" before="before" after="after" :transition="0.3">
+     <vue-over-body :dim="false" :open="IsFooterModalOpen" before="before" after="after" :transition="0.3">
       <div>
-        <button @click="open = 0">&times;</button>
-        <p>A little alert message!</p>
-        <p>For the users of your app!</p>
+        <button @click="closeFooterModal">&times;</button>
+        <p>Bla bla!</p>
+        <p>FBla bla!</p>
       </div>
     </vue-over-body>
   </div>
@@ -47,12 +46,23 @@ export default {
   },
   data () {
     return {
-      open: 1
+      open: 0
+    }
+  },
+  methods: {
+    openFooterModal () {
+      this.$store.commit('openFooterModal')
+    },
+    closeFooterModal () {
+      this.$store.commit('closeFooterModal')
     }
   },
   computed: {
     isWidgetVersion () {
       return this.$store.state.WidgetVersion
+    },
+    IsFooterModalOpen () {
+      return this.$store.state.isFooterModalOpen
     }
   }
 }
@@ -124,7 +134,7 @@ export default {
   left: 0;
   right: 0;
   bottom: 0;
-  height: 35px;
+  height: 55px;
   box-shadow: 1px -3px 10px 0px #b5b5b5;
   text-align: center;
 }

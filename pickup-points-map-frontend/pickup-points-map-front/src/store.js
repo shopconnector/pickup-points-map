@@ -5,9 +5,10 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    status: '',
-    places: {},
-    lastvisit: {},
+    // status: '',
+    // places: {},
+    // lastvisit: {},
+    isFooterModalOpen: 0,
     WidgetVersion: false,
     zoom: 7,
     lat: 53.0409,
@@ -173,6 +174,12 @@ export default new Vuex.Store({
     ]
   },
   mutations: {
+    openFooterModal (state) {
+      state.isFooterModalOpen = 1
+    },
+    closeFooterModal (state) {
+      state.isFooterModalOpen = 0
+    },
     updatePosition (state, position) {
       state.zoom = 14
       state.lat = position.y

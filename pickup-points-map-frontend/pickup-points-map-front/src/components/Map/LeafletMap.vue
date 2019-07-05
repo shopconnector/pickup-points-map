@@ -282,6 +282,9 @@ display: flex;
   display: flex;
   border-radius: 15px;
   overflow: hidden;
+  @media (max-width: 767px) {
+    top: 17px;
+  }
 }
 .type-actions-v2{
   .button-action {
@@ -295,6 +298,7 @@ display: flex;
     margin: 0;
     cursor: pointer;
   }
+  box-shadow: -2px 2px 10px 0px #b5b5b5;
   position: absolute;
   z-index: 999;
   right: 20px;
@@ -303,6 +307,9 @@ display: flex;
   display: flex;
   border-radius: 15px;
   overflow: hidden;
+  @media (max-width: 767px) {
+    top: 17px;
+  }
 }
 .hours-elem{
   flex-basis: 30% !important;
