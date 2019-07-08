@@ -1,9 +1,9 @@
 <template>
   <div :class="isWidgetVersion ? 'location' : 'locationV2'">
-    <div :class="isWidgetVersion ? 'location-header' : 'location-headerV2'">
+    <div class="hidden-xs" :class="isWidgetVersion ? 'location-header' : 'location-headerV2'">
       <h1 class="title">Wybierz lokalizację</h1>
     </div>
-    <div class="choose-location">
+    <div class="choose-location hidden-xs">
         <h3 :class="isWidgetVersion ? 'my-location' : 'my-locationV2'" @click="currentPos()">Użyj mojej lokalizacji</h3>
         <p class="lub">lub</p>
         <vue-autosuggest
@@ -24,15 +24,51 @@
         </vue-autosuggest>
         <!-- <span @click="locitAddress = ''"><i class="material-icons clear-input">clear</i></span> -->
     </div>
+    <vue-over-body :dim="false" :open="IsFooterModalOpen" before="beforeFooterModal" after="afterFooterModal" :transition="0.3">
+      <div class="footer-box">
+        <h3 class="my-location" @click="currentPos()">Użyj mojej lokalizacji</h3>
+        <div class='input-modal-button' @click="openLocitModal()">
+          <template v-if="suggestionText">{{ suggestionText.city + ', ' + suggestionText.prefix + ' ' + suggestionText.street + ' ' + suggestionText.building }}</template>
+          <template v-else>Zacznij wpisywać adres</template>
+          </div>
+        <div class='input-modal-button'>Wpisz kod odbioru</div>
+      </div>
+    </vue-over-body>
+    <vue-over-body :dim="false" :open="IsLocitModalOpen" before="beforeLocitModal" after="afterLocitModal" :transition="0.3">
+      <div class="locit-box">
+        <span @click="closeLocitModal()" >close</span>
+        <vue-autosuggest
+            class='input-tag'
+            :limit="10"
+            v-model="locitAddress"
+            @input="locitAdres()"
+            @selected="logResult"
+            :get-suggestion-value="getSuggestionValue"
+            :suggestions="[{data:locitSuggestions}]"
+            :input-props="{id:'autosuggest__input', placeholder:'Zacznij wpisywać adres'}"
+        >
+          <template slot-scope="{suggestion}">
+            {{ suggestion.item.city + ', ' + suggestion.item.prefix + ' ' + suggestion.item.street + ' ' + suggestion.item.building + ', ' + suggestion.item.zip }}
+            <small>({{ suggestion.item.voiv + ' ' + suggestion.item.pov + ' ' + suggestion.item.mun }})</small>
+          </template>
+        </vue-autosuggest>
+      </div>
+    </vue-over-body>
   </div>
 </template>
 
 <script>
+import vueOverBody from 'vue-over-body'
+
 export default {
   name: 'SelectLocation',
+  components: {
+    vueOverBody
+  },
   data () {
     return {
       locitAddress: '',
+      suggestionText: '',
       limit: 10,
       locitSuggestions: [],
       customSuggestion: [],
@@ -48,18 +84,36 @@ export default {
   computed: {
     isWidgetVersion () {
       return this.$store.state.WidgetVersion
+    },
+    IsFooterModalOpen () {
+      return this.$store.state.isFooterModalOpen
+    },
+    IsLocitModalOpen () {
+      return this.$store.state.isLocitModalOpen
     }
   },
   methods: {
+    openLocitModal () {
+      this.$store.commit('openLocitModal')
+    },
+    closeLocitModal () {
+      this.$store.commit('closeLocitModal')
+    },
+    closeFooterModal () {
+      this.$store.commit('closeFooterModal')
+    },
     currentPos () {
       this.$store.commit('updatePosition1', this.$store.state.geolocation)
+      if (this.IsFooterModalOpen) {
+        this.closeFooterModal()
+      }
     },
     getSuggestionValue (suggestion) {
       if (suggestion) {
-        const s = suggestion.item
+        this.suggestionText = suggestion.item
         this.$store.commit('updatePosition', suggestion.item)
         this.customSuggestion = suggestion.item
-        return s.city + ', ' + s.prefix + ' ' + s.street + ' ' + s.building
+        return this.suggestionText.city + ', ' + this.suggestionText.prefix + ' ' + this.suggestionText.street + ' ' + this.suggestionText.building
       } else {
         return 'Wybierz punkt z listy'
       }
@@ -89,7 +143,34 @@ export default {
 }
 </script>
 
-<style>
+<style lang="scss">
+.beforeLocitModal {
+  top: 0;
+  opacity: 0;
+  transition: all 0.3s ease-in-out;
+  width: 100%;
+  height: 100vh;
+  background-color: #F5F5F5;
+  position: absolute;
+}
+.afterLocitModal {
+  opacity: 1;
+}
+.beforeFooterModal {
+  bottom: -100vh;
+  width: 100%;
+  height: 165px;
+  margin-top: calc( 100vh - 165px );
+  background-color: white;
+  position:absolute;
+}
+.afterFooterModal {
+  bottom: 0;
+}
+.over_body_mask {
+ z-index: 1001 !important;
+ overflow-y: hidden !important;
+}
 .input-tag ul {
   list-style-type: none;
   padding: 0 10px;
@@ -100,16 +181,26 @@ export default {
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;
+  @media (max-width: 767px) {
+    padding: 10px 0;
+  }
 }
-.input-tag input{
- text-align: center;
- background-color: #E5E5E5;
- width: 100%;
- height: 100%;
- border: 0;
- color: black;
- font-size: 16px;
- font-family: 'Lato', sans-serif;
+.input-tag {
+ input {
+    text-align: center;
+    background-color: #E5E5E5;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    color: black;
+    font-size: 16px;
+    font-family: 'Lato', sans-serif;
+    @media (max-width: 767px) {
+      font-weight: bold;
+      border-radius: 5px;
+      padding: 10px 0;
+    }
+ }
 }
 .input-tagV2 input{
  font-size: 14px;
@@ -124,10 +215,28 @@ export default {
   border-radius: 5px;
   right: 0;
   box-shadow: 0px 7px 18px 0px #d8d8d8;
+  @media (max-width: 767px) {
+    box-shadow: none;
+    border-radius: 0px;
+    background-color: #F5F5F5;
+    max-height: calc( 100vh - 200px );
+    overflow-y: scroll;
+  }
 }
 </style>
 
 <style lang="scss" scoped>
+.locit-box {
+  padding: 20px;
+}
+.footer-box {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  flex-direction: column;
+  justify-content: flex-start;
+  padding: 0 40px;
+}
 .location{
   width: 100%;
   display: flex;
@@ -185,10 +294,20 @@ export default {
     border-radius: 3px;
   }
   &:before{
-    content: url(../../assets/gps24px.svg);
-    padding-right: 10px;
+    content: '';
+    background: url('../../assets/gps24px.svg') 0 0 no-repeat;
+    background-size: cover;
+    margin-right: 10px;
     width: 25px;
     height: 25px;
+    @media (max-width: 767px) {
+      width: 40px;
+      height: 40px;
+    }
+  }
+  @media (max-width: 767px) {
+    margin: 10px 0 0 0;
+    width: 100%;
   }
 }
 .my-locationV2{
@@ -235,7 +354,7 @@ export default {
 }
 .input-tag{
   position: relative;
-  flex: 0 0 40%;
+  // flex: 0 0 40%;
   background-color: #E5E5E5;
   border: 3px solid #E5E5E5;
   border-radius: 3px;
@@ -244,12 +363,32 @@ export default {
   padding: 10px;
   font-family: 'Lato', sans-serif;
   color: #303030;
-  &:after{
-    content: url('../../assets/clear.png');
-    position: absolute;
-    right: 5px;
-    top: 5px;
-    filter: opacity(0.4)
+  // &:after{
+  //   content: url('../../assets/clear.png');
+  //   position: absolute;
+  //   right: 5px;
+  //   top: 5px;
+  //   filter: opacity(0.4)
+  // }
+  @media (max-width: 767px) {
+    width: auto;
+    border: 0px;
+    padding: 0px;
+  }
+}
+.input-modal-button {
+  margin: 10px 0 0 0;
+  padding: 10px 0;
+  width: 100%;
+  flex: 0 0 auto;
+  border: 0;
+  font-size: 16px;
+  font-weight: bold;
+  border-radius: 5px;
+  background-color: #e5e5e5;
+  color: #AAAAAA;
+  font-family: 'Lato', sans-serif;
+  @media (max-width: 767px) {
   }
 }
 .input-tagV2{

@@ -32,7 +32,7 @@ input {
 }
 /* Track */
 ::-webkit-scrollbar-track {
-  background: #ffffff;
+  /* background: #ffffff; */
   /* background: #e0e0e0; */
 }
 /* Handle */
@@ -51,10 +51,10 @@ input {
 }
 @media (max-width: 767px) {
   .visible-xs {
-    display: block
+    display: block;
   }
   .hidden-xs {
-    display: none;
+    display: none !important;
   }
 }
 </style>

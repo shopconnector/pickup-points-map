@@ -1,5 +1,5 @@
 <template>
-    <div :class="isWidgetVersion ? 'filters' : 'filtersV2'">
+    <div class="hidden-xs" :class="isWidgetVersion ? 'filters' : 'filtersV2'">
       <!-- Select suppliers first version -->
       <div class="suppliers" v-if="isWidgetVersion">
         <h1 class="title">Wybierz dostawców</h1>

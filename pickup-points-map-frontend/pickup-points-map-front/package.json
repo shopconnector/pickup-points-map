@@ -2,7 +2,7 @@
   "name": "pickup-points-map-front",
   "version": "1.0.0",
   "description": "pickup-points-map widget",
-  "author": "Mykola Zahanych <35174437+MykolaZahanych@users.noreply.github.com>",
+  "author": "",
   "private": true,
   "scripts": {
     "dev": "webpack-dev-server --inline --progress --config build/webpack.dev.conf.js",
