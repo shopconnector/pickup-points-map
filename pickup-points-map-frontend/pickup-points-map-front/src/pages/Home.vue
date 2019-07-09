@@ -4,16 +4,32 @@
       <select-location/>
     </div>
     <div class="container-map">
-      <div class="mobile-header visible-xs"></div>
+      <!-- MOBILE HEADER START -->
+      <div class="mobile-header visible-xs">
+        <div class="mobile-container">
+          <i class="lejek-icon visible-xs" @click="openFilters = 1"></i>
+        </div>
+      </div>
+      <vue-over-body :dim="false" :open="openFilters" before="beforeFilters" after="afterFilters" :transition="0.3">
+        <div>
+          <Filters/>
+        </div>
+      </vue-over-body>
+      <!-- MOBILE HEADER END -->
       <Map/>
       <div class="mobile-footer visible-xs">
         <i class="button-footer" @click="openFooterModal"/>
       </div>
+          <!-- Lis Modal Footer -->
+    <div class="list-modal-footer visible-xs">
+      <p class="footer-btn">WYBIERZ TEN PUNKT</p>
+    </div>
+    <!-- List Modal Footer End -->
     </div>
     <div class="features-div" :class="{ 'first' : !$store.state.WidgetVersion }">
       <div :class="{ 'features-box-ver2' : !$store.state.WidgetVersion }">
         <select-location v-if="!$store.state.WidgetVersion"/>
-        <filters/>
+        <Filters/>
       </div>
     </div>
     <!-- <vue-over-body :dim="false" :open="IsFooterModalOpen" before="before" after="after" :transition="0.3">
@@ -46,7 +62,7 @@ export default {
   },
   data () {
     return {
-      open: 0
+      openFilters: 0
     }
   },
   methods: {
@@ -67,6 +83,34 @@ export default {
   }
 }
 </script>
+
+<style lang="scss" >
+// Mobile styles
+.beforeFilters{
+  top: -100vh;
+  width: 100%;
+  height: 100vh;
+  background-color: #FFFFFF;
+}
+.afterFilters{
+  top: 0;
+}
+.before {
+  bottom: -100vh;
+  width: 100%;
+  height: 200px;
+  margin-top: calc( 100vh - 200px);
+  background-color:yellow;
+  position:absolute;
+}
+.after {
+  bottom: 0;
+}
+.over_body_mask {
+ z-index: 1001 !important;
+ overflow-y: hidden !important;
+}
+</style>
 
 <style lang="scss" scoped>
 .home-page{
@@ -103,6 +147,7 @@ export default {
 .first {
   order: -1;
 }
+// MOBILE
 .mobile-header {
   position: fixed;
   background-color: white;
@@ -112,6 +157,29 @@ export default {
   top: 0;
   height: 70px;
   box-shadow: -1px 3px 10px 0px #b5b5b5;
+}
+.mobile-container{
+  display: flex;
+  align-items: center;
+  height: 70px;
+}
+.lejek-icon {
+  position: relative;
+  margin-left: 20px;
+  width: 35px;
+  height: 30px;
+  background: url(../assets/lejek.png) 0 0 no-repeat;
+  &:after{
+    content: '2';
+    position: absolute;
+    bottom: -10px;
+    right: -11px;
+    background-color: #E54C69;
+    color: #FFFFFF;
+    padding: 3px 7px;
+    border-radius: 50%;
+    font-size: 14px;
+  }
 }
 .mobile-footer {
   .button-footer {
@@ -140,5 +208,32 @@ export default {
   background-repeat: no-repeat;
   background-size: 100% auto;
   background-position: bottom;
+}
+.list-modal-footer{
+  position: fixed;
+  background-color: white;
+  z-index: 1001;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 90px;
+  // box-shadow: 1px -3px 10px 0px #b5b5b5;
+  text-align: center;
+  background: url('../assets/footer.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-size: 100% auto;
+  background-position: bottom;
+  .footer-btn{
+    position: absolute;
+    font-size: 14px;
+    color: #FFFFFF;
+    background-color: #E4405F;
+    border-radius: 9px;
+    margin: 0;
+    bottom: 20px;
+    right: 105px;
+    padding: 10px 12px;
+  }
 }
 </style>
