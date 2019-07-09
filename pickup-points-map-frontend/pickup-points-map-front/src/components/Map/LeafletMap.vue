@@ -66,6 +66,7 @@
                 <l-icon :icon-anchor="marker.iconAnchor" :icon-size="marker.iconSize" class-name="someExtraClass">
                   <img :src="pinsUrl[marker.type]" width="52" height="52"/>
                 </l-icon>
+                <transition name="bounce">
                 <l-popup>
                   <div class="popup-box">
                     <img class="popup-marker" :src="pinsUrl[marker.type]" width="102" height="102"/>
@@ -84,6 +85,7 @@
                     </div>
                   </div>
                 </l-popup>
+                </transition>
               </l-marker>
             </template>
         </l-map>
@@ -314,9 +316,13 @@ export default {
 .map-v2{
   position: relative;
   width: 100%;
-  height: 85.4vh;
+  height: calc( 100vh - 110px );
   overflow: hidden;
-  max-height: 100vh;
+  max-height: calc( 100vh - 110px );
+  @media (max-width: 767px) {
+    height: 100vh;
+    max-height: 100vh;
+  }
 }
 .popup-info {
   width: 200px;

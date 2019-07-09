@@ -1,5 +1,5 @@
 <template>
-    <div :class="isWidgetVersion ? 'filters' : 'filtersV2'">
+    <div :class="isWidgetVersion ? 'filters' : 'filtersV2'" v-if="!isMobile">
       <!-- Select suppliers first version -->
       <div class="suppliers" v-if="isWidgetVersion">
         <h1 class="title-supp">Wybierz dostawców</h1>
@@ -42,12 +42,11 @@
 </template>
 
 <script>
-import vueOverBody from 'vue-over-body'
+import { MobileDetected } from '../../components/mobileDetected.ts'
 
 export default {
   name: 'Filters',
   components: {
-    vueOverBody
   },
   data () {
     return {
@@ -124,7 +123,7 @@ export default {
       markers: null
     }
   },
-
+  mixins: [MobileDetected],
   computed: {
     isWidgetVersion () {
       return this.$store.state.WidgetVersion

@@ -1,11 +1,11 @@
 <template>
   <div class="widget-view">
-    <div class="header-view hidden-xs" v-if="$store.state.WidgetVersion">
+    <div class="header-view" v-if="$store.state.WidgetVersion">
       <select-location/>
     </div>
     <div class="container-map">
       <!-- MOBILE HEADER START -->
-      <div class="mobile-header visible-xs">
+      <div class="mobile-header" v-if="isMobile">
         <div class="mobile-container">
           <i class="lejek-icon visible-xs" @click="openFilterMobile"  :data-content="filtersCount"></i>
         </div>
@@ -17,17 +17,17 @@
       </vue-over-body>
       <!-- MOBILE HEADER END -->
       <Map/>
-      <div class="mobile-footer visible-xs" v-if="!showListFooter">
+      <div class="mobile-footer" v-if="!showListFooter && isMobile">
         <i class="button-footer" @click="openFooterModal"/>
       </div>
-      <div class="list-modal-footer visible-xs" v-if="showListFooter">
+      <div class="list-modal-footer" v-if="showListFooter && isMobile">
         <p class="footer-btn">WYBIERZ TEN PUNKT</p>
       </div>
     </div>
     <div class="features-div" :class="{ 'first' : !$store.state.WidgetVersion }">
       <div :class="{ 'features-box-ver2' : !$store.state.WidgetVersion }">
         <select-location v-if="!$store.state.WidgetVersion"/>
-        <!-- <Filters/>  Important -->
+        <Filters v-if="!isMobile"/>
       </div>
     </div>
   </div>
@@ -40,6 +40,7 @@ import SelectLocation from '../components/features/SelectLocation.vue'
 import Filters from '../components/features/Filters.vue'
 import Map from '../components/Map/LeafletMap.vue'
 import vueOverBody from 'vue-over-body'
+import { MobileDetected } from '../components/mobileDetected.ts'
 
 export default {
   name: 'Home',
@@ -51,6 +52,7 @@ export default {
     Map,
     vueOverBody
   },
+  mixins: [MobileDetected],
   data () {
     return {
     }
@@ -126,10 +128,19 @@ export default {
   }
 }
 .header-view{
-  width: 100%;
-  display: flex;
-  margin: 14px 20px 10px 20px;
-  z-index: 999;
+    width: 100%;
+    display: flex;
+    z-index: 999;
+    height: 110px;
+    align-items: center;
+    padding: 0 20px;
+  @media (max-width: 767px) {
+    margin: 0;
+    z-index: auto;
+    width: auto;
+    height: auto;
+    padding: 0;
+  }
 }
 .features-box-ver2 {
   margin: 20px 40px 0 40px;

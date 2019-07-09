@@ -1,9 +1,9 @@
 <template>
   <div :class="isWidgetVersion ? 'location' : 'locationV2'">
-    <div class="hidden-xs" :class="isWidgetVersion ? 'location-header' : 'location-headerV2'">
+    <div :class="isWidgetVersion ? 'location-header' : 'location-headerV2'" v-if="!isMobile">
       <h1 class="title">Wybierz lokalizację</h1>
     </div>
-    <div class="choose-location hidden-xs">
+    <div class="choose-location" v-if="!isMobile">
         <h3 :class="isWidgetVersion ? 'my-location' : 'my-locationV2'" @click="currentPos()">Użyj mojej lokalizacji</h3>
         <p class="lub">lub</p>
         <div style="position: relative; display: block; width: 72%; flex: 0 0 40%;">
@@ -61,9 +61,11 @@
 
 <script>
 import vueOverBody from 'vue-over-body'
+import { MobileDetected } from '../../components/mobileDetected.ts'
 
 export default {
   name: 'SelectLocation',
+  mixins: [MobileDetected],
   components: {
     vueOverBody
   },
