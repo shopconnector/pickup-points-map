@@ -186,6 +186,7 @@ export default new Vuex.Store({
     },
     closeLocitModal (state) {
       state.isLocitModalOpen = 0
+      state.isFooterModalOpen = 0
     },
     closeAllModal (state) {
       state.isFooterModalOpen = 0

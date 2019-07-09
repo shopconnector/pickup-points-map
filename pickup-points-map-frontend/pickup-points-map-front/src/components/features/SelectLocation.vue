@@ -27,16 +27,16 @@
     <vue-over-body :dim="false" :open="IsFooterModalOpen" before="beforeFooterModal" after="afterFooterModal" :transition="0.3">
       <div class="footer-box">
         <h3 class="my-location" @click="currentPos()">Użyj mojej lokalizacji</h3>
-        <div class='input-modal-button' @click="openLocitModal()">
+        <div class='input-modal-button' :class="{ 'active' : suggestionText }" @click="openLocitModal()">
           <template v-if="suggestionText">{{ suggestionText.city + ', ' + suggestionText.prefix + ' ' + suggestionText.street + ' ' + suggestionText.building }}</template>
           <template v-else>Zacznij wpisywać adres</template>
-          </div>
+        </div>
         <div class='input-modal-button'>Wpisz kod odbioru</div>
       </div>
     </vue-over-body>
     <vue-over-body :dim="false" :open="IsLocitModalOpen" before="beforeLocitModal" after="afterLocitModal" :transition="0.3">
       <div class="locit-box">
-        <span @click="closeLocitModal()" >close</span>
+        <i class="close-button" @click="closeLocitModal()"/>
         <vue-autosuggest
             class='input-tag'
             :limit="10"
@@ -227,7 +227,19 @@ export default {
 
 <style lang="scss" scoped>
 .locit-box {
-  padding: 20px;
+  .close-button {
+    margin: 0 auto;
+    cursor: pointer;
+    background-color: white;
+    width: 40px;
+    height: 40px;
+    right: 10px;
+    top: 10px;
+    position: absolute;
+    background: url('../../assets/clear.png') 0 0 no-repeat;
+    background-size: cover;
+  }
+  padding: 50px 40px 0;
 }
 .footer-box {
   display: flex;
@@ -377,6 +389,10 @@ export default {
   }
 }
 .input-modal-button {
+  &.active {
+    background-color: #e54c69;
+    color: white;
+  }
   margin: 10px 0 0 0;
   padding: 10px 0;
   width: 100%;

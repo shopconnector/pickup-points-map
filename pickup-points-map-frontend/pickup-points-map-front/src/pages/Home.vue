@@ -7,9 +7,7 @@
       <div class="mobile-header visible-xs"></div>
       <Map/>
       <div class="mobile-footer visible-xs">
-        <span  class="button-footer" @click="openFooterModal">
-          <!-- a -->
-        </span>
+        <i class="button-footer" @click="openFooterModal"/>
       </div>
     </div>
     <div class="features-div" :class="{ 'first' : !$store.state.WidgetVersion }">
