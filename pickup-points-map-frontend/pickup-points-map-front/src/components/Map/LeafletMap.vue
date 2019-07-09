@@ -47,7 +47,7 @@
                 :lat-lng="marker.position"
                 class-name="markertype"
               >
-                <l-icon :icon-anchor="marker.iconAnchor" :icon-size="marker.iconSize" class-name="someExtraClass">
+                <l-icon :icon-anchor="marker.iconAnchor" :icon-size="marker.iconSize" class-name="mapIcons">
                   <img :src="pinsUrl[marker.type]" width="52" height="52"/>
                 </l-icon>
                 <l-popup>
@@ -172,16 +172,23 @@ export default {
 .leaflet-popup {
   .leaflet-popup-content-wrapper {
     border: 3px solid #3F87F5;
+    @media (max-width: 767px) {
+      border: none;
+    }
   }
   .leaflet-popup-tip-container {
     display: none;
   }
   .leaflet-popup-close-button {
-    display: none;
+    // display: none;
+    right: 185px !important;
+    top: 5px !important;
   }
-  padding-right: 210px !important;
-  bottom: -210px !important;
-  margin-left: 210px !important;
+  padding: 0px 180px 0 0px !important;
+  // padding-right: 80px !important;
+  // margin-left: 80px !important;
+  // left: -200px !important;
+  bottom: -160px !important;
   margin-bottom: 0 !important;
  }
 .leaflet-right .leaflet-control {
@@ -198,6 +205,13 @@ export default {
 .leaflet-control-attribution a {
   color: #0078A8;
 }
+.mapIcons {
+  img {
+    bottom: 0;
+    position: absolute;
+    right: -26px;
+  }
+}
  @media only screen and (max-width: 1100px) {
    .leaflet-touch .leaflet-bar a {
      width: 25px;
@@ -208,6 +222,12 @@ export default {
    .leaflet-touch .leaflet-control-zoom-out {
      font-size: 19px;
    }
+  //  .leaflet-popup {
+  //     // padding-right: 40px !important;
+  //     bottom: -160px !important;
+  //     margin-left: 0px !important;
+  //     margin-bottom: 0 !important;
+  //  }
 }
 </style>
 
@@ -259,7 +279,7 @@ display: flex;
 }
 .popup-marker {
   position: absolute;
-  left: -20px;
+  right: 155px;
   top: -92px;
 }
 .type-actions {
@@ -282,6 +302,9 @@ display: flex;
   display: flex;
   border-radius: 15px;
   overflow: hidden;
+  @media (max-width: 767px) {
+    top: 17px;
+  }
 }
 .type-actions-v2{
   .button-action {
@@ -295,6 +318,7 @@ display: flex;
     margin: 0;
     cursor: pointer;
   }
+  box-shadow: -2px 2px 10px 0px #b5b5b5;
   position: absolute;
   z-index: 999;
   right: 20px;
@@ -303,6 +327,9 @@ display: flex;
   display: flex;
   border-radius: 15px;
   overflow: hidden;
+  @media (max-width: 767px) {
+    top: 17px;
+  }
 }
 .hours-elem{
   flex-basis: 30% !important;
