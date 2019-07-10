@@ -6,9 +6,12 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    // status: '',
-    // places: {},
-    // lastvisit: {},
+    status: '',
+    places: {},
+    lastvisit: {},
+    filtersCount: 0,
+    showListFooter: false,
+    isFilterMobileOpen: 0,
     isFooterModalOpen: 0,
     isLocitModalOpen: 0,
     WidgetVersion: false,
@@ -178,11 +181,23 @@ export default new Vuex.Store({
     ]
   },
   mutations: {
+    openListFooter (state) {
+      state.showListFooter = true
+    },
+    closeListFooter (state) {
+      state.showListFooter = false
+    },
+    openFilterMobile (state) {
+      state.isFilterMobileOpen = 1
+    },
     openFooterModal (state) {
       state.isFooterModalOpen = 1
     },
     openLocitModal (state) {
       state.isLocitModalOpen = 1
+    },
+    closeFilterMobile (state) {
+      state.isFilterMobileOpen = 0
     },
     closeFooterModal (state) {
       state.isFooterModalOpen = 0
@@ -194,6 +209,9 @@ export default new Vuex.Store({
     closeAllModal (state) {
       state.isFooterModalOpen = 0
       state.isLocitModalOpen = 0
+    },
+    howManyFiltersApplies (state, n) {
+      state.filtersCount = n
     },
     updatePosition (state, position) {
       state.zoom = 16

@@ -1,5 +1,5 @@
 <template>
-    <div class="hidden-xs" :class="isWidgetVersion ? 'filters' : 'filtersV2'">
+    <div :class="isWidgetVersion ? 'filters' : 'filtersV2'">
       <!-- Select suppliers first version -->
       <div class="suppliers" v-if="isWidgetVersion">
         <h1 class="title-supp">Wybierz dostawców</h1>
@@ -34,9 +34,8 @@
       <!-- Mobile version -->
       <div class="visible-xs">
         <div class="mobile-filters-footer">
-          {{ filters }}
           <p class="wyczysc" @click="clearFilter()">Wyczyść filtry</p>
-          <p class="zastosuj">Zastosuj filtry</p>
+          <p class="zastosuj" @click="closeFilterMobile">Zastosuj filtry</p>
         </div>
       </div>
   </div>
@@ -52,7 +51,6 @@ export default {
   },
   data () {
     return {
-      open: 1,
       checkedSuppliers: [],
       suppliers: [{
         id: 'Poczta Polska',
@@ -160,6 +158,14 @@ export default {
     },
     getImgUrl (pic) {
       return require('../../assets/logos/' + pic)
+    },
+    closeFilterMobile () {
+      this.$store.commit('closeFilterMobile')
+      this.howManyFiltersApplies()
+    },
+    howManyFiltersApplies () {
+      let countFilters = this.filters.length + this.checkedSuppliers.length
+      return this.$store.commit('howManyFiltersApplies', countFilters)
     }
   }
 }

@@ -7,38 +7,29 @@
       <!-- MOBILE HEADER START -->
       <div class="mobile-header visible-xs">
         <div class="mobile-container">
-          <i class="lejek-icon visible-xs" @click="openFilters = 1"></i>
+          <i class="lejek-icon visible-xs" @click="openFilterMobile"  :data-content="filtersCount"></i>
         </div>
       </div>
-      <vue-over-body :dim="false" :open="openFilters" before="beforeFilters" after="afterFilters" :transition="0.3">
+      <vue-over-body :dim="false" :open="this.$store.state.isFilterMobileOpen" before="beforeFilters" after="afterFilters" :transition="0.3">
         <div>
           <Filters/>
         </div>
       </vue-over-body>
       <!-- MOBILE HEADER END -->
       <Map/>
-      <div class="mobile-footer visible-xs">
+      <div class="mobile-footer visible-xs" v-if="!showListFooter">
         <i class="button-footer" @click="openFooterModal"/>
       </div>
-          <!-- Lis Modal Footer -->
-    <div class="list-modal-footer visible-xs">
-      <p class="footer-btn">WYBIERZ TEN PUNKT</p>
-    </div>
-    <!-- List Modal Footer End -->
+      <div class="list-modal-footer visible-xs" v-if="showListFooter">
+        <p class="footer-btn">WYBIERZ TEN PUNKT</p>
+      </div>
     </div>
     <div class="features-div" :class="{ 'first' : !$store.state.WidgetVersion }">
       <div :class="{ 'features-box-ver2' : !$store.state.WidgetVersion }">
         <select-location v-if="!$store.state.WidgetVersion"/>
-        <Filters/>
+        <!-- <Filters/>  Important -->
       </div>
     </div>
-    <!-- <vue-over-body :dim="false" :open="IsFooterModalOpen" before="before" after="after" :transition="0.3">
-      <div>
-        <button @click="closeFooterModal">&times;</button>
-        <p>Bla bla!</p>
-        <p>FBla bla!</p>
-      </div>
-    </vue-over-body> -->
   </div>
 </template>
 
@@ -48,7 +39,7 @@ import vueHeadful from 'vue-headful'
 import SelectLocation from '../components/features/SelectLocation.vue'
 import Filters from '../components/features/Filters.vue'
 import Map from '../components/Map/LeafletMap.vue'
-// import vueOverBody from 'vue-over-body'
+import vueOverBody from 'vue-over-body'
 
 export default {
   name: 'Home',
@@ -57,28 +48,30 @@ export default {
     vueHeadful,
     SelectLocation,
     Filters,
-    Map
-    // vueOverBody
+    Map,
+    vueOverBody
   },
   data () {
     return {
-      openFilters: 0
     }
   },
   methods: {
     openFooterModal () {
       this.$store.commit('openFooterModal')
     },
-    closeFooterModal () {
-      this.$store.commit('closeFooterModal')
+    openFilterMobile () {
+      this.$store.commit('openFilterMobile')
     }
   },
   computed: {
+    filtersCount () {
+      return this.$store.state.filtersCount
+    },
     isWidgetVersion () {
       return this.$store.state.WidgetVersion
     },
-    IsFooterModalOpen () {
-      return this.$store.state.isFooterModalOpen
+    showListFooter () {
+      return this.$store.state.showListFooter
     }
   }
 }
@@ -170,7 +163,7 @@ export default {
   height: 30px;
   background: url(../assets/lejek.png) 0 0 no-repeat;
   &:after{
-    content: '2';
+    content: attr(data-content);
     position: absolute;
     bottom: -10px;
     right: -11px;

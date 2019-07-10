@@ -2,8 +2,8 @@
 <div class='list-background-fix'>
   <div :class="isWidgetVersion ? 'map-v2' : 'map'">
     <div class="type-actions" :class="{'type-actions-v2' : !isWidgetVersion}">
-      <p class="button-action" :class="{ 'active' : !toogleMap }" @click="toogleMap = !toogleMap">Mapa</p>
-      <p class="button-action" :class="{ 'active' : toogleMap }" @click="toogleMap = !toogleMap">Lista</p>
+      <p class="button-action" :class="{ 'active' : !toogleMap }" @click="toogleMapMethod()">Mapa</p>
+      <p class="button-action" :class="{ 'active' : toogleMap }" @click="toogleMapMethod()">Lista</p>
     </div>
     <transition name="fade">
       <template v-if="toogleMap">
@@ -14,7 +14,7 @@
               v-for="(marker, index) in markers"
               :key="marker.id"
               @click="openListModal(index)">
-              <div class="list-elem">
+              <div class="list-elem list-elem-img">
                 <img :class="{'img-modal' : isOpenListModal(index)}" :src="logosUrl[marker.type]" width="auto" height="70px" />
               </div>
               <div class="list-elem">
@@ -191,6 +191,10 @@ export default {
   // },
 
   methods: {
+    toogleMapMethod () {
+      this.toogleMap = !this.toogleMap
+      this.$store.commit('closeListFooter')
+    },
     selectedPopup (index) {
       this.toogleModal = false
       setTimeout(() => this.toogleMethod(index), 500)
@@ -209,6 +213,7 @@ export default {
     },
     isOpenListModal (index) {
       if (this.selectedPoint === index) {
+        this.$store.commit('openListFooter')
         return true
       } else {
         return false
@@ -537,7 +542,6 @@ display: flex;
       .list-row{
         border-bottom: 1.5px solid #E5E5E5;
         justify-content: center;
-        margin: 0 35px;
         &:last-child{
           border-bottom: none;
         }
@@ -547,11 +551,17 @@ display: flex;
             justify-content: normal;
             .img-modal{
                filter: none;
+               height: 65px;
+               padding-right: 20px;
             }
             img{
               filter: grayscale(1) opacity(0.6);
               height: 55px;
             }
+          }
+          .list-elem-img{
+                justify-content: center;
+                margin-right: -25px;
           }
           .hours-elem{
             display: none;
