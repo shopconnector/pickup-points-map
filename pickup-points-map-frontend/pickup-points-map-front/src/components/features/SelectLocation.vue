@@ -280,9 +280,9 @@ export default {
   color: #b4b1b1;
   font-size: 35px;
   cursor: pointer;
-  &:hover{
-    color: black;
-  }
+  // &:hover{
+  //   color: black;
+  // }
 }
 .title{
   font-family: 'Lato', sans-serif;

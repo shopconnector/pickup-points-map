@@ -14,14 +14,13 @@ export default new Vuex.Store({
     isFilterMobileOpen: 0,
     isFooterModalOpen: 0,
     isLocitModalOpen: 0,
-    WidgetVersion: false,
+    WidgetVersion: true,
     isFilterMobilOpen: 1,
     zoom: 7,
     lat: 53.0409,
     lng: 19.2850,
     radiusOfVisibily: 0,
     filteredMarkers: [],
-    // markers: []
     markers: [
       {
         id: 'm1',

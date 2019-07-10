@@ -7,11 +7,11 @@
       <!-- MOBILE HEADER START -->
       <div class="mobile-header" v-if="isMobile">
         <div class="mobile-container">
-          <i class="lejek-icon visible-xs" @click="openFilterMobile"  :data-content="filtersCount"></i>
+          <i class="lejek-icon" @click="openFilterMobile"  :data-content="filtersCount"></i>
         </div>
       </div>
       <vue-over-body :dim="false" :open="this.$store.state.isFilterMobileOpen" before="beforeFilters" after="afterFilters" :transition="0.3">
-        <div>
+        <div v-if="isMobile">
           <Filters/>
         </div>
       </vue-over-body>

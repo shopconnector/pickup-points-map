@@ -457,7 +457,7 @@ display: flex;
     height: 70vh;
     border: 1px solid #AAAAAA;
   }
-  margin-top: 105px;
+  margin-top: 80px;
   padding: 0px 20px;
   text-align: left;
 }
