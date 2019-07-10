@@ -14,13 +14,13 @@ export default new Vuex.Store({
     isFilterMobileOpen: 0,
     isFooterModalOpen: 0,
     isLocitModalOpen: 0,
-    WidgetVersion: false,
+    WidgetVersion: true,
     isFilterMobilOpen: 1,
     zoom: 7,
     lat: 53.0409,
     lng: 19.2850,
+    radiusOfVisibily: 0,
     filteredMarkers: [],
-    // markers: []
     markers: [
       {
         id: 'm1',
@@ -190,6 +190,9 @@ export default new Vuex.Store({
     openFilterMobile (state) {
       state.isFilterMobileOpen = 1
     },
+    changeRadiusOfVisibility (state, newRadius) {
+      if (newRadius) state.radiusOfVisibily = newRadius
+    },
     openFooterModal (state) {
       state.isFooterModalOpen = 1
     },
@@ -213,16 +216,6 @@ export default new Vuex.Store({
     howManyFiltersApplies (state, n) {
       state.filtersCount = n
     },
-    updatePosition (state, position) {
-      state.zoom = 16
-      state.lat = position.y
-      state.lng = position.x
-    },
-    updatePosition1 (state, position) {
-      state.zoom = 16
-      state.lat = position.lat
-      state.lng = position.lng
-    },
     // API CALLS
     get_points (state) {
       state.status = 'loading points'
@@ -233,6 +226,12 @@ export default new Vuex.Store({
     },
     get_points_err (state) {
       state.status = 'error, points couldnt be loaded'
+    },
+    updatePosition (state, newPosition) {
+      var point = newPosition[0]
+      state.zoom = point.zoom ? point.zoom : state.zoom
+      state.lat = point.lat ? point.lat : state.lat
+      state.lng = point.lng ? point.lng : state.lng
     }
   },
   actions: {

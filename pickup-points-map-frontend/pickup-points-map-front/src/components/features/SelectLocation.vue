@@ -1,9 +1,9 @@
 <template>
   <div :class="isWidgetVersion ? 'location' : 'locationV2'">
-    <div class="hidden-xs" :class="isWidgetVersion ? 'location-header' : 'location-headerV2'">
+    <div :class="isWidgetVersion ? 'location-header' : 'location-headerV2'" v-if="!isMobile">
       <h1 class="title">Wybierz lokalizację</h1>
     </div>
-    <div class="choose-location hidden-xs">
+    <div class="choose-location" v-if="!isMobile">
         <h3 :class="isWidgetVersion ? 'my-location' : 'my-locationV2'" @click="currentPos()">Użyj mojej lokalizacji</h3>
         <p class="lub">lub</p>
         <div style="position: relative; display: block; width: 72%; flex: 0 0 40%;">
@@ -61,9 +61,11 @@
 
 <script>
 import vueOverBody from 'vue-over-body'
+import { MobileDetected } from '../../components/mobileDetected.ts'
 
 export default {
   name: 'SelectLocation',
+  mixins: [MobileDetected],
   components: {
     vueOverBody
   },
@@ -105,7 +107,7 @@ export default {
       this.$store.commit('closeFooterModal')
     },
     currentPos () {
-      this.$store.commit('updatePosition1', this.$store.state.geolocation)
+      this.$store.commit('updatePosition', [{ lat: this.$store.state.geolocation.lat, lng: this.$store.state.geolocation.lng, zoom: 16 }])
       if (this.IsFooterModalOpen) {
         this.closeFooterModal()
       }
@@ -113,7 +115,7 @@ export default {
     getSuggestionValue (suggestion) {
       if (suggestion) {
         this.suggestionText = suggestion.item
-        this.$store.commit('updatePosition', suggestion.item)
+        this.$store.commit('updatePosition', [{ lat: suggestion.item.y, lng: suggestion.item.x, zoom: 16 }])
         this.customSuggestion = suggestion.item
         return this.suggestionText.city + ', ' + this.suggestionText.prefix + ' ' + this.suggestionText.street + ' ' + this.suggestionText.building
       } else {
@@ -278,9 +280,9 @@ export default {
   color: #b4b1b1;
   font-size: 35px;
   cursor: pointer;
-  &:hover{
-    color: black;
-  }
+  // &:hover{
+  //   color: black;
+  // }
 }
 .title{
   font-family: 'Lato', sans-serif;

@@ -42,12 +42,11 @@
 </template>
 
 <script>
-import vueOverBody from 'vue-over-body'
+import { MobileDetected } from '../../components/mobileDetected.ts'
 
 export default {
   name: 'Filters',
   components: {
-    vueOverBody
   },
   data () {
     return {
@@ -124,7 +123,7 @@ export default {
       markers: null
     }
   },
-
+  mixins: [MobileDetected],
   computed: {
     isWidgetVersion () {
       return this.$store.state.WidgetVersion
