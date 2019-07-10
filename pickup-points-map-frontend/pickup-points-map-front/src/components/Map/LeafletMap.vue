@@ -1,20 +1,21 @@
 <template>
-<div>
+<div class='list-background-fix'>
   <div :class="isWidgetVersion ? 'map-v2' : 'map'">
-    <div :class="isWidgetVersion ? 'type-actions' : 'type-actions-v2'">
-      <p class="button-action" :class="{ 'active' : !toogleMap }" @click="toogleMap = !toogleMap">Mapa</p>
-      <p class="button-action" :class="{ 'active' : toogleMap }" @click="toogleMap = !toogleMap">Lista</p>
+    <div class="type-actions" :class="{'type-actions-v2' : !isWidgetVersion}">
+      <p class="button-action" :class="{ 'active' : !toogleMap }" @click="toogleMapMethod()">Mapa</p>
+      <p class="button-action" :class="{ 'active' : toogleMap }" @click="toogleMapMethod()">Lista</p>
     </div>
     <transition name="fade">
       <template v-if="toogleMap">
         <div class="list-box" :class="{'listbox-margin-top' : isWidgetVersion}">
-          <div class="list-title">Punkty odbioru w pobliżu Twojej lokalizacji</div>
+          <div class="list-title hidden-xs">Punkty odbioru w pobliżu Twojej lokalizacji</div>
           <div class="scroll-box" :class="{'change-vh' : !isWidgetVersion}">
-            <div class="list-row"
+            <div class="list-row" :class="{'list-row-modal' : isOpenListModal(index)}"
               v-for="(marker, index) in markers"
-              :key="marker.id">
-              <div class="list-elem">
-                <img :src="logosUrl[marker.type]" width="auto" height="70px"/>
+              :key="marker.id"
+              @click="openListModal(index)">
+              <div class="list-elem list-elem-img">
+                <img :class="{'img-modal' : isOpenListModal(index)}" :src="logosUrl[marker.type]" width="auto" height="70px" />
               </div>
               <div class="list-elem">
                 <b>{{ marker.address1 }}</b>
@@ -29,6 +30,22 @@
               <div class="list-elem btn-elem">
                 <p class="list-button" @click="selectedPopup(index)">Wybierz</p>
               </div>
+              <!-- List Modal Section -->
+              <transition name="fade">
+              <div class="list-modal" v-if="isOpenListModal(index)">
+                <div class="list-modal-hours">
+                  <b>Godziny otwarcia:</b>
+                  {{ marker.openTime }}<br>
+                  {{ marker.openTime2 }}
+                </div>
+                <div class="list-modal-additional">
+                  <i class="icon hours"/>
+                  <i class="icon sobota"/>
+                  <i class="icon niedziela"/>
+                </div>
+              </div>
+              </transition>
+              <!-- List Modal Section END -->
             </div>
           </div>
         </div>
@@ -37,7 +54,6 @@
     <transition name="fade">
       <template v-if="!toogleMap">
         <l-map :zoom="zoom" :center="center" :options="{zoomControl: false}">
-            <!-- <l-control-zoom position="bottomleft"></l-control-zoom> -->
             <l-tile-layer :url="url" :attribution="attribution" />
             <template v-if="markers[0] !== 'empty'">
               <l-marker
@@ -47,7 +63,7 @@
                 :lat-lng="marker.position"
                 class-name="markertype"
               >
-                <l-icon :icon-anchor="marker.iconAnchor" :icon-size="marker.iconSize" class-name="mapIcons">
+                <l-icon :icon-anchor="marker.iconAnchor" :icon-size="marker.iconSize" class-name="someExtraClass">
                   <img :src="pinsUrl[marker.type]" width="52" height="52"/>
                 </l-icon>
                 <l-popup>
@@ -107,9 +123,14 @@ export default {
   },
   data () {
     return {
+      isListFooter: false,
+      selectedPoint: Number,
       toogleMap: false,
       toogleModal: false,
-      geoCenter: '',
+      geoCenter: {
+        lat: 0,
+        lng: 0
+      },
       // markers: null,
       selectedMarker: {},
       url: 'http://{s}.tile.osm.org/{z}/{x}/{y}.png',
@@ -150,7 +171,30 @@ export default {
       return this.$store.state.WidgetVersion
     }
   },
+
+  // mounted () {
+  //   this.$store.subscribe((mutation, state) => {
+  //     if (mutation.type === 'geolocation/LOCATION_CHANGED') {
+  //       this.geoCenter.lat = parseFloat(this.$store.state.geolocation.lat)
+  //       this.geoCenter.lng = parseFloat(this.$store.state.geolocation.lng)
+
+  //       this.$store.dispatch('get_points', {
+  //         lat: this.geoCenter.lat,
+  //         lng: this.geoCenter.lng,
+  //         dist: 14
+  //       })
+  //     }
+  //     if (mutation.type === 'get_points_succ') {
+  //       this.markers = this.$store.state.markers
+  //     }
+  //   })
+  // },
+
   methods: {
+    toogleMapMethod () {
+      this.toogleMap = !this.toogleMap
+      this.$store.commit('closeListFooter')
+    },
     selectedPopup (index) {
       this.toogleModal = false
       setTimeout(() => this.toogleMethod(index), 500)
@@ -163,6 +207,17 @@ export default {
     },
     onCloseChild (value) {
       this.toogleModal = value
+    },
+    openListModal (index) {
+      this.selectedPoint = index
+    },
+    isOpenListModal (index) {
+      if (this.selectedPoint === index) {
+        this.$store.commit('openListFooter')
+        return true
+      } else {
+        return false
+      }
     }
   }
 }
@@ -172,23 +227,16 @@ export default {
 .leaflet-popup {
   .leaflet-popup-content-wrapper {
     border: 3px solid #3F87F5;
-    @media (max-width: 767px) {
-      border: none;
-    }
   }
   .leaflet-popup-tip-container {
     display: none;
   }
   .leaflet-popup-close-button {
-    // display: none;
-    right: 185px !important;
-    top: 5px !important;
+    display: none;
   }
-  padding: 0px 180px 0 0px !important;
-  // padding-right: 80px !important;
-  // margin-left: 80px !important;
-  // left: -200px !important;
-  bottom: -160px !important;
+  padding-right: 210px !important;
+  bottom: -210px !important;
+  margin-left: 210px !important;
   margin-bottom: 0 !important;
  }
 .leaflet-right .leaflet-control {
@@ -205,12 +253,8 @@ export default {
 .leaflet-control-attribution a {
   color: #0078A8;
 }
-.mapIcons {
-  img {
-    bottom: 0;
-    position: absolute;
-    right: -26px;
-  }
+::-webkit-scrollbar-track {
+  background: transparent;
 }
  @media only screen and (max-width: 1100px) {
    .leaflet-touch .leaflet-bar a {
@@ -222,16 +266,45 @@ export default {
    .leaflet-touch .leaflet-control-zoom-out {
      font-size: 19px;
    }
-  //  .leaflet-popup {
-  //     // padding-right: 40px !important;
-  //     bottom: -160px !important;
-  //     margin-left: 0px !important;
-  //     margin-bottom: 0 !important;
-  //  }
 }
 </style>
 
 <style lang="scss" scoped>
+// list modal styles
+.list-background-fix{
+  background: #F5F5F5;
+}
+.list-modal{
+  .list-modal-hours{
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    padding: 15px 0;
+    font-size: 14px;
+  }
+  .list-modal-additional{
+    display: flex;
+    justify-content: space-around;
+    .icon{
+      width: 17px;
+      height: 17px;
+      display: flex;
+    }
+    .hours{
+      background: url('../../assets/ZEGAR.png') 0 0 no-repeat;
+      background-size: cover;
+    }
+    .sobota{
+      background: url('../../assets/sobota.png') 0 0 no-repeat;
+      background-size: cover;
+    }
+    .niedziela{
+      background: url('../../assets/niedziela.png') 0 0 no-repeat;
+      background-size: cover;
+    }
+  }
+}
+// list modal style END
 .map{
   width: 100%;
   height: 100vh;
@@ -279,7 +352,7 @@ display: flex;
 }
 .popup-marker {
   position: absolute;
-  right: 155px;
+  left: -20px;
   top: -92px;
 }
 .type-actions {
@@ -302,34 +375,11 @@ display: flex;
   display: flex;
   border-radius: 15px;
   overflow: hidden;
-  @media (max-width: 767px) {
-    top: 17px;
-  }
 }
 .type-actions-v2{
-  .button-action {
-    &.active {
-      color: white;
-      background-color: #E54C69;
-    }
-    color: #AAAAAA;
-    background-color: #E5E5E5;
-    padding: 8px 40px 10px 40px;
-    margin: 0;
-    cursor: pointer;
-  }
-  box-shadow: -2px 2px 10px 0px #b5b5b5;
-  position: absolute;
-  z-index: 999;
+  left: auto;
   right: 20px;
-  top: 25px;
-  background-color: white;
-  display: flex;
-  border-radius: 15px;
-  overflow: hidden;
-  @media (max-width: 767px) {
-    top: 17px;
-  }
+  top: 20px;
 }
 .hours-elem{
   flex-basis: 30% !important;
@@ -474,5 +524,52 @@ display: flex;
      padding: 8px 15px;
    }
  }
+}
+
+// Styles for mobile
+@media (max-width: 767px) {
+    .list-box{
+      padding: 0;
+      margin-top: 70px;
+      background: #F5F5F5;
+      .scroll-box{
+        height: calc( 100vh - 160px);
+        border: 0;
+      }
+      .list-row-modal{
+        background: #FFFFFF;
+      }
+      .list-row{
+        border-bottom: 1.5px solid #E5E5E5;
+        justify-content: center;
+        &:last-child{
+          border-bottom: none;
+        }
+          .list-elem{
+            flex-basis: 37%;
+            max-width: 37%;
+            justify-content: normal;
+            .img-modal{
+               filter: none;
+               height: 65px;
+               padding-right: 20px;
+            }
+            img{
+              filter: grayscale(1) opacity(0.6);
+              height: 55px;
+            }
+          }
+          .list-elem-img{
+                justify-content: center;
+                margin-right: -25px;
+          }
+          .hours-elem{
+            display: none;
+          }
+          .btn-elem{
+            display: none;
+          }
+      }
+    }
 }
 </style>

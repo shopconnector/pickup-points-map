@@ -1,20 +1,26 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import APIService from './services/APIService'
 
 Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    // status: '',
-    // places: {},
-    // lastvisit: {},
+    status: '',
+    places: {},
+    lastvisit: {},
+    filtersCount: 0,
+    showListFooter: false,
+    isFilterMobileOpen: 0,
     isFooterModalOpen: 0,
     isLocitModalOpen: 0,
     WidgetVersion: false,
+    isFilterMobilOpen: 1,
     zoom: 7,
     lat: 53.0409,
     lng: 19.2850,
     filteredMarkers: [],
+    // markers: []
     markers: [
       {
         id: 'm1',
@@ -175,11 +181,23 @@ export default new Vuex.Store({
     ]
   },
   mutations: {
+    openListFooter (state) {
+      state.showListFooter = true
+    },
+    closeListFooter (state) {
+      state.showListFooter = false
+    },
+    openFilterMobile (state) {
+      state.isFilterMobileOpen = 1
+    },
     openFooterModal (state) {
       state.isFooterModalOpen = 1
     },
     openLocitModal (state) {
       state.isLocitModalOpen = 1
+    },
+    closeFilterMobile (state) {
+      state.isFilterMobileOpen = 0
     },
     closeFooterModal (state) {
       state.isFooterModalOpen = 0
@@ -192,6 +210,9 @@ export default new Vuex.Store({
       state.isFooterModalOpen = 0
       state.isLocitModalOpen = 0
     },
+    howManyFiltersApplies (state, n) {
+      state.filtersCount = n
+    },
     updatePosition (state, position) {
       state.zoom = 16
       state.lat = position.y
@@ -201,9 +222,34 @@ export default new Vuex.Store({
       state.zoom = 16
       state.lat = position.lat
       state.lng = position.lng
+    },
+    // API CALLS
+    get_points (state) {
+      state.status = 'loading points'
+    },
+    get_points_succ (state, points) {
+      state.markers = points
+      state.status = 'success, points loaded'
+    },
+    get_points_err (state) {
+      state.status = 'error, points couldnt be loaded'
     }
   },
   actions: {
+    get_points ({commit}, query) {
+      return new Promise((resolve, reject) => {
+        commit('get_points')
+        APIService.get_points(query)
+          .then(res => {
+            const points = res.response.pickupPoints
+            commit('get_points_succ', points)
+            resolve(res)
+          }).catch(err => {
+            commit('get_points_err')
+            reject(err)
+          })
+      })
+    }
   },
   getters: {
     filterMarkers: (state) => (filters, suppliers) => {

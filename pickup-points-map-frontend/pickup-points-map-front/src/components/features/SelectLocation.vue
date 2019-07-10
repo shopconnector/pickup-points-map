@@ -6,6 +6,7 @@
     <div class="choose-location hidden-xs">
         <h3 :class="isWidgetVersion ? 'my-location' : 'my-locationV2'" @click="currentPos()">Użyj mojej lokalizacji</h3>
         <p class="lub">lub</p>
+        <div style="position: relative; display: block; width: 72%; flex: 0 0 40%;">
         <vue-autosuggest
             class='input-tag'
             :class="{'input-tagV2' : !isWidgetVersion}"
@@ -22,7 +23,8 @@
             <small>({{ suggestion.item.voiv + ' ' + suggestion.item.pov + ' ' + suggestion.item.mun }})</small>
           </template>
         </vue-autosuggest>
-        <!-- <span @click="locitAddress = ''"><i class="material-icons clear-input">clear</i></span> -->
+        <span class="span-location" @click="locitAddress = ''"><i class="material-icons clear-input">clear</i></span>
+        </div>
     </div>
     <vue-over-body :dim="false" :open="IsFooterModalOpen" before="beforeFooterModal" after="afterFooterModal" :transition="0.3">
       <div class="footer-box">
@@ -226,6 +228,11 @@ export default {
 </style>
 
 <style lang="scss" scoped>
+.span-location{
+  position: absolute;
+  right: 10px;
+  top: calc( 50% - 17.5px );
+}
 .locit-box {
   .close-button {
     margin: 0 auto;
@@ -267,16 +274,14 @@ export default {
 .location-headerV2{
   display: block;
 }
-// .clear-input{
-//   padding-left: 5px;
-//   color: #b4b1b1;
-//   font-size: 35px;
-//   cursor: pointer;
-//   &:hover{
-//     color: black;
-//   }
-// }
-
+.clear-input{
+  color: #b4b1b1;
+  font-size: 35px;
+  cursor: pointer;
+  &:hover{
+    color: black;
+  }
+}
 .title{
   font-family: 'Lato', sans-serif;
   font-size: 22px;
@@ -358,30 +363,16 @@ export default {
   margin: 0;
   padding: 0 25px;
 }
-.lubV2{
-  font-size: 14px;
-  font-family: 'Lato', sans-serif;
-  color: #989898;
-  margin: 0px 20px;
-}
 .input-tag{
   position: relative;
   // flex: 0 0 40%;
   background-color: #E5E5E5;
   border: 3px solid #E5E5E5;
   border-radius: 3px;
-  width: 72%;
   margin: 9px 0;
   padding: 10px;
   font-family: 'Lato', sans-serif;
   color: #303030;
-  // &:after{
-  //   content: url('../../assets/clear.png');
-  //   position: absolute;
-  //   right: 5px;
-  //   top: 5px;
-  //   filter: opacity(0.4)
-  // }
   @media (max-width: 767px) {
     width: auto;
     border: 0px;
@@ -434,10 +425,6 @@ input::placeholder{
  }
  .lub{
    font-size: 14px;
- }
- .lubV2{
-   font-size: 13px;
-   margin: 0 15px;
  }
 }
 </style>

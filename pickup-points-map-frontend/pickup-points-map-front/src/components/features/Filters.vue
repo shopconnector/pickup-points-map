@@ -1,8 +1,8 @@
 <template>
-    <div class="hidden-xs" :class="isWidgetVersion ? 'filters' : 'filtersV2'">
+    <div :class="isWidgetVersion ? 'filters' : 'filtersV2'">
       <!-- Select suppliers first version -->
       <div class="suppliers" v-if="isWidgetVersion">
-        <h1 class="title">Wybierz dostawców</h1>
+        <h1 class="title-supp">Wybierz dostawców</h1>
         <div class="suppliers-menu">
           <div class="selectSuppliers" v-for="supp in suppliers" :key="supp.id">
             <input class="styled-checkbox" type="checkbox" :id="supp.id" :value="supp.value" v-model="checkedSuppliers">
@@ -22,7 +22,7 @@
       </div>
       <!-- Filters Menu -->
       <div class="header">
-        <h1 :class="isWidgetVersion ? 'title' : 'titleV2'">Filtry</h1><p :class="isWidgetVersion ? 'subtitle' : 'subtitleV2'" @click="clearFilter()">
+        <h1 class="title" :class="{'titleV2' : !isWidgetVersion}">Filtry</h1><p :class="isWidgetVersion ? 'subtitle' : 'subtitleV2'" @click="clearFilter()">
             Wyczyść filtry<span :class="isWidgetVersion ? 'clear' : 'clearV2'">X</span></p>
       </div>
       <div class="filters-menu">
@@ -31,12 +31,24 @@
           <label class="custom-icon" :class="box.icon" :for="box.id">{{box.info}}</label>
         </div>
       </div>
-    </div>
+      <!-- Mobile version -->
+      <div class="visible-xs">
+        <div class="mobile-filters-footer">
+          <p class="wyczysc" @click="clearFilter()">Wyczyść filtry</p>
+          <p class="zastosuj" @click="closeFilterMobile">Zastosuj filtry</p>
+        </div>
+      </div>
+  </div>
 </template>
 
 <script>
+import vueOverBody from 'vue-over-body'
+
 export default {
   name: 'Filters',
+  components: {
+    vueOverBody
+  },
   data () {
     return {
       checkedSuppliers: [],
@@ -112,9 +124,13 @@ export default {
       markers: null
     }
   },
+
   computed: {
     isWidgetVersion () {
       return this.$store.state.WidgetVersion
+    },
+    isFilterMobilOpen () {
+      return this.$store.state.isFilterMobilOpen
     },
     activeFilter () {
       if (this.filters.length > 0 || this.checkedSuppliers.length > 0) {
@@ -124,13 +140,16 @@ export default {
       }
     }
   },
+
   watch: {
     activeFilter (val) {
     }
   },
+
   created () {
     this.markers = this.$store.state.markers
   },
+
   methods: {
     clearFilter () {
       this.checkedSuppliers = []
@@ -139,12 +158,33 @@ export default {
     },
     getImgUrl (pic) {
       return require('../../assets/logos/' + pic)
+    },
+    closeFilterMobile () {
+      this.$store.commit('closeFilterMobile')
+      this.howManyFiltersApplies()
+    },
+    howManyFiltersApplies () {
+      let countFilters = this.filters.length + this.checkedSuppliers.length
+      return this.$store.commit('howManyFiltersApplies', countFilters)
     }
   }
 }
 </script>
 
 <style lang='scss' scoped>
+.mobile-filters-footer{
+  p {
+    margin: 0;
+    font-size: 16px;
+    bottom: 20px;
+    position: absolute;
+    color: #000000;
+  }
+  .zastosuj{
+    right: 35px;
+    color: #E54C69;
+  }
+}
 .filters{
   margin: 0 20px;
 }
@@ -162,8 +202,6 @@ export default {
   font-weight: 900;
 }
 .titleV2{
-  font-size: 22px;
-  font-weight: 900;
   color: #000000;
   margin: 0;
 }
@@ -298,7 +336,7 @@ export default {
   display: flex;
   flex-direction: column;
 }
-.title{
+.title-supp{
   font-family: 'Lato', sans-serif;
   font-size: 22px;
   font-weight: 900;
@@ -392,6 +430,9 @@ export default {
  .title{
    font-size: 20px;
  }
+ .title-supp{
+   font-size: 20px;
+ }
  .titleV2{
    font-size: 20px
  }
@@ -447,4 +488,65 @@ export default {
    }
   }
  }
+
+ // Styles for mobile
+@media (max-width: 767px) {
+ .filtersV2{
+   padding: 30px 35px 0 35px;
+ }
+ .title-dostawcow{
+   font-size:  16px;
+   margin: 0;
+ }
+ .styled-checkbox-dostawcow{
+   & + label{
+     padding: 0
+   }
+   & + label:before {
+     top: -12px;
+     left: 20px;
+     border: 2px solid #E4E4E4;
+   }
+   &:checked + label:before{
+     background-color: #E54C69;
+     box-shadow: inset 0 0px 3px #FFFFFF, inset 0 0 0 3px #FFFFFF;
+     border-color: #E54C69;
+   }
+ }
+ .select-suppliers-dostawcow{
+   padding-top: 35px;
+   justify-content: center;
+ }
+ .title{
+   font-size: 16px;
+ }
+ .subtitle, .subtitleV2 {
+   display: none;
+ }
+ .filters-menu{
+   flex-wrap: nowrap;
+   height: auto;
+ }
+ .checkbox-container{
+   width: 100%;
+ }
+ .custom-checkbox{
+   & + .custom-icon{
+     width: 100%;
+     color: #000000;
+   }
+ }
+ .custom-checkboxV2{
+   & + .custom-icon:after{
+     border: 2px solid #E4E4E4;
+     width: 17px;
+     height: 17px;
+   }
+   &:checked + .custom-icon:after{
+    background-color: #E54C69;
+    box-shadow: inset 0 0px 3px #FFFFFF, inset 0 0 0 3px #FFFFFF;
+    border-color: #E54C69;
+   }
+ }
+}
 </style>
