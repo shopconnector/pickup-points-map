@@ -2,57 +2,54 @@
 <div class='list-background-fix'>
   <div :class="isWidgetVersion ? 'map-v2' : 'map'">
     <div class="type-actions" :class="{'type-actions-v2' : !isWidgetVersion}">
-      <p class="button-action" :class="{ 'active' : !toogleMap }" @click="toogleMapMethod()">Mapa</p>
-      <p class="button-action" :class="{ 'active' : toogleMap }" @click="toogleMapMethod()">Lista</p>
+      <p class="button-action" :class="{ 'active' : !toogleMap }" @click="toogleMapMethod('show')">Mapa</p>
+      <p class="button-action" :class="{ 'active' : toogleMap }" @click="toogleMapMethod('hide')">Lista</p>
     </div>
     <transition name="fade">
-      <template v-if="toogleMap">
-        <div class="list-box" :class="{'listbox-margin-top' : isWidgetVersion}">
-          <div class="list-title hidden-xs">Punkty odbioru w pobliżu Twojej lokalizacji</div>
-          <div class="scroll-box" :class="{'change-vh' : !isWidgetVersion}">
-            <div class="list-row" :class="{'list-row-modal' : isOpenListModal(index)}"
-              v-for="(marker, index) in markers"
-              :key="marker.id"
-              @click="openListModal(index)">
-              <div class="list-elem list-elem-img">
-                <img :class="{'img-modal' : isOpenListModal(index)}" :src="logosUrl[marker.type]" width="auto" height="70px" />
-              </div>
-              <div class="list-elem">
-                <b>{{ marker.address1 }}</b>
-                {{ marker.zip }}
-                {{ marker.address2 }}
-              </div>
-              <div class="list-elem hours-elem">
+      <div  v-if="toogleMap" class="list-box" :class="{'listbox-margin-top' : isWidgetVersion}">
+        <div class="list-title hidden-xs">Punkty odbioru w pobliżu Twojej lokalizacji</div>
+        <div class="scroll-box" :class="{'change-vh' : !isWidgetVersion}">
+          <div class="list-row" :class="{'list-row-modal' : isOpenListModal(index)}"
+            v-for="(marker, index) in markers"
+            :key="marker.id"
+            @click="openListModal(index)">
+            <div class="list-elem list-elem-img">
+              <img :class="{'img-modal' : isOpenListModal(index)}" :src="logosUrl[marker.type]" width="auto" height="70px" />
+            </div>
+            <div class="list-elem">
+              <b>{{ marker.address1 }}</b>
+              {{ marker.zip }}
+              {{ marker.address2 }}
+            </div>
+            <div class="list-elem hours-elem">
+              <b>Godziny otwarcia:</b>
+              {{ marker.openTime }}<br>
+              {{ marker.openTime2 }}
+            </div>
+            <div class="list-elem btn-elem">
+              <p class="list-button" @click="selectedPopup(marker.id, index)">Wybierz</p>
+            </div>
+            <!-- List Modal Section -->
+            <transition name="fade">
+            <div class="list-modal" v-if="isOpenListModal(index)">
+              <div class="list-modal-hours">
                 <b>Godziny otwarcia:</b>
                 {{ marker.openTime }}<br>
                 {{ marker.openTime2 }}
               </div>
-              <div class="list-elem btn-elem">
-                <p class="list-button" @click="selectedPopup(index)">Wybierz</p>
+              <div class="list-modal-additional">
+                <i class="icon hours"/>
+                <i class="icon sobota"/>
+                <i class="icon niedziela"/>
               </div>
-              <!-- List Modal Section -->
-              <transition name="fade">
-              <div class="list-modal" v-if="isOpenListModal(index)">
-                <div class="list-modal-hours">
-                  <b>Godziny otwarcia:</b>
-                  {{ marker.openTime }}<br>
-                  {{ marker.openTime2 }}
-                </div>
-                <div class="list-modal-additional">
-                  <i class="icon hours"/>
-                  <i class="icon sobota"/>
-                  <i class="icon niedziela"/>
-                </div>
-              </div>
-              </transition>
-              <!-- List Modal Section END -->
             </div>
+            </transition>
+            <!-- List Modal Section END -->
           </div>
         </div>
-      </template>
+      </div>
     </transition>
     <transition name="fade">
-      <template v-if="!toogleMap">
         <l-map
           :zoom="zoom"
           :center="center"
@@ -89,7 +86,7 @@
                       </div>
                     </div>
                     <div class="popup-action">
-                      <p class="popup-button" @click="selectedPopup(index)">Wybierz</p>
+                      <p class="popup-button" @click="selectedPopup(marker.id, index)">Wybierz</p>
                     </div>
                   </div>
                 </l-popup>
@@ -97,7 +94,6 @@
               </l-marker>
             </template>
         </l-map>
-      </template>
     </transition>
   </div>
     <div>
@@ -140,7 +136,8 @@ export default {
         lng: 0
       },
       // markers: null,
-      selectedMarker: {},
+      selectedMarker: Object,
+      selectedMarkerId: String,
       url: 'http://{s}.tile.osm.org/{z}/{x}/{y}.png',
       attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
       logosUrl: {
@@ -202,8 +199,12 @@ export default {
   // },
 
   methods: {
-    toogleMapMethod () {
-      this.toogleMap = !this.toogleMap
+    toogleMapMethod (text) {
+      if (text === 'show') {
+        this.toogleMap = false
+      } else if (text === 'hide') {
+        this.toogleMap = true
+      }
       this.$store.commit('closeListFooter')
     },
     zoomUpdated (zoom) {
@@ -221,15 +222,18 @@ export default {
       var rad = Math.round(dist / 2)
       this.$store.commit('changeRadiusOfVisibility', rad)
     },
-    selectedPopup (index) {
+    selectedPopup (id, index) {
       this.toogleModal = false
-      setTimeout(() => this.toogleMethod(index), 500)
+      setTimeout(() => this.toogleMethod(id, index), 500)
     },
-    toogleMethod (index) {
-      this.toogleModal = true
-      if (this.toogleModal === true) {
-        this.selectedMarker = this.markers[index]
+    toogleMethod (id, index) {
+      if (this.selectedMarkerId !== id) {
+        this.toogleModal = true
+        this.selectedMarkerId = id
+      } else {
+        this.selectedMarkerId = ''
       }
+      this.selectedMarker = this.markers[index]
     },
     onCloseChild (value) {
       this.toogleModal = value
@@ -405,11 +409,24 @@ display: flex;
   display: flex;
   border-radius: 15px;
   overflow: hidden;
+  @media (max-width: 767px) {
+    right: 20px;
+    left: auto;
+    top: 15px;
+    .button-action {
+      padding: 12px 40px 12px 40px;
+    }
+  }
 }
 .type-actions-v2{
   left: auto;
   right: 20px;
   top: 20px;
+  @media (max-width: 767px) {
+    right: 20px;
+    left: auto;
+    top: 15px;
+  }
 }
 .hours-elem{
   flex-basis: 30% !important;
@@ -457,12 +474,13 @@ display: flex;
     height: 70vh;
     border: 1px solid #AAAAAA;
   }
+  height: 100vh;
   margin-top: 80px;
   padding: 0px 20px;
   text-align: left;
 }
 .listbox-margin-top{
-  margin-top: 55px !important;
+  margin-top: 70px !important;
 }
 .modal-position {
   width: 55%;
@@ -521,13 +539,11 @@ display: flex;
  .type-actions{
    .button-action{
      font-size: 14px;
-     padding: 8px 30px 8px 30px;
    }
  }
 .type-actions-v2{
    .button-action{
      font-size: 14px;
-     padding: 8px 30px 8px 30px;
    }
  }
  .list-box{
@@ -563,7 +579,7 @@ display: flex;
       margin-top: 70px;
       background: #F5F5F5;
       .scroll-box{
-        height: calc( 100vh - 160px);
+        height: calc( 100vh - 110px);
         border: 0;
       }
       .list-row-modal{

@@ -21,10 +21,12 @@
               </div>
             </div>
             <div class="col-2" :class="{'col2-v2' : isWidgetVersion}">
-              <div class="logo">
-                <img :src="parentData.icon.iconUrl" :alt="parentData.icon.alt" class="img">
+              <div class="info-box">
+                <div class="logo">
+                  <img :src="parentData.icon.iconUrl" :alt="parentData.icon.alt" class="img">
+                </div>
                 <div class="road">
-                  <p>Wyznacz trasę dojazdu <i class="material-icons">play_arrow</i></p>
+                  <a :href="'https://www.google.pl/maps/dir//' + parentData.position.lat + ',' + parentData.position.lng + '/@52.2502198,21.0280249 + ,16z/data=!4m2!4m1!3e3?hl=pl'" target="_blank">Wyznacz trasę dojazdu <i class="material-icons">play_arrow</i></a>
                 </div>
               </div>
               <div class="open-hours">
@@ -95,7 +97,7 @@ p {
 }
 .img{
   width: 85px;
-  padding-right: 55px;
+  // padding-right: 55px;
 }
 .content{
   background: #F5F5F5;
@@ -171,17 +173,25 @@ p {
 .col2-v2{
   flex: 0 0 50%;
 }
-.logo{
+.info-box {
   display: flex;
-}
-.road{
-  display: flex;
-  justify-content: center;
-  p {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  .logo{
     display: flex;
-    font-size: 14px;
-    color: #000000;
-    align-items: center;
+  }
+  .road{
+    display: flex;
+    justify-content: center;
+    width: 50%;
+    a {
+      display: flex;
+      font-size: 16px;
+      color: #000000;
+      align-items: center;
+      text-decoration: none;
+    }
   }
 }
 .open-hours{
@@ -314,7 +324,7 @@ p {
  }
  .img{
    width: 75px;
-   padding-right: 40px;
+  //  padding-right: 40px;
  }
  .powrot{
    font-size: 15px;
