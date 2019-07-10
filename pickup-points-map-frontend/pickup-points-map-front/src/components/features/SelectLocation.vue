@@ -231,6 +231,7 @@ export default {
     background-color: #F5F5F5;
     max-height: calc( 100vh - 200px );
     overflow-y: scroll;
+    margin-top: 40px;
   }
 }
 </style>

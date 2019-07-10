@@ -1,5 +1,5 @@
 <template>
-<div class='list-background-fix'>
+<div :class="{'list-background-mobile-fix' : isMobile}">
   <div :class="isWidgetVersion ? 'map-v2' : 'map'">
     <div class="type-actions" :class="{'type-actions-v2' : !isWidgetVersion}">
       <p class="button-action" :class="{ 'active' : !toogleMap }" @click="toogleMapMethod('show')">Mapa</p>
@@ -29,22 +29,22 @@
             <div class="list-elem btn-elem">
               <p class="list-button" @click="selectedPopup(marker.id, index)">Wybierz</p>
             </div>
-            <!-- List Modal Section -->
-            <transition name="fade">
-            <div class="list-modal" v-if="isOpenListModal(index)">
-              <div class="list-modal-hours">
-                <b>Godziny otwarcia:</b>
-                {{ marker.openTime }}<br>
-                {{ marker.openTime2 }}
+              <!-- List Modal Section -->
+              <transition name="fade">
+              <div class="list-modal" v-if="isOpenListModal(index) && isMobile">
+                <div class="list-modal-hours">
+                  <b>Godziny otwarcia:</b>
+                  {{ marker.openTime }}<br>
+                  {{ marker.openTime2 }}
+                </div>
+                <div class="list-modal-additional">
+                  <i class="icon hours"/>
+                  <i class="icon sobota"/>
+                  <i class="icon niedziela"/>
+                </div>
               </div>
-              <div class="list-modal-additional">
-                <i class="icon hours"/>
-                <i class="icon sobota"/>
-                <i class="icon niedziela"/>
-              </div>
-            </div>
-            </transition>
-            <!-- List Modal Section END -->
+              </transition>
+              <!-- List Modal Section END -->
           </div>
         </div>
       </div>
@@ -111,6 +111,7 @@ import { LMap, LTileLayer, LMarker, LPopup, LTooltip, LControlZoom, LIcon } from
 import { latLng } from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import ModalDiv from '../features/ModalDiv.vue'
+import { MobileDetected } from '../mobileDetected.ts'
 
 export default {
   name: 'Home',
@@ -125,6 +126,7 @@ export default {
     LControlZoom,
     LIcon
   },
+  mixins: [MobileDetected],
   data () {
     return {
       isListFooter: false,
@@ -301,7 +303,7 @@ export default {
 
 <style lang="scss" scoped>
 // list modal styles
-.list-background-fix{
+.list-background-mobile-fix{
   background: #F5F5F5;
 }
 .list-modal{
@@ -495,7 +497,7 @@ display: flex;
   width: 55%;
 }
 .change-vh{
-  min-height: 79vh !important;
+  min-height: 81vh !important;
 }
 // transitions
 .fade-enter-active {
@@ -574,6 +576,18 @@ display: flex;
 
 // Styles for mobile
 @media (max-width: 767px) {
+  // Mobile map div
+.modal-position + .modal-positionV2{
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    display: flex;
+    width: 100%;
+    z-index: 1001;
+}
+  // ------------------------
     .list-box{
       padding: 0;
       margin-top: 70px;

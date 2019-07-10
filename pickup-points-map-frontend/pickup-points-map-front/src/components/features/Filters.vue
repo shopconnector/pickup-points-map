@@ -1,7 +1,7 @@
 <template>
     <div :class="isWidgetVersion ? 'filters' : 'filtersV2'">
       <!-- Select suppliers first version -->
-      <div class="suppliers" v-if="isWidgetVersion">
+      <div class="suppliers" v-if="isWidgetVersion && !isMobile">
         <h1 class="title-supp">Wybierz dostawców</h1>
         <div class="suppliers-menu">
           <div class="selectSuppliers" v-for="supp in suppliers" :key="supp.id">
@@ -11,7 +11,7 @@
         </div>
       </div>
       <!-- Select suppliers second version -->
-      <div v-if="!isWidgetVersion">
+      <div v-if="!isWidgetVersion || isMobile">
         <h1 class="title-dostawcow">Wybierz dostawców</h1>
         <div class="suppliers-menu-dostawcow">
           <div class="select-suppliers-dostawcow" v-for="supp in suppliers" :key="supp.id">
@@ -42,12 +42,13 @@
 </template>
 
 <script>
-import { MobileDetected } from '../../components/mobileDetected.ts'
+import { MobileDetected } from '../mobileDetected.ts'
 
 export default {
   name: 'Filters',
   components: {
   },
+  mixins: [MobileDetected],
   data () {
     return {
       checkedSuppliers: [],
@@ -123,7 +124,6 @@ export default {
       markers: null
     }
   },
-  mixins: [MobileDetected],
   computed: {
     isWidgetVersion () {
       return this.$store.state.WidgetVersion
@@ -490,6 +490,10 @@ export default {
 
  // Styles for mobile
 @media (max-width: 767px) {
+.filters{
+   padding: 30px 35px 0 35px;
+   margin: 0;
+ }
  .filtersV2{
    padding: 30px 35px 0 35px;
  }
@@ -546,6 +550,25 @@ export default {
     box-shadow: inset 0 0px 3px #FFFFFF, inset 0 0 0 3px #FFFFFF;
     border-color: #E54C69;
    }
+ }
+ .custom-checkbox{
+    & + .custom-icon{
+        &:after{
+          content: '';
+          position: absolute;
+          width: 17px;
+          height: 17px;
+          right: 15px;
+          border: 2px solid #E4E4E4;
+          border-radius: 50%;
+          background-color: transparent;
+        }
+    }
+    &:checked + .custom-icon:after{
+        background-color: #E54C69;
+        box-shadow: inset 0 0px 3px #FFFFFF, inset 0 0 0 3px #FFFFFF;
+        border-color: #E54C69;
+    }
  }
 }
 </style>
