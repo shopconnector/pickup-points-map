@@ -107,7 +107,7 @@ export default {
       this.$store.commit('closeFooterModal')
     },
     currentPos () {
-      this.$store.commit('updatePosition1', this.$store.state.geolocation)
+      this.$store.commit('updatePosition', [{ lat: this.$store.state.geolocation.lat, lng: this.$store.state.geolocation.lng, zoom: 16 }])
       if (this.IsFooterModalOpen) {
         this.closeFooterModal()
       }
@@ -115,7 +115,7 @@ export default {
     getSuggestionValue (suggestion) {
       if (suggestion) {
         this.suggestionText = suggestion.item
-        this.$store.commit('updatePosition', suggestion.item)
+        this.$store.commit('updatePosition', [{ lat: suggestion.item.y, lng: suggestion.item.x, zoom: 16 }])
         this.customSuggestion = suggestion.item
         return this.suggestionText.city + ', ' + this.suggestionText.prefix + ' ' + this.suggestionText.street + ' ' + this.suggestionText.building
       } else {

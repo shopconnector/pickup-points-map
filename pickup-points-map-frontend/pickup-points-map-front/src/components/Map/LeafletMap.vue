@@ -53,7 +53,15 @@
     </transition>
     <transition name="fade">
       <template v-if="!toogleMap">
-        <l-map :zoom="zoom" :center="center" :options="{zoomControl: false}">
+        <l-map
+          :zoom="zoom"
+          :center="center"
+          :options="{zoomControl: false}"
+          @update:zoom="zoomUpdated"
+          @update:center="centerUpdated"
+          @update:bounds="boundsUpdated"
+        >
+            <!-- <l-control-zoom position="bottomleft"></l-control-zoom> -->
             <l-tile-layer :url="url" :attribution="attribution" />
             <template v-if="markers[0] !== 'empty'">
               <l-marker
@@ -106,8 +114,6 @@
 import { LMap, LTileLayer, LMarker, LPopup, LTooltip, LControlZoom, LIcon } from 'vue2-leaflet'
 import { latLng } from 'leaflet'
 import 'leaflet/dist/leaflet.css'
-// import { mapState } from 'vuex'
-
 import ModalDiv from '../features/ModalDiv.vue'
 
 export default {
@@ -156,6 +162,9 @@ export default {
     }
   },
   computed: {
+    // calc () {
+    //   console.log(Math.sqrt((52.2353 - 52.2241)*(52.2353 - 52.2241)+(21.0150 - 21.0032) * (21.0150 - 21.0032)))
+    // },
     zoom () {
       return this.$store.state.zoom
     },
@@ -196,6 +205,21 @@ export default {
     toogleMapMethod () {
       this.toogleMap = !this.toogleMap
       this.$store.commit('closeListFooter')
+    },
+    zoomUpdated (zoom) {
+      this.$store.commit('updatePosition', [{ lat: null, lng: null, zoom: zoom }])
+    },
+    centerUpdated (center) {
+      this.$store.commit('updatePosition', [{ lat: center.lat, lng: center.lng, zoom: null }])
+    },
+    boundsUpdated (bounds) {
+      var fromLng = bounds._northEast.lng / 180.0 * Math.PI
+      var fromLat = bounds._northEast.lat / 180.0 * Math.PI
+      var pointLng = bounds._southWest.lng / 180.0 * Math.PI
+      var pointLat = bounds._southWest.lat / 180.0 * Math.PI
+      var dist = Math.acos(Math.sin(fromLat) * Math.sin(pointLat) + (Math.cos(fromLat) * Math.cos(pointLat) * Math.cos(pointLng - fromLng))) * 6371000
+      var rad = Math.round(dist / 2)
+      this.$store.commit('changeRadiusOfVisibility', rad)
     },
     selectedPopup (index) {
       this.toogleModal = false
