@@ -60,7 +60,6 @@ export default {
   methods: {
     openFooterModal () {
       this.$store.commit('openFooterModal')
-      // this.$store.dispatch('controlMutation', 'openFooterModal')
     },
     openFilterMobile () {
       this.$store.commit('openFilterMobile')

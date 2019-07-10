@@ -105,8 +105,7 @@ p {
 }
 .modal{
   width: 100%;
-  margin-top: 25px;
-  // margin-bottom: 65px;
+  margin: 25px -35px 0px 0px;
   display: flex;
   flex-direction: column;
   border-radius: 9px;
@@ -123,11 +122,6 @@ p {
   justify-content: space-between;
   padding: 10px 0;
   align-items: center;
-  // position: fixed;
-  // bottom: 0;
-  // right: 0;
-  // left: 0;
-  // background: white;
 }
 .footerV2{
   justify-content: space-between;

@@ -14,7 +14,7 @@ export default new Vuex.Store({
     isFilterMobileOpen: 0,
     isFooterModalOpen: 0,
     isLocitModalOpen: 0,
-    WidgetVersion: false,
+    WidgetVersion: true,
     isFilterMobilOpen: 1,
     zoom: 7,
     lat: 53.0409,
@@ -235,9 +235,6 @@ export default new Vuex.Store({
     }
   },
   actions: {
-    controlMutation ({commit}, name) {
-      commit(`${name}`)
-    },
     get_points ({commit}, query) {
       return new Promise((resolve, reject) => {
         commit('get_points')
