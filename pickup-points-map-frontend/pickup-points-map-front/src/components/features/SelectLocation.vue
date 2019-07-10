@@ -54,6 +54,7 @@
             <small>({{ suggestion.item.voiv + ' ' + suggestion.item.pov + ' ' + suggestion.item.mun }})</small>
           </template>
         </vue-autosuggest>
+        <span class="span-location" @click="locitAddress = ''"><i class="material-icons clear-input">clear</i></span>
       </div>
     </vue-over-body>
   </div>
@@ -191,10 +192,11 @@ export default {
 }
 .input-tag {
  input {
+    height: 40px;
     text-align: center;
     background-color: #E5E5E5;
     width: 100%;
-    height: 100%;
+    padding: 0 35px 0 0;
     border: 0;
     color: black;
     font-size: 16px;
@@ -202,11 +204,15 @@ export default {
     @media (max-width: 767px) {
       font-weight: bold;
       border-radius: 5px;
-      padding: 10px 0;
+      // padding:  0;
     }
  }
 }
 .input-tagV2 input{
+ padding-right: 25px;
+//  font-weight: bold;
+ height: 29px;
+ border: none;
  font-size: 14px;
  background-color: transparent;
 }
@@ -232,8 +238,8 @@ export default {
 <style lang="scss" scoped>
 .span-location{
   position: absolute;
-  right: 10px;
-  top: calc( 50% - 17.5px );
+  right: 5px;
+  top: 18px;
 }
 .locit-box {
   .close-button {
@@ -248,7 +254,12 @@ export default {
     background: url('../../assets/clear.png') 0 0 no-repeat;
     background-size: cover;
   }
+  .span-location {
+    right: 50px;
+    top: 64px;
+  }
   padding: 50px 40px 0;
+  position: relative;
 }
 .footer-box {
   display: flex;
@@ -278,7 +289,7 @@ export default {
 }
 .clear-input{
   color: #b4b1b1;
-  font-size: 35px;
+  font-size: 30px;
   cursor: pointer;
   // &:hover{
   //   color: black;
@@ -331,6 +342,7 @@ export default {
 }
 .my-locationV2{
   flex-basis: 30%;
+  padding-left: 25px;
   color: #989898;
   font-size: 14px;
   font-family: 'Lato', sans-serif;
@@ -347,6 +359,8 @@ export default {
   position: relative;
   &:before{
     content: url(../../assets/gps24px.svg);
+    position: absolute;
+    left: 5px;
     padding-right: 10px;
     width: 17px;
     height: 25px;
@@ -367,12 +381,13 @@ export default {
 }
 .input-tag{
   position: relative;
+  display: flex;
   // flex: 0 0 40%;
   background-color: #E5E5E5;
   border: 3px solid #E5E5E5;
   border-radius: 3px;
   margin: 9px 0;
-  padding: 10px;
+  padding: 0px;
   font-family: 'Lato', sans-serif;
   color: #303030;
   @media (max-width: 767px) {
@@ -401,12 +416,13 @@ export default {
   }
 }
 .input-tagV2{
+  display: flex;
   flex: 0 0 45%;
   border: 3px solid #E5E5E5;
   background-color: transparent;
   border-radius: 9px;
   margin: 14px 0;
-  padding: 6px;
+  padding: 0px;
   &::after{
     top: 0;
     right: 0;
