@@ -77,6 +77,7 @@
                     <img class="popup-marker" :src="pinsUrl[marker.type]" width="102" height="102"/>
                     <div class="popup-info">
                       <div class="popup-text-box">
+                        <span class="popup-close-x"><i class="close-icon"/></span>
                         <p class="popup-text">
                           <b>Mniszew 25 </b><br> 26910 Magnuszew, <br>PL13883
                         </p>
@@ -299,6 +300,11 @@ export default {
      font-size: 19px;
    }
 }
+@media (max-width: 767px) {
+  .leaflet-popup .leaflet-popup-content-wrapper {
+    border: 1px solid #E54C69;
+  }
+}
 </style>
 
 <style lang="scss" scoped>
@@ -356,11 +362,25 @@ export default {
 }
 .popup-info {
   width: 200px;
+  position: relative;
   .popup-text-box {
     width: 70%;
-  .popup-text {
-    margin: 0;
-  }
+    .popup-close-x {
+      position: absolute;
+      right: -12px;
+      top: -10px;
+      .close-icon{
+        width: 19px;
+        height: 19px;
+        display: flex;
+        filter: grayscale(0.8) opacity(0.5);
+        background: url('../../assets/clear.png') 0 0 no-repeat;
+        background-size: cover;
+      }
+    }
+    .popup-text {
+      margin: 0;
+    }
   }
   .popup-img {
     width: 30%;
@@ -523,7 +543,6 @@ display: flex;
     transform: scale(0);
   }
   100% {
-    bottom: 0;
     right:0;
     transform: scale(1);
   }
@@ -577,15 +596,9 @@ display: flex;
 // Styles for mobile
 @media (max-width: 767px) {
   // Mobile map div
-.modal-position + .modal-positionV2{
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    right: 0;
-    left: 0;
-    display: flex;
+.modal-position{
     width: 100%;
-    z-index: 1001;
+    bottom: calc(100vh - 70%);
 }
   // ------------------------
     .list-box{
@@ -593,7 +606,7 @@ display: flex;
       margin-top: 70px;
       background: #F5F5F5;
       .scroll-box{
-        height: calc( 100vh - 110px);
+        height: calc( 100vh - 160px);
         border: 0;
       }
       .list-row-modal{
@@ -604,6 +617,7 @@ display: flex;
         justify-content: center;
         &:last-child{
           border-bottom: none;
+          margin-bottom: 15px;
         }
           .list-elem{
             flex-basis: 37%;

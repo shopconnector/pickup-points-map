@@ -64,6 +64,7 @@ export default {
     },
     openFilterMobile () {
       this.$store.commit('openFilterMobile')
+      this.$store.commit('closeListFooter')
     }
   },
   computed: {

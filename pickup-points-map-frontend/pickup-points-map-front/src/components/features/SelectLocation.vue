@@ -28,6 +28,7 @@
     </div>
     <vue-over-body :dim="false" :open="IsFooterModalOpen" before="beforeFooterModal" after="afterFooterModal" :transition="0.3">
       <div class="footer-box">
+        <!-- v-closable="{ exclude: [], handler: 'closeFooterModal'}" -->
         <h3 class="my-location" @click="currentPos()">Użyj mojej lokalizacji</h3>
         <div class='input-modal-button' :class="{ 'active' : suggestionText }" @click="openLocitModal()">
           <template v-if="suggestionText">{{ suggestionText.city + ', ' + suggestionText.prefix + ' ' + suggestionText.street + ' ' + suggestionText.building }}</template>
@@ -63,6 +64,33 @@
 <script>
 import vueOverBody from 'vue-over-body'
 import { MobileDetected } from '../../components/mobileDetected.ts'
+// import Vue from 'vue'
+
+// let handleOutsideClick
+// Vue.directive('closable', {
+//   bind (el, binding, vnode) {
+//     handleOutsideClick = (e) => {
+//       e.stopPropagation()
+//       const { handler, exclude } = binding.value
+//       let clickedOnExcludedEl = false
+//       exclude.forEach(refName => {
+//         if (!clickedOnExcludedEl) {
+//           const excludedEl = vnode.context.$refs[refName]
+//           clickedOnExcludedEl = excludedEl.contains(e.target)
+//         }
+//       })
+//       if (!el.contains(e.target) && !clickedOnExcludedEl) {
+//         vnode.context[handler]()
+//       }
+//     }
+//     document.addEventListener('click', handleOutsideClick)
+//     document.addEventListener('touchstart', handleOutsideClick)
+//   },
+//   unbind () {
+//     document.removeEventListener('click', handleOutsideClick)
+//     document.removeEventListener('touchstart', handleOutsideClick)
+//   }
+// })
 
 export default {
   name: 'SelectLocation',
@@ -220,11 +248,12 @@ export default {
   position: absolute;
   background-color: white;
   z-index: 999;
-  margin-top: 13px;
+  margin-top: 32px;
   left: 0;
   border-radius: 5px;
   right: 0;
   box-shadow: 0px 7px 18px 0px #d8d8d8;
+  cursor: pointer;
   @media (max-width: 767px) {
     box-shadow: none;
     border-radius: 0px;
