@@ -1,5 +1,5 @@
 <template>
-    <div :class="isWidgetVersion ? 'filters' : 'filtersV2'">
+    <div class='filters'>
       <!-- Select suppliers first version -->
       <div class="suppliers" v-if="isWidgetVersion && !isMobile">
         <h1 class="title-supp">Wybierz dostawców</h1>
@@ -493,9 +493,6 @@ export default {
 .filters{
    padding: 30px 35px 0 35px;
    margin: 0;
- }
- .filtersV2{
-   padding: 30px 35px 0 35px;
  }
  .title-dostawcow{
    font-size:  16px;

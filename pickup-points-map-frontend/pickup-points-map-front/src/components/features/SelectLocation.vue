@@ -232,13 +232,11 @@ export default {
     @media (max-width: 767px) {
       font-weight: bold;
       border-radius: 5px;
-      // padding:  0;
     }
  }
 }
 .input-tagV2 input{
  padding-right: 25px;
-//  font-weight: bold;
  height: 29px;
  border: none;
  font-size: 14px;
@@ -321,9 +319,6 @@ export default {
   color: #b4b1b1;
   font-size: 30px;
   cursor: pointer;
-  // &:hover{
-  //   color: black;
-  // }
 }
 .title{
   font-family: 'Lato', sans-serif;
@@ -412,7 +407,6 @@ export default {
 .input-tag{
   position: relative;
   display: flex;
-  // flex: 0 0 40%;
   background-color: #E5E5E5;
   border: 3px solid #E5E5E5;
   border-radius: 3px;

@@ -58,7 +58,6 @@
           @update:center="centerUpdated"
           @update:bounds="boundsUpdated"
         >
-            <!-- <l-control-zoom position="bottomleft"></l-control-zoom> -->
             <l-tile-layer :url="url" :attribution="attribution" />
             <template v-if="markers[0] !== 'empty'">
               <l-marker
@@ -67,17 +66,17 @@
                 :visible="marker.visible"
                 :lat-lng="marker.position"
                 class-name="markertype"
+                v-on="isMobile ? { click: () => selectedPopup(marker.id, index) } : {} "
               >
                 <l-icon :icon-anchor="marker.iconAnchor" :icon-size="marker.iconSize" class-name="someExtraClass">
                   <img :src="pinsUrl[marker.type]" width="52" height="52"/>
                 </l-icon>
                 <transition name="bounce">
-                <l-popup>
+                <l-popup v-if="!isMobile">
                   <div class="popup-box">
                     <img class="popup-marker" :src="pinsUrl[marker.type]" width="102" height="102"/>
                     <div class="popup-info">
                       <div class="popup-text-box">
-                        <span class="popup-close-x"><i class="close-icon"/></span>
                         <p class="popup-text">
                           <b>Mniszew 25 </b><br> 26910 Magnuszew, <br>PL13883
                         </p>
@@ -130,6 +129,7 @@ export default {
   mixins: [MobileDetected],
   data () {
     return {
+      isOpenModalMap: 0,
       isListFooter: false,
       selectedPoint: Number,
       toogleMap: false,
@@ -182,25 +182,6 @@ export default {
       return this.$store.state.WidgetVersion
     }
   },
-
-  // mounted () {
-  //   this.$store.subscribe((mutation, state) => {
-  //     if (mutation.type === 'geolocation/LOCATION_CHANGED') {
-  //       this.geoCenter.lat = parseFloat(this.$store.state.geolocation.lat)
-  //       this.geoCenter.lng = parseFloat(this.$store.state.geolocation.lng)
-
-  //       this.$store.dispatch('get_points', {
-  //         lat: this.geoCenter.lat,
-  //         lng: this.geoCenter.lng,
-  //         dist: 14
-  //       })
-  //     }
-  //     if (mutation.type === 'get_points_succ') {
-  //       this.markers = this.$store.state.markers
-  //     }
-  //   })
-  // },
-
   methods: {
     toogleMapMethod (text) {
       if (text === 'show') {
@@ -264,8 +245,10 @@ export default {
   .leaflet-popup-tip-container {
     display: none;
   }
-  .leaflet-popup-close-button {
-    display: none;
+  a.leaflet-popup-close-button {
+    right: 220px;
+    top: 5px;
+    color: #333333;
   }
   padding-right: 210px !important;
   bottom: -210px !important;
@@ -308,7 +291,6 @@ export default {
 </style>
 
 <style lang="scss" scoped>
-// list modal styles
 .list-background-mobile-fix{
   background: #F5F5F5;
 }
@@ -342,7 +324,6 @@ export default {
     }
   }
 }
-// list modal style END
 .map{
   width: 100%;
   height: 100vh;
@@ -365,19 +346,6 @@ export default {
   position: relative;
   .popup-text-box {
     width: 70%;
-    .popup-close-x {
-      position: absolute;
-      right: -12px;
-      top: -10px;
-      .close-icon{
-        width: 19px;
-        height: 19px;
-        display: flex;
-        filter: grayscale(0.8) opacity(0.5);
-        background: url('../../assets/clear.png') 0 0 no-repeat;
-        background-size: cover;
-      }
-    }
     .popup-text {
       margin: 0;
     }
@@ -593,14 +561,12 @@ display: flex;
  }
 }
 
-// Styles for mobile
 @media (max-width: 767px) {
-  // Mobile map div
 .modal-position{
     width: 100%;
-    bottom: calc(100vh - 70%);
+    bottom: 0;
+    z-index: 1001;
 }
-  // ------------------------
     .list-box{
       padding: 0;
       margin-top: 70px;

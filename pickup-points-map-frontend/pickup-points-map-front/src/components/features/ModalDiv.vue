@@ -3,7 +3,7 @@
     <div :class="!isWidgetVersion ? 'modal' : 'modalV2'" v-if="!isMobile">
        <div :class="!isWidgetVersion ? 'content' : 'contentV2'">
           <div :class="!isWidgetVersion ? 'title' : 'titleV2'"><h3>Wybrany sposób dostawy</h3></div>
-          <div :class="!isWidgetVersion ? 'selected-supplier' : 'selected-supplierV2'">
+          <div class="selected-supplier" :class="{'selected-supplierV2' : isWidgetVersion}">
             <div class="col-1" :class="{'col1-v2' : isWidgetVersion}">
               <div class="address">
                 <h4>{{parentData.address1}}</h4>
@@ -50,7 +50,7 @@
             </div>
           </div>
        </div>
-       <div class="footer" :class="{'footerV2' : isWidgetVersion}">
+       <div class="footer">
          <p class="powrot" @click ="closeModal()" :class="{'powrot-v2' : isWidgetVersion}"><i class="material-icons">arrow_left</i>POWRÓT</p>
          <p class="zamknij" :class="{'zamknij-v2' : isWidgetVersion}">WYBIERZ DPD I ZAMKNIJ</p>
        </div>
@@ -132,11 +132,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-//mobile map modal styles
 .mobile-map-modal{
   background: white;
-  margin: 0 20px;
-  border: 1px solid #E4405F;
   .mobile-map-header{
     display: flex;
     justify-content: center;
@@ -145,7 +142,7 @@ export default {
     font-weight: 700;
     .close-mobile-map-modal{
       position: absolute;
-      right: 25px;
+      right: 15px;
       top: 6px;
     }
   }
@@ -181,11 +178,14 @@ export default {
   .mobile-map-additional{
     display: flex;
     flex-direction: column;
+    flex-wrap: wrap;
+    height: 75px;
     padding: 15px;
     font-size: 15px;
     .additional-info{
     display: flex;
     align-items: center;
+    width: 50%;
     .mobile-map-icon-padding{
       padding-right: 10px;
       .icon{
@@ -229,15 +229,12 @@ export default {
    }
  }
 }
-
-// -----------------------
 p {
   padding: 0;
   margin: 0;
 }
 .img{
   width: 85px;
-  // padding-right: 55px;
 }
 .content{
   background: #F5F5F5;
@@ -269,9 +266,6 @@ p {
   // left: 0;
   // background: white;
 }
-.footerV2{
-  justify-content: space-between;
-}
 .title{
   padding-left: 27px;
   h3 {
@@ -296,12 +290,10 @@ p {
   align-items: center;
 }
 .selected-supplierV2{
-   display: flex;
    justify-content: space-between;
    padding-bottom: 15px;
    border-bottom: 1px solid #E5E5E5;
    margin: 0 30px;
-   align-items: center;
 }
 .col-1{
   display: flex;
@@ -407,7 +399,6 @@ p {
   }
 }
 .powrot-v2{
-  // display: none;
   padding-left: 10px;
 }
 .zamknij{
@@ -470,7 +461,6 @@ p {
  }
  .img{
    width: 75px;
-  //  padding-right: 40px;
  }
  .powrot{
    font-size: 15px;
