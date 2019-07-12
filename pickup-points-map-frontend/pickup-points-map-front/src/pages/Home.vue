@@ -4,7 +4,6 @@
       <select-location/>
     </div>
     <div class="container-map">
-      <!-- MOBILE HEADER START -->
       <div class="mobile-header" v-if="isMobile">
         <div class="mobile-container">
           <i class="lejek-icon" @click="openFilterMobile"  :data-content="filtersCount"></i>
@@ -15,7 +14,6 @@
           <Filters/>
         </div>
       </vue-over-body>
-      <!-- MOBILE HEADER END -->
       <Map/>
       <div class="mobile-footer" v-if="!showListFooter && isMobile">
         <i class="button-footer" @click="openFooterModal"/>
@@ -60,9 +58,11 @@ export default {
   methods: {
     openFooterModal () {
       this.$store.commit('openFooterModal')
+      // this.$store.dispatch('controlMutation', 'openFooterModal')
     },
     openFilterMobile () {
       this.$store.commit('openFilterMobile')
+      this.$store.commit('closeListFooter')
     }
   },
   computed: {
@@ -80,7 +80,6 @@ export default {
 </script>
 
 <style lang="scss" >
-// Mobile styles
 .beforeFilters{
   top: -100vh;
   width: 100%;
@@ -151,7 +150,6 @@ export default {
 .first {
   order: -1;
 }
-// MOBILE
 .mobile-header {
   position: fixed;
   background-color: white;
@@ -187,7 +185,6 @@ export default {
 }
 .mobile-footer {
   .button-footer {
-        /* margin: 0 auto; */
     cursor: pointer;
     background-color: white;
     width: 40px;
@@ -205,7 +202,6 @@ export default {
   right: 0;
   bottom: 0;
   height: 90px;
-  // box-shadow: 1px -3px 10px 0px #b5b5b5;
   text-align: center;
   background: url('../assets/Path-1122.png');
   background-size: contain;

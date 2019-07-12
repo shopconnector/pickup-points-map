@@ -28,6 +28,7 @@
     </div>
     <vue-over-body :dim="false" :open="IsFooterModalOpen" before="beforeFooterModal" after="afterFooterModal" :transition="0.3">
       <div class="footer-box">
+        <!-- v-closable="{ exclude: [], handler: 'closeFooterModal'}" -->
         <h3 class="my-location" @click="currentPos()">Użyj mojej lokalizacji</h3>
         <div class='input-modal-button' :class="{ 'active' : suggestionText }" @click="openLocitModal()">
           <template v-if="suggestionText">{{ suggestionText.city + ', ' + suggestionText.prefix + ' ' + suggestionText.street + ' ' + suggestionText.building }}</template>
@@ -63,6 +64,33 @@
 <script>
 import vueOverBody from 'vue-over-body'
 import { MobileDetected } from '../../components/mobileDetected.ts'
+// import Vue from 'vue'
+
+// let handleOutsideClick
+// Vue.directive('closable', {
+//   bind (el, binding, vnode) {
+//     handleOutsideClick = (e) => {
+//       e.stopPropagation()
+//       const { handler, exclude } = binding.value
+//       let clickedOnExcludedEl = false
+//       exclude.forEach(refName => {
+//         if (!clickedOnExcludedEl) {
+//           const excludedEl = vnode.context.$refs[refName]
+//           clickedOnExcludedEl = excludedEl.contains(e.target)
+//         }
+//       })
+//       if (!el.contains(e.target) && !clickedOnExcludedEl) {
+//         vnode.context[handler]()
+//       }
+//     }
+//     document.addEventListener('click', handleOutsideClick)
+//     document.addEventListener('touchstart', handleOutsideClick)
+//   },
+//   unbind () {
+//     document.removeEventListener('click', handleOutsideClick)
+//     document.removeEventListener('touchstart', handleOutsideClick)
+//   }
+// })
 
 export default {
   name: 'SelectLocation',
@@ -204,13 +232,11 @@ export default {
     @media (max-width: 767px) {
       font-weight: bold;
       border-radius: 5px;
-      // padding:  0;
     }
  }
 }
 .input-tagV2 input{
  padding-right: 25px;
-//  font-weight: bold;
  height: 29px;
  border: none;
  font-size: 14px;
@@ -220,17 +246,19 @@ export default {
   position: absolute;
   background-color: white;
   z-index: 999;
-  margin-top: 13px;
+  margin-top: 32px;
   left: 0;
   border-radius: 5px;
   right: 0;
   box-shadow: 0px 7px 18px 0px #d8d8d8;
+  cursor: pointer;
   @media (max-width: 767px) {
     box-shadow: none;
     border-radius: 0px;
     background-color: #F5F5F5;
     max-height: calc( 100vh - 200px );
     overflow-y: scroll;
+    margin-top: 40px;
   }
 }
 </style>
@@ -291,9 +319,6 @@ export default {
   color: #b4b1b1;
   font-size: 30px;
   cursor: pointer;
-  // &:hover{
-  //   color: black;
-  // }
 }
 .title{
   font-family: 'Lato', sans-serif;
@@ -382,7 +407,6 @@ export default {
 .input-tag{
   position: relative;
   display: flex;
-  // flex: 0 0 40%;
   background-color: #E5E5E5;
   border: 3px solid #E5E5E5;
   border-radius: 3px;

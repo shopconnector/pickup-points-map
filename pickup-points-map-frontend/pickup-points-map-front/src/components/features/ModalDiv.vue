@@ -1,8 +1,9 @@
 <template>
-        <div :class="!isWidgetVersion ? 'modal' : 'modalV2'">
+  <div>
+    <div :class="!isWidgetVersion ? 'modal' : 'modalV2'" v-if="!isMobile">
        <div :class="!isWidgetVersion ? 'content' : 'contentV2'">
           <div :class="!isWidgetVersion ? 'title' : 'titleV2'"><h3>Wybrany sposób dostawy</h3></div>
-          <div :class="!isWidgetVersion ? 'selected-supplier' : 'selected-supplierV2'">
+          <div class="selected-supplier" :class="{'selected-supplierV2' : isWidgetVersion}">
             <div class="col-1" :class="{'col1-v2' : isWidgetVersion}">
               <div class="address">
                 <h4>{{parentData.address1}}</h4>
@@ -49,16 +50,56 @@
             </div>
           </div>
        </div>
-       <div class="footer" :class="{'footerV2' : isWidgetVersion}">
+       <div class="footer">
          <p class="powrot" @click ="closeModal()" :class="{'powrot-v2' : isWidgetVersion}"><i class="material-icons">arrow_left</i>POWRÓT</p>
          <p class="zamknij" :class="{'zamknij-v2' : isWidgetVersion}">WYBIERZ DPD I ZAMKNIJ</p>
        </div>
     </div>
+    <!-- Modal DIV for mobile map -->
+    <div class="mobile-map-modal" v-if="isMobile">
+      <div class="mobile-map-header">
+        <p>Wybrany punky</p>
+        <i class="material-icons close-mobile-map-modal" @click="closeModal()">clear</i>
+      </div>
+      <div class="mobile-map-row">
+        <div class="mobile-map-logo">
+          <img :src="parentData.icon.iconUrl" :alt="parentData.icon.alt" class="img">
+        </div>
+        <div class="mobile-map-address">
+          <h4 class="mobile-map-title">{{parentData.address1}}</h4>
+          <p class="mobile-map-street">{{parentData.zip}} {{parentData.address2}}</p>
+          <p class="mobile-map-street">PL13883</p>
+        </div>
+      </div>
+      <div class="mobile-map-hours">
+        <div class="mobile-map-hours-title">
+          <b>Godziny otwarcia:</b>
+        </div>
+        <div class="mobile-map-hours-info">
+          <p>{{ parentData.openTime }}</p>
+          <p>{{ parentData.openTime2 }}</p>
+        </div>
+      </div>
+      <div class="mobile-map-additional">
+        <p class="additional-info"><span class="mobile-map-icon-padding"><i class="icon hours"/></span> - otwarte do pózna</p>
+        <p class="additional-info"><span class="mobile-map-icon-padding"><i class="icon sobota"/></span> - otwarte w soboty</p>
+        <p class="additional-info"><span class="mobile-map-icon-padding"><i class="icon niedziela"/></span> - otwarte w niediele</p>
+        <p class="additional-info"><span class="mobile-map-icon-padding"><i class="icon parking"/></span> - parking</p>
+      </div>
+      <div class="mobile-map-footer">
+        <p class="mobile-map-btn-close" @click="closeModal()">WYBIERZ I ZAMKNIJ</p>
+      </div>
+    </div>
+    <!-- End -->
+  </div>
 </template>
 
 <script>
+import { MobileDetected } from '../mobileDetected.ts'
+
 export default {
   name: 'ModalDiv',
+  mixins: [MobileDetected],
   props: {
     parentData: Object,
     toogleModal: Boolean
@@ -91,13 +132,109 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.mobile-map-modal{
+  background: white;
+  .mobile-map-header{
+    display: flex;
+    justify-content: center;
+    padding-top: 10px;
+    font-size: 18px;
+    font-weight: 700;
+    .close-mobile-map-modal{
+      position: absolute;
+      right: 15px;
+      top: 6px;
+    }
+  }
+  .mobile-map-row{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 15px 0;
+    .mobile-map-logo{
+      padding-right: 20px;
+    }
+    .mobile-map-address{
+      display: flex;
+      flex-direction: column;
+      text-align: left;
+      .mobile-map-title{
+        margin: 0;
+      }
+      .mobile-map-street{
+        font-size: 14px;
+      }
+    }
+  }
+  .mobile-map-hours{
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-start;
+    .mobile-map-hours-info{
+      text-align: left;
+      font-size: 14px;
+    }
+  }
+  .mobile-map-additional{
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    height: 75px;
+    padding: 15px;
+    font-size: 15px;
+    .additional-info{
+    display: flex;
+    align-items: center;
+    width: 50%;
+    .mobile-map-icon-padding{
+      padding-right: 10px;
+      .icon{
+        width: 17px;
+        height: 17px;
+        display: flex;
+      }
+      .hours{
+        background: url('../../assets/ZEGAR.png') 0 0 no-repeat;
+        background-size: cover;
+      }
+      .sobota{
+        background: url('../../assets/sobota.png') 0 0 no-repeat;
+        background-size: cover;
+      }
+      .niedziela{
+        background: url('../../assets/niedziela.png') 0 0 no-repeat;
+        background-size: cover;
+      }
+      .parking{
+        background: url('../../assets/parking.png') 0 0 no-repeat;
+        background-size: cover;
+      }
+    }
+  }
+ }
+ .mobile-map-footer{
+   display: flex;
+   justify-content: center;
+   padding-bottom: 15px;
+   .mobile-map-btn-close{
+    color: white;
+    background: #E4405F;
+    display: flex;
+    width: fit-content;
+    height: 40px;
+    padding: 0 15px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 9px;
+   }
+ }
+}
 p {
   padding: 0;
   margin: 0;
 }
 .img{
   width: 85px;
-  // padding-right: 55px;
 }
 .content{
   background: #F5F5F5;
@@ -105,7 +242,8 @@ p {
 }
 .modal{
   width: 100%;
-  margin: 25px -35px 0px 0px;
+  margin-top: 25px;
+  // margin-bottom: 65px;
   display: flex;
   flex-direction: column;
   border-radius: 9px;
@@ -122,9 +260,11 @@ p {
   justify-content: space-between;
   padding: 10px 0;
   align-items: center;
-}
-.footerV2{
-  justify-content: space-between;
+  // position: fixed;
+  // bottom: 0;
+  // right: 0;
+  // left: 0;
+  // background: white;
 }
 .title{
   padding-left: 27px;
@@ -150,12 +290,10 @@ p {
   align-items: center;
 }
 .selected-supplierV2{
-   display: flex;
    justify-content: space-between;
    padding-bottom: 15px;
    border-bottom: 1px solid #E5E5E5;
    margin: 0 30px;
-   align-items: center;
 }
 .col-1{
   display: flex;
@@ -261,7 +399,6 @@ p {
   }
 }
 .powrot-v2{
-  // display: none;
   padding-left: 10px;
 }
 .zamknij{
@@ -324,7 +461,6 @@ p {
  }
  .img{
    width: 75px;
-  //  padding-right: 40px;
  }
  .powrot{
    font-size: 15px;

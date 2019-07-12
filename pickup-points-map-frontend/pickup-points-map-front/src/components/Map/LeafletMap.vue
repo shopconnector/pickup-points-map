@@ -1,5 +1,5 @@
 <template>
-<div class='list-background-fix'>
+<div :class="{'list-background-mobile-fix' : isMobile}">
   <div :class="isWidgetVersion ? 'map-v2' : 'map'">
     <div class="type-actions" :class="{'type-actions-v2' : !isWidgetVersion}">
       <p class="button-action" :class="{ 'active' : !toogleMap }" @click="toogleMapMethod('show')">Mapa</p>
@@ -29,22 +29,22 @@
             <div class="list-elem btn-elem">
               <p class="list-button" @click="selectedPopup(marker.id, index)">Wybierz</p>
             </div>
-            <!-- List Modal Section -->
-            <transition name="fade">
-            <div class="list-modal" v-if="isOpenListModal(index)">
-              <div class="list-modal-hours">
-                <b>Godziny otwarcia:</b>
-                {{ marker.openTime }}<br>
-                {{ marker.openTime2 }}
+              <!-- List Modal Section -->
+              <transition name="fade">
+              <div class="list-modal" v-if="isOpenListModal(index) && isMobile">
+                <div class="list-modal-hours">
+                  <b>Godziny otwarcia:</b>
+                  {{ marker.openTime }}<br>
+                  {{ marker.openTime2 }}
+                </div>
+                <div class="list-modal-additional">
+                  <i class="icon hours"/>
+                  <i class="icon sobota"/>
+                  <i class="icon niedziela"/>
+                </div>
               </div>
-              <div class="list-modal-additional">
-                <i class="icon hours"/>
-                <i class="icon sobota"/>
-                <i class="icon niedziela"/>
-              </div>
-            </div>
-            </transition>
-            <!-- List Modal Section END -->
+              </transition>
+              <!-- List Modal Section END -->
           </div>
         </div>
       </div>
@@ -58,7 +58,6 @@
           @update:center="centerUpdated"
           @update:bounds="boundsUpdated"
         >
-            <!-- <l-control-zoom position="bottomleft"></l-control-zoom> -->
             <l-tile-layer :url="url" :attribution="attribution" />
             <template v-if="markers[0] !== 'empty'">
               <l-marker
@@ -67,12 +66,13 @@
                 :visible="marker.visible"
                 :lat-lng="marker.position"
                 class-name="markertype"
+                v-on="isMobile ? { click: () => selectedPopup(marker.id, index) } : {} "
               >
                 <l-icon :icon-anchor="marker.iconAnchor" :icon-size="marker.iconSize" class-name="someExtraClass">
                   <img :src="pinsUrl[marker.type]" width="52" height="52"/>
                 </l-icon>
                 <transition name="bounce">
-                <l-popup>
+                <l-popup v-if="!isMobile">
                   <div class="popup-box">
                     <img class="popup-marker" :src="pinsUrl[marker.type]" width="102" height="102"/>
                     <div class="popup-info">
@@ -111,6 +111,7 @@ import { LMap, LTileLayer, LMarker, LPopup, LTooltip, LControlZoom, LIcon } from
 import { latLng } from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import ModalDiv from '../features/ModalDiv.vue'
+import { MobileDetected } from '../mobileDetected.ts'
 
 export default {
   name: 'Home',
@@ -125,8 +126,10 @@ export default {
     LControlZoom,
     LIcon
   },
+  mixins: [MobileDetected],
   data () {
     return {
+      isOpenModalMap: 0,
       isListFooter: false,
       selectedPoint: Number,
       toogleMap: false,
@@ -179,25 +182,6 @@ export default {
       return this.$store.state.WidgetVersion
     }
   },
-
-  // mounted () {
-  //   this.$store.subscribe((mutation, state) => {
-  //     if (mutation.type === 'geolocation/LOCATION_CHANGED') {
-  //       this.geoCenter.lat = parseFloat(this.$store.state.geolocation.lat)
-  //       this.geoCenter.lng = parseFloat(this.$store.state.geolocation.lng)
-
-  //       this.$store.dispatch('get_points', {
-  //         lat: this.geoCenter.lat,
-  //         lng: this.geoCenter.lng,
-  //         dist: 14
-  //       })
-  //     }
-  //     if (mutation.type === 'get_points_succ') {
-  //       this.markers = this.$store.state.markers
-  //     }
-  //   })
-  // },
-
   methods: {
     toogleMapMethod (text) {
       if (text === 'show') {
@@ -261,8 +245,10 @@ export default {
   .leaflet-popup-tip-container {
     display: none;
   }
-  .leaflet-popup-close-button {
-    display: none;
+  a.leaflet-popup-close-button {
+    right: 220px;
+    top: 5px;
+    color: #333333;
   }
   padding-right: 210px !important;
   bottom: -210px !important;
@@ -297,11 +283,15 @@ export default {
      font-size: 19px;
    }
 }
+@media (max-width: 767px) {
+  .leaflet-popup .leaflet-popup-content-wrapper {
+    border: 1px solid #E54C69;
+  }
+}
 </style>
 
 <style lang="scss" scoped>
-// list modal styles
-.list-background-fix{
+.list-background-mobile-fix{
   background: #F5F5F5;
 }
 .list-modal{
@@ -334,7 +324,6 @@ export default {
     }
   }
 }
-// list modal style END
 .map{
   width: 100%;
   height: 100vh;
@@ -354,11 +343,12 @@ export default {
 }
 .popup-info {
   width: 200px;
+  position: relative;
   .popup-text-box {
     width: 70%;
-  .popup-text {
-    margin: 0;
-  }
+    .popup-text {
+      margin: 0;
+    }
   }
   .popup-img {
     width: 30%;
@@ -495,7 +485,7 @@ display: flex;
   width: 55%;
 }
 .change-vh{
-  min-height: 79vh !important;
+  min-height: 81vh !important;
 }
 // transitions
 .fade-enter-active {
@@ -521,7 +511,6 @@ display: flex;
     transform: scale(0);
   }
   100% {
-    bottom: 0;
     right:0;
     transform: scale(1);
   }
@@ -572,14 +561,18 @@ display: flex;
  }
 }
 
-// Styles for mobile
 @media (max-width: 767px) {
+.modal-position{
+    width: 100%;
+    bottom: 0;
+    z-index: 1001;
+}
     .list-box{
       padding: 0;
       margin-top: 70px;
       background: #F5F5F5;
       .scroll-box{
-        height: calc( 100vh - 110px);
+        height: calc( 100vh - 160px);
         border: 0;
       }
       .list-row-modal{
@@ -590,6 +583,7 @@ display: flex;
         justify-content: center;
         &:last-child{
           border-bottom: none;
+          margin-bottom: 15px;
         }
           .list-elem{
             flex-basis: 37%;

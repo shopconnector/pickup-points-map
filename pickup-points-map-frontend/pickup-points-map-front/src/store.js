@@ -212,6 +212,7 @@ export default new Vuex.Store({
     closeAllModal (state) {
       state.isFooterModalOpen = 0
       state.isLocitModalOpen = 0
+      state.isFilterMobileOpen = 0
     },
     howManyFiltersApplies (state, n) {
       state.filtersCount = n
@@ -235,6 +236,9 @@ export default new Vuex.Store({
     }
   },
   actions: {
+    controlMutation ({commit}, name) {
+      commit(`${name}`)
+    },
     get_points ({commit}, query) {
       return new Promise((resolve, reject) => {
         commit('get_points')
