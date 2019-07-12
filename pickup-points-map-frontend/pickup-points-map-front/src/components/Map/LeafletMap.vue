@@ -60,7 +60,7 @@
         >
             <l-tile-layer :url="url" :attribution="attribution" />
             <template v-if="markers[0] !== 'empty'">
-              <l-marker
+              <!-- <l-marker
                 v-for="(marker, index) in markers"
                 :key="marker.id"
                 :visible="marker.visible"
@@ -91,7 +91,7 @@
                   </div>
                 </l-popup>
                 </transition>
-              </l-marker>
+              </l-marker> -->
             </template>
         </l-map>
     </transition>
