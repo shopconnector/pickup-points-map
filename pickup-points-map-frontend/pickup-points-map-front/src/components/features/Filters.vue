@@ -32,12 +32,10 @@
         </div>
       </div>
       <!-- Mobile version -->
-      <div class="visible-xs">
         <div class="mobile-filters-footer">
           <p class="wyczysc" @click="clearFilter()">Wyczyść filtry</p>
           <p class="zastosuj" @click="closeFilterMobile">Zastosuj filtry</p>
         </div>
-      </div>
   </div>
 </template>
 
@@ -172,15 +170,21 @@ export default {
 
 <style lang='scss' scoped>
 .mobile-filters-footer{
-  p {
+  position: absolute;
+  bottom: 30px;
+  display: flex;
+  left: 0;
+  width: 100%;
+  justify-content: space-around;
+  @media (min-width: 767px) {
+    display: none
+  }
+  .wyczysc {
     margin: 0;
-    font-size: 16px;
-    bottom: 20px;
-    position: absolute;
     color: #000000;
   }
   .zastosuj{
-    right: 35px;
+    margin: 0;
     color: #E54C69;
   }
 }

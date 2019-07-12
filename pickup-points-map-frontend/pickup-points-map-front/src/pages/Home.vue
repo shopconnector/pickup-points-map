@@ -212,7 +212,7 @@ export default {
 .list-modal-footer{
   position: fixed;
   background-color: white;
-  z-index: 1001;
+  z-index: 999;
   left: 0;
   right: 0;
   bottom: 0;

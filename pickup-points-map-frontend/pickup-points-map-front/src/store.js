@@ -14,7 +14,7 @@ export default new Vuex.Store({
     isFilterMobileOpen: 0,
     isFooterModalOpen: 0,
     isLocitModalOpen: 0,
-    WidgetVersion: true,
+    WidgetVersion: false,
     isFilterMobilOpen: 1,
     zoom: 7,
     lat: 53.0409,

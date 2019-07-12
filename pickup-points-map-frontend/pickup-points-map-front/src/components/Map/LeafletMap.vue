@@ -7,46 +7,46 @@
     </div>
     <transition name="fade">
       <div  v-if="toogleMap" class="list-box" :class="{'listbox-margin-top' : isWidgetVersion}">
-        <div class="list-title hidden-xs">Punkty odbioru w pobliżu Twojej lokalizacji</div>
-        <div class="scroll-box" :class="{'change-vh' : !isWidgetVersion}">
-          <div class="list-row" :class="{'list-row-modal' : isOpenListModal(index)}"
-            v-for="(marker, index) in markers"
-            :key="marker.id"
-            @click="openListModal(index)">
-            <div class="list-elem list-elem-img">
-              <img :class="{'img-modal' : isOpenListModal(index)}" :src="logosUrl[marker.type]" width="auto" height="70px" />
-            </div>
-            <div class="list-elem">
-              <b>{{ marker.address1 }}</b>
-              {{ marker.zip }}
-              {{ marker.address2 }}
-            </div>
-            <div class="list-elem hours-elem">
-              <b>Godziny otwarcia:</b>
-              {{ marker.openTime }}<br>
-              {{ marker.openTime2 }}
-            </div>
-            <div class="list-elem btn-elem">
-              <p class="list-button" @click="selectedPopup(marker.id, index)">Wybierz</p>
-            </div>
-              <!-- List Modal Section -->
-              <transition name="fade">
-              <div class="list-modal" v-if="isOpenListModal(index) && isMobile">
-                <div class="list-modal-hours">
+          <div class="list-title hidden-xs">Punkty odbioru w pobliżu Twojej lokalizacji</div>
+          <div class="scroll-box" :class="{'change-vh' : !isWidgetVersion}">
+              <div class="list-row" :class="{'list-row-modal' : isOpenListModal(index)}"
+                v-for="(marker, index) in markers"
+                :key="marker.id"
+                @click="openListModal(index)">
+                <div class="list-elem list-elem-img">
+                  <img :class="{'img-modal' : isOpenListModal(index)}" :src="logosUrl[marker.type]" width="auto" height="70px" />
+                </div>
+                <div class="list-elem">
+                  <b>{{ marker.address1 }}</b>
+                  {{ marker.zip }}
+                  {{ marker.address2 }}
+                </div>
+                <div class="list-elem hours-elem">
                   <b>Godziny otwarcia:</b>
                   {{ marker.openTime }}<br>
                   {{ marker.openTime2 }}
                 </div>
-                <div class="list-modal-additional">
-                  <i class="icon hours"/>
-                  <i class="icon sobota"/>
-                  <i class="icon niedziela"/>
+                <div class="list-elem btn-elem">
+                  <p class="list-button" @click="selectedPopup(marker.id, index)">Wybierz</p>
                 </div>
+                  <!-- List Modal Section -->
+                  <transition name="fade">
+                  <div class="list-modal" v-if="isOpenListModal(index) && isMobile">
+                    <div class="list-modal-hours">
+                      <b>Godziny otwarcia:</b>
+                      {{ marker.openTime }}<br>
+                      {{ marker.openTime2 }}
+                    </div>
+                    <div class="list-modal-additional">
+                      <i class="icon hours"/>
+                      <i class="icon sobota"/>
+                      <i class="icon niedziela"/>
+                    </div>
+                  </div>
+                  </transition>
+                  <!-- List Modal Section END -->
               </div>
-              </transition>
-              <!-- List Modal Section END -->
           </div>
-        </div>
       </div>
     </transition>
     <transition name="fade">
