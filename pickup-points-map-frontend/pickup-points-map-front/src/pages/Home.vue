@@ -81,19 +81,19 @@ export default {
 
 <style lang="scss" >
 .beforeFilters{
-  top: -100vh;
+  top: -100%;
   width: 100%;
-  height: 100vh;
+  height: 100%;
   background-color: #FFFFFF;
 }
 .afterFilters{
   top: 0;
 }
 .before {
-  bottom: -100vh;
+  bottom: -100%;
   width: 100%;
   height: 200px;
-  margin-top: calc( 100vh - 200px);
+  margin-top: calc( 100% - 200px);
   background-color:yellow;
   position:absolute;
 }
@@ -232,7 +232,7 @@ export default {
     border-radius: 9px;
     margin: 0;
     bottom: 20px;
-    right: 105px;
+    right: calc(50% - 85px);
     padding: 10px 12px;
   }
 }
