@@ -402,6 +402,7 @@ display: flex;
   border-radius: 15px;
   overflow: hidden;
   @media (max-width: 767px) {
+    position: fixed;
     right: 20px;
     left: auto;
     top: 15px;
