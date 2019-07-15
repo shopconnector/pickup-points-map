@@ -326,9 +326,11 @@ export default {
 }
 .map{
   width: 100%;
+  // height: 100vh;
   height: 100vh;
   overflow: hidden;
   max-height: 100vh;
+  // max-height: 100vh;
 }
 .map-v2{
   position: relative;
