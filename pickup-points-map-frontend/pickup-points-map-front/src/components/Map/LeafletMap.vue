@@ -16,10 +16,10 @@
                 <div class="list-elem list-elem-img">
                   <img :class="{'img-modal' : isOpenListModal(index)}" :src="logosUrl[marker.type]" width="auto" height="70px" />
                 </div>
-                <div class="list-elem">
+                <div class="list-elem list-elem-address">
                   <b>{{ marker.address1 }}</b>
-                  {{ marker.zip }}
-                  {{ marker.address2 }}
+                  <p class="address-parag">{{ marker.zip }}
+                  {{ marker.address2 }}</p>
                 </div>
                 <div class="list-elem hours-elem">
                   <b>Godziny otwarcia:</b>
@@ -455,6 +455,9 @@ display: flex;
       flex-wrap: wrap;
       align-items: center;
       justify-content: center;
+      .address-parag{
+        margin: 0;
+      }
     }
     padding: 20px 0;
     border-bottom: 1px solid #AAAAAA;
@@ -615,22 +618,31 @@ display: flex;
           margin-bottom: 15px;
         }
           .list-elem{
-            flex-basis: 37%;
-            max-width: 37%;
+            flex-basis: 50%;
+            max-width: 50%;
             justify-content: normal;
             .img-modal{
                filter: none;
                height: 65px;
-               padding-right: 20px;
             }
             img{
               filter: grayscale(1) opacity(0.6);
               height: 55px;
+              padding-right: 20px;
             }
           }
+          .list-elem-address{
+              display: flex;
+              flex-direction: column;
+              justify-content: center;
+              align-items: end;
+              .address-parag{
+                margin: 0;
+                padding-top: 5px;
+              }
+          }
           .list-elem-img{
-                justify-content: center;
-                margin-right: -20px;
+                justify-content: flex-end;
           }
           .hours-elem{
             display: none;
