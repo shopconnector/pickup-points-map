@@ -1,6 +1,12 @@
 <template>
-<div :class="{'list-background-mobile-fix' : isMobile}">
-  <div :class="isWidgetVersion ? 'map-v2' : 'map'">
+  <l-map
+    :zoom="zoom"
+    :center="center"
+    style="height: 100vh"
+  >
+      <l-tile-layer :url="url" :attribution="attribution" />
+  </l-map>
+  <!-- <div :class="isWidgetVersion ? 'map-v2' : 'map'">
     <div class="type-actions" :class="{'type-actions-v2' : !isWidgetVersion}">
       <p class="button-action" :class="{ 'active' : !toogleMap }" @click="toogleMapMethod('show')">Mapa</p>
       <p class="button-action" :class="{ 'active' : toogleMap }" @click="toogleMapMethod('hide')">Lista</p>
@@ -29,71 +35,24 @@
                 <div class="list-elem btn-elem">
                   <p class="list-button" @click="selectedPopup(marker.id, index)">Wybierz</p>
                 </div>
-                  <!-- List Modal Section -->
-                  <transition name="fade">
-                  <div class="list-modal" v-if="isOpenListModal(index) && isMobile">
-                    <div class="list-modal-hours">
-                      <b>Godziny otwarcia:</b>
-                      {{ marker.openTime }}<br>
-                      {{ marker.openTime2 }}
-                    </div>
-                    <div class="list-modal-additional">
-                      <i class="icon hours"/>
-                      <i class="icon sobota"/>
-                      <i class="icon niedziela"/>
-                    </div>
+                 List Modal Section <transition name="fade">
+                <div class="list-modal" v-if="isOpenListModal(index) && isMobile">
+                  <div class="list-modal-hours">
+                    <b>Godziny otwarcia:</b>
+                    {{ marker.openTime }}<br>
+                    {{ marker.openTime2 }}
                   </div>
-                  </transition>
-                  <!-- List Modal Section END -->
-              </div>
+                  <div class="list-modal-additional">
+                    <i class="icon hours"/>
+                    <i class="icon sobota"/>
+                    <i class="icon niedziela"/>
+                  </div>
+                </div>
+                </transition> -->
+                <!-- List Modal Section END -->
+              <!-- </div>
           </div>
       </div>
-    </transition>
-    <transition name="fade">
-        <l-map
-          :zoom="zoom"
-          :center="center"
-          :options="{zoomControl: false}"
-          @update:zoom="zoomUpdated"
-          @update:center="centerUpdated"
-          @update:bounds="boundsUpdated"
-        >
-            <l-tile-layer :url="url" :attribution="attribution" />
-            <template v-if="markers[0] !== 'empty'">
-              <l-marker
-                v-for="(marker, index) in markers"
-                :key="marker.id"
-                :visible="marker.visible"
-                :lat-lng="marker.position"
-                class-name="markertype"
-                v-on="isMobile ? { click: () => selectedPopup(marker.id, index) } : {} "
-              >
-                <l-icon :icon-anchor="marker.iconAnchor" :icon-size="marker.iconSize" class-name="someExtraClass">
-                  <img :src="pinsUrl[marker.type]" width="52" height="52"/>
-                </l-icon>
-                <transition name="bounce">
-                <l-popup v-if="!isMobile">
-                  <div class="popup-box">
-                    <img class="popup-marker" :src="pinsUrl[marker.type]" width="102" height="102"/>
-                    <div class="popup-info">
-                      <div class="popup-text-box">
-                        <p class="popup-text">
-                          <b>Mniszew 25 </b><br> 26910 Magnuszew, <br>PL13883
-                        </p>
-                      </div>
-                      <div class="popup-img" >
-                        <img :src="logosUrl[marker.type]" width="100%" height="auto"/>
-                      </div>
-                    </div>
-                    <div class="popup-action">
-                      <p class="popup-button" @click="selectedPopup(marker.id, index)">Wybierz</p>
-                    </div>
-                  </div>
-                </l-popup>
-                </transition>
-              </l-marker>
-            </template>
-        </l-map>
     </transition>
   </div>
     <div>
@@ -102,8 +61,7 @@
           <ModalDiv :parentData="selectedMarker" :toogleModal="toogleModal" @close="onCloseChild"/>
         </div>
       </transition>
-    </div>
-  </div>
+    </div> -->
 </template>
 
 <script>
@@ -238,56 +196,56 @@ export default {
 </script>
 
 <style lang="scss">
-.leaflet-popup {
-  .leaflet-popup-content-wrapper {
-    border: 3px solid #3F87F5;
-  }
-  .leaflet-popup-tip-container {
-    display: none;
-  }
-  a.leaflet-popup-close-button {
-    right: 220px;
-    top: 5px;
-    color: #333333;
-  }
-  padding-right: 210px !important;
-  bottom: -210px !important;
-  margin-left: 210px !important;
-  margin-bottom: 0 !important;
- }
-.leaflet-right .leaflet-control {
-  margin-right: 0;
-}
-.leaflet-bottom .leaflet-control {
-  margin-bottom: 0;
-}
-.leaflet-control-attribution, .leaflet-control-scale-line {
-  font-size: 11px;
-  background: rgba(255, 255, 255, 0.7);
-  margin: 0;
-}
-.leaflet-control-attribution a {
-  color: #0078A8;
-}
-::-webkit-scrollbar-track {
-  background: transparent;
-}
- @media only screen and (max-width: 1100px) {
-   .leaflet-touch .leaflet-bar a {
-     width: 25px;
-     height: 25px;
-     line-height: 25px;
-   }
-   .leaflet-touch .leaflet-control-zoom-in,
-   .leaflet-touch .leaflet-control-zoom-out {
-     font-size: 19px;
-   }
-}
-@media (max-width: 767px) {
-  .leaflet-popup .leaflet-popup-content-wrapper {
-    border: 1px solid #E54C69;
-  }
-}
+// .leaflet-popup {
+//   .leaflet-popup-content-wrapper {
+//     border: 3px solid #3F87F5;
+//   }
+//   .leaflet-popup-tip-container {
+//     display: none;
+//   }
+//   a.leaflet-popup-close-button {
+//     right: 220px;
+//     top: 5px;
+//     color: #333333;
+//   }
+//   padding-right: 210px !important;
+//   bottom: -210px !important;
+//   margin-left: 210px !important;
+//   margin-bottom: 0 !important;
+//  }
+// .leaflet-right .leaflet-control {
+//   margin-right: 0;
+// }
+// .leaflet-bottom .leaflet-control {
+//   margin-bottom: 0;
+// }
+// .leaflet-control-attribution, .leaflet-control-scale-line {
+//   font-size: 11px;
+//   background: rgba(255, 255, 255, 0.7);
+//   margin: 0;
+// }
+// .leaflet-control-attribution a {
+//   color: #0078A8;
+// }
+// ::-webkit-scrollbar-track {
+//   background: transparent;
+// }
+//  @media only screen and (max-width: 1100px) {
+//    .leaflet-touch .leaflet-bar a {
+//      width: 25px;
+//      height: 25px;
+//      line-height: 25px;
+//    }
+//    .leaflet-touch .leaflet-control-zoom-in,
+//    .leaflet-touch .leaflet-control-zoom-out {
+//      font-size: 19px;
+//    }
+// }
+// @media (max-width: 767px) {
+//   .leaflet-popup .leaflet-popup-content-wrapper {
+//     border: 1px solid #E54C69;
+//   }
+// }
 </style>
 
 <style lang="scss" scoped>
