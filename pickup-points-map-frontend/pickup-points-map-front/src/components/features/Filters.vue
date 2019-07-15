@@ -1,5 +1,6 @@
 <template>
-    <div class='filters'>
+  <div>
+    <div class='filters add-scroll-filters'>
       <!-- Select suppliers first version -->
       <div class="suppliers" v-if="isWidgetVersion && !isMobile">
         <h1 class="title-supp">Wybierz dostawców</h1>
@@ -31,11 +32,12 @@
           <label class="custom-icon" :class="box.icon" :for="box.id">{{box.info}}</label>
         </div>
       </div>
-      <!-- Mobile version -->
-        <div class="mobile-filters-footer">
-          <p class="wyczysc" @click="clearFilter()">Wyczyść filtry</p>
-          <p class="zastosuj" @click="closeFilterMobile">Zastosuj filtry</p>
-        </div>
+    </div>
+    <!-- Mobile version -->
+    <div class="mobile-filters-footer">
+      <p class="wyczysc" @click="clearFilter()">Wyczyść filtry</p>
+      <p class="zastosuj" @click="closeFilterMobile">Zastosuj filtry</p>
+    </div>
   </div>
 </template>
 
@@ -169,11 +171,20 @@ export default {
 </script>
 
 <style lang='scss' scoped>
+.add-scroll-filters{
+  height: calc(100vh - 80px);
+  overflow: scroll;
+}
 .mobile-filters-footer{
-  margin-top: 40px;
+  background-color: white;
+  height: 20px;
+  position: absolute;
+  bottom: 20px;
+  left: 0;
+  right: 0;
   display: flex;
   width: 100%;
-  justify-content: space-between;
+  justify-content: space-around;
   @media (min-width: 767px) {
     display: none
   }

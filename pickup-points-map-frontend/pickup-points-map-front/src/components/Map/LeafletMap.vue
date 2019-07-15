@@ -615,8 +615,8 @@ display: flex;
           margin-bottom: 15px;
         }
           .list-elem{
-            flex-basis: 32%;
-            max-width: 32%;
+            flex-basis: 37%;
+            max-width: 37%;
             justify-content: normal;
             .img-modal{
                filter: none;
@@ -630,7 +630,7 @@ display: flex;
           }
           .list-elem-img{
                 justify-content: center;
-                margin-right: -25px;
+                margin-right: -20px;
           }
           .hours-elem{
             display: none;

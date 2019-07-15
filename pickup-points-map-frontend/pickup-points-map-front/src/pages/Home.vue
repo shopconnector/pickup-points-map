@@ -107,6 +107,10 @@ export default {
 </style>
 
 <style lang="scss" scoped>
+.scroll-box-filters{
+  height: 100%;
+  overflow-y: scroll;
+}
 .home-page{
   display: flex;
 }
@@ -231,7 +235,7 @@ export default {
     background-color: #E4405F;
     border-radius: 9px;
     margin: 0;
-    bottom: 20px;
+    bottom: calc(50% - 25px);
     right: calc(50% - 85px);
     padding: 10px 12px;
   }
