@@ -170,12 +170,10 @@ export default {
 
 <style lang='scss' scoped>
 .mobile-filters-footer{
-  position: absolute;
-  bottom: 30px;
+  margin-top: 40px;
   display: flex;
-  left: 0;
   width: 100%;
-  justify-content: space-around;
+  justify-content: space-between;
   @media (min-width: 767px) {
     display: none
   }
