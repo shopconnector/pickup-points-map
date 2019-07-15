@@ -152,6 +152,7 @@ export default {
       }
     },
     logResult (item) {
+      this.closeLocitModal()
       if (item) {
         this.placeHolder = item.item.street
       }
@@ -286,7 +287,7 @@ export default {
     right: 50px;
     top: 64px;
   }
-  padding: 50px 40px 0;
+  padding: 50px 15px 0;
   position: relative;
 }
 .footer-box {
