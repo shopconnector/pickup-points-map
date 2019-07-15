@@ -141,7 +141,7 @@ export default {
       // markers: null,
       selectedMarker: Object,
       selectedMarkerId: String,
-      url: 'http://{s}.tile.osm.org/{z}/{x}/{y}.png',
+      url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
       attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
       logosUrl: {
         zabka: require('../../assets/logos/żabka.png'),
