@@ -182,9 +182,13 @@ export default {
     right: -11px;
     background-color: #E54C69;
     color: #FFFFFF;
-    padding: 3px 7px;
     border-radius: 50%;
     font-size: 14px;
+    display: flex;
+    width: 23px;
+    justify-content: center;
+    align-items: center;
+    height: 23px;
   }
 }
 .mobile-footer {

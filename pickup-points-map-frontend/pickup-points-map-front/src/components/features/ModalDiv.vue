@@ -83,8 +83,10 @@
       <div class="mobile-map-additional">
         <p class="additional-info"><span class="mobile-map-icon-padding"><i class="icon hours"/></span> - otwarte do pózna</p>
         <p class="additional-info"><span class="mobile-map-icon-padding"><i class="icon sobota"/></span> - otwarte w soboty</p>
-        <p class="additional-info"><span class="mobile-map-icon-padding"><i class="icon niedziela"/></span> - otwarte w niediele</p>
+        <p class="additional-info"><span class="mobile-map-icon-padding"><i class="icon niedziela"/></span> - otwarte w niedziele</p>
         <p class="additional-info"><span class="mobile-map-icon-padding"><i class="icon parking"/></span> - parking</p>
+        <p class="additional-info"><span class="mobile-map-icon-padding"><i class="icon niepelnosprawni"/></span> - ułatwienie dla osób niepełnosprawnych</p>
+        <p class="additional-info"><span class="mobile-map-icon-padding"><i class="icon pobraniem"/></span> - odbiór za pobraniem</p>
       </div>
       <div class="mobile-map-footer">
         <p class="mobile-map-btn-close" @click="closeModal()">WYBIERZ I ZAMKNIJ</p>
@@ -207,6 +209,14 @@ export default {
       }
       .parking{
         background: url('../../assets/parking.png') 0 0 no-repeat;
+        background-size: cover;
+      }
+      .pobraniem{
+        background: url('../../assets/za-pobraniem.png') 0 0 no-repeat;
+        background-size: cover;
+      }
+      .niepelnosprawni{
+        background: url('../../assets/niepelnosprawni.png') 0 0 no-repeat;
         background-size: cover;
       }
     }

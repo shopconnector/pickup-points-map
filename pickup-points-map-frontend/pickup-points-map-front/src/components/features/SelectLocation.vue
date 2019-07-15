@@ -23,7 +23,7 @@
             <small>({{ suggestion.item.voiv + ' ' + suggestion.item.pov + ' ' + suggestion.item.mun }})</small>
           </template>
         </vue-autosuggest>
-        <span class="span-location" @click="locitAddress = ''"><i class="material-icons clear-input">clear</i></span>
+        <span class="span-location" :class="{'span-locationV2' : isWidgetVersion}" @click="locitAddress = ''"><i class="material-icons clear-input">clear</i></span>
         </div>
     </div>
     <vue-over-body :dim="false" :open="IsFooterModalOpen" before="beforeFooterModal" after="afterFooterModal" :transition="0.3">
@@ -220,7 +220,7 @@ export default {
 }
 .input-tag {
  input {
-    height: 40px;
+    height: 29px;
     text-align: center;
     background-color: #E5E5E5;
     width: 100%;
@@ -267,7 +267,10 @@ export default {
 .span-location{
   position: absolute;
   right: 5px;
-  top: 18px;
+  top: 16px;
+}
+.span-locationV2{
+  top: 12px;
 }
 .locit-box {
   .close-button {
@@ -341,7 +344,7 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 46px;
+  height: 35px;
   margin: 10px 0;
   cursor: pointer;
   &:hover{

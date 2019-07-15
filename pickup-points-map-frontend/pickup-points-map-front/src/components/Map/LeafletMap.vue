@@ -11,6 +11,7 @@
           <div class="scroll-box" :class="{'change-vh' : !isWidgetVersion}">
               <div class="list-row" :class="{'list-row-modal' : isOpenListModal(index)}"
                 v-for="(marker, index) in markers"
+                v-show="markers[0] !== 'empty'"
                 :key="marker.id"
                 @click="openListModal(index)">
                 <div class="list-elem list-elem-img">
@@ -41,6 +42,9 @@
                       <i class="icon hours"/>
                       <i class="icon sobota"/>
                       <i class="icon niedziela"/>
+                      <i class="icon parking"/>
+                      <i class="icon pobraniem"/>
+                      <i class="icon niepelnosprawni"/>
                     </div>
                   </div>
                   </transition>
@@ -78,7 +82,7 @@
                     <div class="popup-info">
                       <div class="popup-text-box">
                         <p class="popup-text">
-                          <b>Mniszew 25 </b><br> 26910 Magnuszew, <br>PL13883
+                          <b>{{ marker.address1 }}</b><br> {{ marker.zip}} {{marker.address2}}, <br>PL13883
                         </p>
                       </div>
                       <div class="popup-img" >
@@ -149,7 +153,8 @@ export default {
         dpdPickup: require('../../assets/logos/dpd-pickup.png'),
         fresh: require('../../assets/logos/freshmarket.png'),
         inpost: require('../../assets/logos/inpost.png'),
-        pocztaPolska: require('../../assets/logos/pocztapolska.png')
+        pocztaPolska: require('../../assets/logos/pocztapolska.png'),
+        paczkaWRuchu: require('../../assets/logos/paczka_w_ruchu.jpg')
       },
       pinsUrl: {
         zabka: require('../../assets/zabka.png'),
@@ -157,7 +162,8 @@ export default {
         dpdPickup: require('../../assets/dpdpickup.png'),
         fresh: require('../../assets/fresh.png'),
         inpost: require('../../assets/inpost.png'),
-        pocztaPolska: require('../../assets/poczta-polska.png')
+        pocztaPolska: require('../../assets/poczta-polska.png'),
+        paczkaWRuchu: require('../../assets/zabka.png')
       }
     }
   },
@@ -296,6 +302,7 @@ export default {
   background: #F5F5F5;
 }
 .list-modal{
+  width: 100%;
   .list-modal-hours{
     display: flex;
     flex-direction: column;
@@ -305,7 +312,7 @@ export default {
   }
   .list-modal-additional{
     display: flex;
-    justify-content: space-around;
+    justify-content: space-evenly;
     .icon{
       width: 17px;
       height: 17px;
@@ -321,6 +328,18 @@ export default {
     }
     .niedziela{
       background: url('../../assets/niedziela.png') 0 0 no-repeat;
+      background-size: cover;
+    }
+    .parking{
+      background: url('../../assets/parking.png') 0 0 no-repeat;
+      background-size: cover;
+    }
+    .pobraniem{
+      background: url('../../assets/za-pobraniem.png') 0 0 no-repeat;
+      background-size: cover;
+      }
+    .niepelnosprawni{
+      background: url('../../assets/niepelnosprawni.png') 0 0 no-repeat;
       background-size: cover;
     }
   }
@@ -481,7 +500,7 @@ display: flex;
 }
 .modal-position {
   width: 55%;
-  position: absolute;
+  position: fixed;
   right: 0;
   bottom: 0;
   z-index: 999;

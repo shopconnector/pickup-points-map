@@ -92,6 +92,12 @@ export default {
         name: 'Paczkomaty In-Post',
         src: 'inpost.png',
         alt: 'Paczkomaty In-Post img'
+      }, {
+        id: 'Paczka w ruchu',
+        value: 'paczkaWRuchu',
+        name: 'Paczka w ruchu',
+        src: 'paczka_w_ruchu.jpg',
+        alt: 'Paczka w ruchu image'
       }],
       checkboxes: [{
         id: 'otwarteDoPozna',
@@ -177,10 +183,6 @@ export default {
 <style lang='scss' scoped>
 .m0 {
   margin: 0;
-}
-.add-scroll-filters{
-  height: calc(100vh - 80px);
-  overflow: scroll;
 }
 .mobile-filters-footer{
   background-color: white;
@@ -390,6 +392,7 @@ export default {
       height: 20px;
       line-height: 16px;
       align-items: center;
+      text-align: left;
     }
     & + label:before {
       content: '';
@@ -514,6 +517,10 @@ export default {
 
  // Styles for mobile
 @media (max-width: 767px) {
+.add-scroll-filters{
+  height: calc(100vh - 80px);
+  overflow: scroll;
+}
 .filters{
    padding: 30px 35px 0 35px;
    margin: 0;

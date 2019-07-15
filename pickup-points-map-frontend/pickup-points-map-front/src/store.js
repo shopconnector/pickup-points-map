@@ -25,7 +25,6 @@ export default new Vuex.Store({
       {
         id: 'm1',
         position: { lat: 52.229676, lng: 21.012229 },
-        tooltip: 'tooltip for marker1',
         address1: 'Mazowiecka 50A',
         address2: 'Warszawa',
         zip: '02776',
@@ -51,7 +50,6 @@ export default new Vuex.Store({
       {
         id: 'm2',
         position: { lat: 52.239050, lng: 21.046113 },
-        tooltip: 'tooltip for marker2',
         address1: 'Jasna 3A',
         address2: ' Kraków',
         zip: '05423',
@@ -77,7 +75,6 @@ export default new Vuex.Store({
       {
         id: 'm3',
         position: { lat: 52.228740, lng: 21.033668 },
-        tooltip: 'tooltip for marker3',
         address1: 'Kalinowa 13',
         address2: 'Poznań',
         zip: '33145',
@@ -103,7 +100,6 @@ export default new Vuex.Store({
       {
         id: 'm4',
         position: { lat: 52.235238, lng: 21.008434 },
-        tooltip: 'tooltip for marker4',
         address1: 'Romualda Gutta 5B',
         address2: 'Chorzów',
         zip: '12213',
@@ -129,7 +125,6 @@ export default new Vuex.Store({
       {
         id: 'm5',
         position: { lat: 52.233949, lng: 21.017360 },
-        tooltip: 'tooltip for marker5',
         address1: 'Fregaty 50A',
         address2: 'Lublin',
         zip: '01277',
@@ -155,7 +150,6 @@ export default new Vuex.Store({
       {
         id: 'm6',
         position: { lat: 52.234949, lng: 21.015360 },
-        tooltip: 'tooltip for marker6',
         address1: 'Brazylijska 45',
         address2: 'Białystok',
         zip: '98233',
@@ -176,6 +170,31 @@ export default new Vuex.Store({
           iconSize: [52, 52],
           iconAnchor: [26, 52],
           alt: 'PocztaPolska image'
+        }
+      },
+      {
+        id: 'm7',
+        position: { lat: 52.244960, lng: 21.014360 },
+        address1: 'Pod Strzechą 4',
+        address2: 'Warszawa',
+        zip: '12263',
+        shop: 'Dostawa przesyłek ',
+        phone: '334412343',
+        openTime: 'pn - pt: 8:00 - 18:00',
+        openTime2: 'so: 8:00 - 16:00',
+        visible: true,
+        openSat: true,
+        openSun: true,
+        openNight: false,
+        disabledPeople: false,
+        parking: false,
+        cashOnDelivery: false,
+        type: 'paczkaWRuchu',
+        icon: {
+          iconUrl: require('./assets/logos/paczka_w_ruchu.jpg'),
+          iconSize: [52, 52],
+          iconAnchor: [26, 52],
+          alt: 'Paczka w Ruchu image'
         }
       }
     ]
