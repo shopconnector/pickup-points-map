@@ -35,8 +35,12 @@
     </div>
     <!-- Mobile version -->
     <div class="mobile-filters-footer">
-      <p class="wyczysc" @click="clearFilter()">Wyczyść filtry</p>
-      <p class="zastosuj" @click="closeFilterMobile">Zastosuj filtry</p>
+      <div class="wyczysc">
+        <p class="m0" @click="clearFilter()" v-show="filters.length || checkedSuppliers.length" >Wyczyść filtry</p>
+      </div>
+      <div class="zastosuj">
+        <p class="m0" @click="closeFilterMobile">Zastosuj filtry</p>
+      </div>
     </div>
   </div>
 </template>
@@ -171,6 +175,9 @@ export default {
 </script>
 
 <style lang='scss' scoped>
+.m0 {
+  margin: 0;
+}
 .add-scroll-filters{
   height: calc(100vh - 80px);
   overflow: scroll;
@@ -179,20 +186,24 @@ export default {
   background-color: white;
   height: 20px;
   position: absolute;
-  bottom: 20px;
+  bottom: 16px;
   left: 0;
   right: 0;
   display: flex;
   width: 100%;
-  justify-content: space-around;
+  justify-content: space-between;
   @media (min-width: 767px) {
     display: none
   }
   .wyczysc {
+    width: 50%;
+    align-items: center;
     margin: 0;
     color: #000000;
   }
   .zastosuj{
+    width: 50%;
+    align-items: center;
     margin: 0;
     color: #E54C69;
   }
