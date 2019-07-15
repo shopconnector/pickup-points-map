@@ -1,5 +1,5 @@
 <template>
-  <!-- <div class="widget-view">
+  <div class="widget-view">
     <div class="header-view" v-if="$store.state.WidgetVersion">
       <select-location/>
     </div>
@@ -13,9 +13,9 @@
         <div v-if="isMobile">
           <Filters/>
         </div>
-      </vue-over-body> -->
-  <Map/>
-      <!-- <div class="mobile-footer" v-if="!showListFooter && isMobile">
+      </vue-over-body>
+      <Map/>
+      <div class="mobile-footer" v-if="!showListFooter && isMobile">
         <i class="button-footer" @click="openFooterModal"/>
       </div>
       <div class="list-modal-footer" v-if="showListFooter && isMobile">
@@ -28,7 +28,7 @@
         <Filters v-if="!isMobile"/>
       </div>
     </div>
-  </div> -->
+  </div>
 </template>
 
 <script>
