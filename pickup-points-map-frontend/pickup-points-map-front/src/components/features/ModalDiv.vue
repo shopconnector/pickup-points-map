@@ -102,7 +102,8 @@ export default {
   mixins: [MobileDetected],
   props: {
     parentData: Object,
-    toogleModal: Boolean
+    toogleModal: Boolean,
+    parentSelectedId: String
   },
   data () {
     return {
@@ -124,8 +125,7 @@ export default {
   },
   methods: {
     closeModal () {
-      this.mutableToogleModal = false
-      this.$emit('close', this.mutableToogleModal)
+      this.$emit('close')
     }
   }
 }

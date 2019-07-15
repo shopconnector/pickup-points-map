@@ -97,9 +97,9 @@
     </transition>
   </div>
     <div>
-      <transition name="bounce">
+      <transition :name="isMobile ? 'fade-in-up' : 'bounce'">
         <div class="modal-position" :class="{'modal-positionV2' : !isWidgetVersion}" v-if="toogleModal">
-          <ModalDiv :parentData="selectedMarker" :toogleModal="toogleModal" @close="onCloseChild"/>
+          <ModalDiv :parentData="selectedMarker" :parentSelectedId = "selectedMarkerId" :toogleModal="toogleModal" @close="onCloseChild"/>
         </div>
       </transition>
     </div>
@@ -219,8 +219,9 @@ export default {
       }
       this.selectedMarker = this.markers[index]
     },
-    onCloseChild (value) {
-      this.toogleModal = value
+    onCloseChild () {
+      this.toogleModal = false
+      this.selectedMarkerId = ''
     },
     openListModal (index) {
       this.selectedPoint = index
@@ -527,6 +528,31 @@ display: flex;
   }
 }
 
+.fade-in {
+  &-down-enter-active,
+  &-up-enter-active{
+    transition: all .4s cubic-bezier(0.4, 0.0, 0.2, 1);
+  }
+  &-down-leave-active,
+  &-up-leave-active {
+    transition: all .4s cubic-bezier(0.4, 0.0, 1, 1);
+  }
+  &-down-enter,
+  &-down-leave-to,
+  &-up-enter,
+  &-up-leave-to {
+    opacity: 0;
+  }
+  &-down-enter,
+  &-down-leave-to {
+    transform: translateY(-100%);
+  }
+  &-up-enter,
+  &-up-leave-to {
+    transform: translateY(100%);
+  }
+}
+// animation end
 @media only screen and (max-width: 1100px) {
  .type-actions{
    .button-action{
@@ -589,8 +615,8 @@ display: flex;
           margin-bottom: 15px;
         }
           .list-elem{
-            flex-basis: 37%;
-            max-width: 37%;
+            flex-basis: 32%;
+            max-width: 32%;
             justify-content: normal;
             .img-modal{
                filter: none;
