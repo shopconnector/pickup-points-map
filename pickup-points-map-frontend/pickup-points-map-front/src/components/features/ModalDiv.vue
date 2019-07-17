@@ -27,7 +27,7 @@
                   <img :src="parentData.icon.iconUrl" :alt="parentData.icon.alt" class="img">
                 </div>
                 <div class="road">
-                  <a :href="'https://www.google.pl/maps/dir//' + parentData.position.lat + ',' + parentData.position.lng + '/@52.2502198,21.0280249 + ,16z/data=!4m2!4m1!3e3?hl=pl'" target="_blank">Wyznacz trasę dojazdu <i class="play_arrow"/></a>
+                  <a :href="linkToRoad" target="_blank">Wyznacz trasę dojazdu <i class="play_arrow"/></a>
                 </div>
               </div>
               <div class="open-hours">
@@ -123,6 +123,10 @@ export default {
   computed: {
     isWidgetVersion () {
       return this.$store.state.WidgetVersion
+    },
+    linkToRoad () {
+      let url = 'https://www.google.pl/maps/dir/' + this.$store.state.lat + ',' + this.$store.state.lng + '/' + this.parentData.position.lat + ',' + this.parentData.position.lng + '/@52.2502198,21.0280249 + ,16z/data=!4m2!4m1!3e3?hl=pl'
+      return url
     }
   },
   methods: {

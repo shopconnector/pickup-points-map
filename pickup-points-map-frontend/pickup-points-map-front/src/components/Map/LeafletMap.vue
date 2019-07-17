@@ -59,6 +59,8 @@
           :center="center"
           :options="{zoomControl: false}"
           @update:bounds="boundsUpdated"
+          @update:zoom="zoomUpdated"
+          @update:center="centerUpdated"
         >
             <l-tile-layer :url="url" :attribution="attribution" />
             <template v-if="markers[0] !== 'empty'">
@@ -136,10 +138,6 @@ export default {
       selectedPoint: Number,
       toogleMap: false,
       toogleModal: false,
-      geoCenter: {
-        lat: 0,
-        lng: 0
-      },
       selectedMarker: Object,
       selectedMarkerId: String,
       url: 'https://{s}.tile.osm.org/{z}/{x}/{y}.png',

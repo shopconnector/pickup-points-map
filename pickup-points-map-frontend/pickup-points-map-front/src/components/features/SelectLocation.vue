@@ -108,13 +108,12 @@ export default {
       this.$store.commit('closeFooterModal')
     },
     currentPos () {
-      // this.$vuexGeolocation.getCurrentPosition()
-      // setTimeout(
-      //   () =>
-      //     this.$store.commit('updatePosition', [{ lat: this.$store.state.geolocation.lat, lng: this.$store.state.geolocation.lng, zoom: 16 }])
-      //   , 1
-      // )
-      this.$store.commit('updatePosition', [{ lat: this.$store.state.geolocation.lat, lng: this.$store.state.geolocation.lng, zoom: 16 }])
+      this.$vuexGeolocation.getCurrentPosition()
+      setTimeout(
+        () =>
+          this.$store.commit('updatePosition', [{ lat: this.$store.state.geolocation.lat, lng: this.$store.state.geolocation.lng, zoom: 16 }])
+        , 100
+      )
       if (this.IsFooterModalOpen) {
         this.closeFooterModal()
       }

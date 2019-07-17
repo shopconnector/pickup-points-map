@@ -224,18 +224,18 @@ export default new Vuex.Store({
     },
     updatePosition (state, newPosition) {
       var point = newPosition[0]
-      // if (point.zoom) {
-      //   state.zoom = point.zoom
-      // }
-      // if (point.lat) {
-      //   state.lat = point.lat
-      // }
-      // if (point.lng) {
-      //   state.lng = point.lng
-      // }
-      state.zoom = point.zoom ? point.zoom : state.zoom
-      state.lat = point.lat ? point.lat : state.lat
-      state.lng = point.lng ? point.lng : state.lng
+      console.log(point)
+      if (state.geolocation.lat !== null && state.geolocation.lng !== null) {
+        if (point.zoom) {
+          state.zoom = point.zoom
+        }
+        if (point.lat) {
+          state.lat = point.lat
+        }
+        if (point.lng) {
+          state.lng = point.lng
+        }
+      }
     }
   },
   actions: {
