@@ -7,7 +7,7 @@
     </div>
     <transition name="fade">
       <div  v-if="toogleMap" class="list-box" :class="{'listbox-margin-top' : isWidgetVersion}">
-          <div class="list-title hidden-xs">Punkty odbioru w pobliżu Twojej lokalizacji</div>
+          <div class="list-title hidden-xs"><h1>Punkty odbioru w pobliżu Twojej lokalizacji</h1></div>
           <div class="scroll-box" :class="{'change-vh' : !isWidgetVersion}">
               <div class="list-row" :class="{'list-row-modal' : isOpenListModal(index)}"
                 v-for="(marker, index) in markers"
@@ -15,7 +15,7 @@
                 :key="marker.id"
                 @click="openListModal(index)">
                 <div class="list-elem list-elem-img">
-                  <img :class="{'img-modal' : isOpenListModal(index)}" :src="logosUrl[marker.type]" width="auto" height="70px" />
+                  <img :class="{'img-modal' : isOpenListModal(index)}" :src="logosUrl[marker.type]" :alt="marker.icon.alt" width="auto" height="70px" />
                 </div>
                 <div class="list-elem list-elem-address">
                   <b>{{ marker.address1 }}</b>
@@ -39,12 +39,12 @@
                       {{ marker.openTime2 }}
                     </div>
                     <div class="list-modal-additional">
-                      <i class="icon hours"/>
-                      <i class="icon sobota"/>
-                      <i class="icon niedziela"/>
-                      <i class="icon parking"/>
-                      <i class="icon pobraniem"/>
-                      <i class="icon niepelnosprawni"/>
+                      <i v-if="marker.openNight" class="icon hours"/>
+                      <i v-if="marker.openSat" class="icon sobota"/>
+                      <i v-if="marker.openSun" class="icon niedziela"/>
+                      <i v-if="marker.parking" class="icon parking"/>
+                      <i v-if="marker.cashOnDelivery" class="icon pobraniem"/>
+                      <i v-if="marker.niepelnosprawni" class="icon niepelnosprawni"/>
                     </div>
                   </div>
                   </transition>
@@ -58,8 +58,6 @@
           :zoom="zoom"
           :center="center"
           :options="{zoomControl: false}"
-          @update:zoom="zoomUpdated"
-          @update:center="centerUpdated"
           @update:bounds="boundsUpdated"
         >
             <l-tile-layer :url="url" :attribution="attribution" />
@@ -73,12 +71,12 @@
                 v-on="isMobile ? { click: () => selectedPopup(marker.id, index) } : {} "
               >
                 <l-icon :icon-anchor="marker.iconAnchor" :icon-size="marker.iconSize" class-name="someExtraClass">
-                  <img :src="pinsUrl[marker.type]" width="52" height="52"/>
+                  <img :src="pinsUrl[marker.type]" :alt="marker.icon.alt" width="52" height="52"/>
                 </l-icon>
                 <transition name="bounce">
                 <l-popup v-if="!isMobile">
                   <div class="popup-box">
-                    <img class="popup-marker" :src="pinsUrl[marker.type]" width="102" height="102"/>
+                    <img class="popup-marker" :src="pinsUrl[marker.type]" :alt="marker.icon.alt" width="102" height="102"/>
                     <div class="popup-info">
                       <div class="popup-text-box">
                         <p class="popup-text">
@@ -86,7 +84,7 @@
                         </p>
                       </div>
                       <div class="popup-img" >
-                        <img :src="logosUrl[marker.type]" width="100%" height="auto"/>
+                        <img :src="logosUrl[marker.type]" :alt="marker.icon.alt" width="100%" height="auto"/>
                       </div>
                     </div>
                     <div class="popup-action">
@@ -142,14 +140,12 @@ export default {
         lat: 0,
         lng: 0
       },
-      // markers: null,
       selectedMarker: Object,
       selectedMarkerId: String,
       url: 'https://{s}.tile.osm.org/{z}/{x}/{y}.png',
       attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
       logosUrl: {
         zabka: require('../../assets/logos/żabka.png'),
-        dpd: require('../../assets/logos/dpd.png'),
         dpdPickup: require('../../assets/logos/dpd-pickup.png'),
         fresh: require('../../assets/logos/freshmarket.png'),
         inpost: require('../../assets/logos/inpost.png'),
@@ -158,12 +154,11 @@ export default {
       },
       pinsUrl: {
         zabka: require('../../assets/zabka.png'),
-        dpd: require('../../assets/dpd.png'),
         dpdPickup: require('../../assets/dpdpickup.png'),
         fresh: require('../../assets/fresh.png'),
         inpost: require('../../assets/inpost.png'),
         pocztaPolska: require('../../assets/poczta-polska.png'),
-        paczkaWRuchu: require('../../assets/zabka.png')
+        paczkaWRuchu: require('../../assets/paczka-w-ruchu.png')
       }
     }
   },
@@ -319,38 +314,36 @@ export default {
       display: flex;
     }
     .hours{
-      background: url('../../assets/ZEGAR.png') 0 0 no-repeat;
+      background: url('../../assets/icons/ZEGAR.png') 0 0 no-repeat;
       background-size: cover;
     }
     .sobota{
-      background: url('../../assets/sobota.png') 0 0 no-repeat;
+      background: url('../../assets/icons/sobota.png') 0 0 no-repeat;
       background-size: cover;
     }
     .niedziela{
-      background: url('../../assets/niedziela.png') 0 0 no-repeat;
+      background: url('../../assets/icons/niedziela.png') 0 0 no-repeat;
       background-size: cover;
     }
     .parking{
-      background: url('../../assets/parking.png') 0 0 no-repeat;
+      background: url('../../assets/icons/parking.png') 0 0 no-repeat;
       background-size: cover;
     }
     .pobraniem{
-      background: url('../../assets/za-pobraniem.png') 0 0 no-repeat;
+      background: url('../../assets/icons/za-pobraniem.png') 0 0 no-repeat;
       background-size: cover;
       }
     .niepelnosprawni{
-      background: url('../../assets/niepelnosprawni.png') 0 0 no-repeat;
+      background: url('../../assets/icons/niepelnosprawni.png') 0 0 no-repeat;
       background-size: cover;
     }
   }
 }
 .map{
   width: 100%;
-  // height: 100vh;
   height: 100vh;
   overflow: hidden;
   max-height: 100vh;
-  // max-height: 100vh;
 }
 .map-v2{
   position: relative;
@@ -405,9 +398,9 @@ display: flex;
   .button-action {
     &.active {
       color: white;
-      background-color: #E54C69;
+      background-color: #DD2C54;
     }
-    color: #AAAAAA;
+    color: #4A4A4A;
     background-color: #E5E5E5;
     padding: 8px 40px 10px 40px;
     margin: 0;
@@ -452,9 +445,12 @@ display: flex;
 }
 .list-box {
   .list-title {
-    font-weight: 700;
-    font-size: 22px;
-    padding: 10px 0;
+    h1 {
+      font-weight: 700;
+      font-size: 22px;
+      padding: 10px 0;
+      margin: 0;
+    }
   }
   .list-row {
     .list-elem {

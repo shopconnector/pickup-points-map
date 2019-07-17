@@ -58,7 +58,6 @@ export default {
   methods: {
     openFooterModal () {
       this.$store.commit('openFooterModal')
-      // this.$store.dispatch('controlMutation', 'openFooterModal')
     },
     openFilterMobile () {
       this.$store.commit('openFilterMobile')
@@ -174,7 +173,7 @@ export default {
   margin-left: 20px;
   width: 35px;
   height: 30px;
-  background: url(../assets/lejek.png) 0 0 no-repeat;
+  background: url(../assets/icons/lejek.png) 0 0 no-repeat;
   &:after{
     content: attr(data-content);
     position: absolute;
@@ -200,7 +199,7 @@ export default {
     bottom: 20px;
     left: calc( 50% - 20px);
     position: absolute;
-    background: url('../assets/Group-12.png') 0 0 no-repeat;
+    background: url('../assets/icons/Group-12.png') 0 0 no-repeat;
     background-size: cover;
   }
   position: fixed;

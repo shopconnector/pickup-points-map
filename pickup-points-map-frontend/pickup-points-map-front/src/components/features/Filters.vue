@@ -3,7 +3,7 @@
     <div class='filters add-scroll-filters'>
       <!-- Select suppliers first version -->
       <div class="suppliers" v-if="isWidgetVersion && !isMobile">
-        <h1 class="title-supp">Wybierz dostawców</h1>
+        <h2 class="title-supp">Wybierz dostawców</h2>
         <div class="suppliers-menu">
           <div class="selectSuppliers" v-for="supp in suppliers" :key="supp.id">
             <input class="styled-checkbox" type="checkbox" :id="supp.id" :value="supp.value" v-model="checkedSuppliers">
@@ -13,7 +13,7 @@
       </div>
       <!-- Select suppliers second version -->
       <div v-if="!isWidgetVersion || isMobile">
-        <h1 class="title-dostawcow">Wybierz dostawców</h1>
+        <h2 class="title-dostawcow">Wybierz dostawców</h2>
         <div class="suppliers-menu-dostawcow">
           <div class="select-suppliers-dostawcow" v-for="supp in suppliers" :key="supp.id">
             <input class="styled-checkbox-dostawcow" type="checkbox" :id="supp.id" :value="supp.value" v-model="checkedSuppliers">
@@ -23,7 +23,7 @@
       </div>
       <!-- Filters Menu -->
       <div class="header">
-        <h1 class="title" :class="{'titleV2' : !isWidgetVersion}">Filtry</h1><p :class="isWidgetVersion ? 'subtitle' : 'subtitleV2'" @click="clearFilter()">
+        <h2 class="title" :class="{'titleV2' : !isWidgetVersion}">Filtry</h2><p :class="isWidgetVersion ? 'subtitle' : 'subtitleV2'" @click="clearFilter()">
             Wyczyść filtry<span :class="isWidgetVersion ? 'clear' : 'clearV2'">X</span></p>
       </div>
       <div class="filters-menu">
@@ -62,13 +62,8 @@ export default {
         name: 'Poczta Polska',
         src: 'pocztapolska.png',
         alt: 'Poczta Polska img'
-      }, {
-        id: 'Kurier DPD',
-        value: 'dpd',
-        name: 'Kurier DPD',
-        src: 'dpd.png',
-        alt: 'DPD img'
-      }, {
+      },
+      {
         id: 'DPD Pickup',
         value: 'dpdPickup',
         name: 'DPD Pickup',
@@ -322,37 +317,37 @@ export default {
     }
 }
 .custom-checkbox + .pozna:before{
-    background: url('../../assets/ZEGAR.png');
+    background: url('../../assets/icons/ZEGAR.png');
     background-position: center;
     background-repeat: no-repeat;
     background-size: contain;
 }
 .custom-checkbox + .sobota:before{
-    background: url('../../assets/sobota.png');
+    background: url('../../assets/icons/sobota.png');
     background-position: center;
     background-repeat: no-repeat;
     background-size: contain;
 }
 .custom-checkbox + .niedziela:before{
-    background: url('../../assets/niedziela.png');
+    background: url('../../assets/icons/niedziela.png');
     background-position: center;
     background-repeat: no-repeat;
     background-size: contain;
 }
 .custom-checkbox + .niepelnosprawni:before{
-    background: url('../../assets/niepelnosprawni.png');
+    background: url('../../assets/icons/niepelnosprawni.png');
     background-position: center;
     background-repeat: no-repeat;
     background-size: contain;
 }
 .custom-checkbox + .parking:before{
-    background: url('../../assets/parking.png');
+    background: url('../../assets/icons/parking.png');
     background-position: center;
     background-repeat: no-repeat;
     background-size: contain;
 }
 .custom-checkbox + .pobraniem:before{
-    background: url('../../assets/za-pobraniem.png');
+    background: url('../../assets/icons/za-pobraniem.png');
     background-position: center;
     background-repeat: no-repeat;
     background-size: contain;

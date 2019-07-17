@@ -27,7 +27,7 @@
                   <img :src="parentData.icon.iconUrl" :alt="parentData.icon.alt" class="img">
                 </div>
                 <div class="road">
-                  <a :href="'https://www.google.pl/maps/dir//' + parentData.position.lat + ',' + parentData.position.lng + '/@52.2502198,21.0280249 + ,16z/data=!4m2!4m1!3e3?hl=pl'" target="_blank">Wyznacz trasę dojazdu <i class="material-icons">play_arrow</i></a>
+                  <a :href="'https://www.google.pl/maps/dir//' + parentData.position.lat + ',' + parentData.position.lng + '/@52.2502198,21.0280249 + ,16z/data=!4m2!4m1!3e3?hl=pl'" target="_blank">Wyznacz trasę dojazdu <i class="play_arrow"/></a>
                 </div>
               </div>
               <div class="open-hours">
@@ -51,7 +51,7 @@
           </div>
        </div>
        <div class="footer">
-         <p class="powrot" @click ="closeModal()" :class="{'powrot-v2' : isWidgetVersion}"><i class="material-icons">arrow_left</i>POWRÓT</p>
+         <p class="powrot" @click ="closeModal()" :class="{'powrot-v2' : isWidgetVersion}"><i class="arrow_left"/>POWRÓT</p>
          <p class="zamknij" :class="{'zamknij-v2' : isWidgetVersion}">WYBIERZ DPD I ZAMKNIJ</p>
        </div>
     </div>
@@ -59,7 +59,7 @@
     <div class="mobile-map-modal" v-if="isMobile">
       <div class="mobile-map-header">
         <p>Wybrany punky</p>
-        <i class="material-icons close-mobile-map-modal" @click="closeModal()">clear</i>
+        <i class="close-icon close-mobile-map-modal" @click="closeModal()"/>
       </div>
       <div class="mobile-map-row">
         <div class="mobile-map-logo">
@@ -81,12 +81,12 @@
         </div>
       </div>
       <div class="mobile-map-additional">
-        <p class="additional-info"><span class="mobile-map-icon-padding"><i class="icon hours"/></span> - otwarte do pózna</p>
-        <p class="additional-info"><span class="mobile-map-icon-padding"><i class="icon sobota"/></span> - otwarte w soboty</p>
-        <p class="additional-info"><span class="mobile-map-icon-padding"><i class="icon niedziela"/></span> - otwarte w niedziele</p>
-        <p class="additional-info"><span class="mobile-map-icon-padding"><i class="icon parking"/></span> - parking</p>
-        <p class="additional-info"><span class="mobile-map-icon-padding"><i class="icon niepelnosprawni"/></span> - ułatwienie dla osób niepełnosprawnych</p>
-        <p class="additional-info"><span class="mobile-map-icon-padding"><i class="icon pobraniem"/></span> - odbiór za pobraniem</p>
+        <p v-if="parentData.openNight" class="additional-info"><span class="mobile-map-icon-padding"><i class="icon hours"/></span> - otwarte do pózna</p>
+        <p v-if="parentData.openSat" class="additional-info"><span class="mobile-map-icon-padding"><i class="icon sobota"/></span> - otwarte w soboty</p>
+        <p v-if="parentData.openSun" class="additional-info"><span class="mobile-map-icon-padding"><i class="icon niedziela"/></span> - otwarte w niedziele</p>
+        <p v-if="parentData.parking" class="additional-info"><span class="mobile-map-icon-padding"><i class="icon parking"/></span> - parking</p>
+        <p v-if="parentData.disabledPeople" class="additional-info"><span class="mobile-map-icon-padding"><i class="icon niepelnosprawni"/></span> - ułatwienie dla osób niepełnosprawnych</p>
+        <p v-if="parentData.cashOnDelivery" class="additional-info"><span class="mobile-map-icon-padding"><i class="icon pobraniem"/></span> - odbiór za pobraniem</p>
       </div>
       <div class="mobile-map-footer">
         <p class="mobile-map-btn-close" @click="closeModal()">WYBIERZ I ZAMKNIJ</p>
@@ -134,6 +134,23 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.arrow_left{
+  width: 35px;
+  height: 35px;
+  display: flex;
+  cursor: pointer;
+  filter: grayscale(0.5) opacity(0.3);
+  background: url('../../assets/icons/arrow_left.png') 0 0 no-repeat;
+  background-size: cover;
+}
+.play_arrow{
+  width: 22px;
+  height: 22px;
+  display: flex;
+  cursor: pointer;
+  background: url('../../assets/icons/play_arrow.png') 0 0 no-repeat;
+  background-size: cover;
+}
 .mobile-map-modal{
   background: white;
   .mobile-map-header{
@@ -145,7 +162,16 @@ export default {
     .close-mobile-map-modal{
       position: absolute;
       right: 15px;
-      top: 6px;
+      top: 10px;
+    }
+    .close-icon{
+      width: 22px;
+      height: 22px;
+      display: flex;
+      cursor: pointer;
+      filter: grayscale(0.5) opacity(0.8);
+      background: url('../../assets/icons/clear.png') 0 0 no-repeat;
+      background-size: cover;
     }
   }
   .mobile-map-row{
@@ -196,27 +222,27 @@ export default {
         display: flex;
       }
       .hours{
-        background: url('../../assets/ZEGAR.png') 0 0 no-repeat;
+        background: url('../../assets/icons/ZEGAR.png') 0 0 no-repeat;
         background-size: cover;
       }
       .sobota{
-        background: url('../../assets/sobota.png') 0 0 no-repeat;
+        background: url('../../assets/icons/sobota.png') 0 0 no-repeat;
         background-size: cover;
       }
       .niedziela{
-        background: url('../../assets/niedziela.png') 0 0 no-repeat;
+        background: url('../../assets/icons/niedziela.png') 0 0 no-repeat;
         background-size: cover;
       }
       .parking{
-        background: url('../../assets/parking.png') 0 0 no-repeat;
+        background: url('../../assets/icons/parking.png') 0 0 no-repeat;
         background-size: cover;
       }
       .pobraniem{
-        background: url('../../assets/za-pobraniem.png') 0 0 no-repeat;
+        background: url('../../assets/icons/za-pobraniem.png') 0 0 no-repeat;
         background-size: cover;
       }
       .niepelnosprawni{
-        background: url('../../assets/niepelnosprawni.png') 0 0 no-repeat;
+        background: url('../../assets/icons/niepelnosprawni.png') 0 0 no-repeat;
         background-size: cover;
       }
     }
@@ -248,7 +274,7 @@ p {
 }
 .content{
   background: #F5F5F5;
-  padding-bottom: 15px;
+  padding-bottom: 10px;
 }
 .modal{
   width: 100%;
@@ -268,8 +294,9 @@ p {
 .footer{
   display: flex;
   justify-content: space-between;
-  padding: 10px 0;
+  padding: 6px 0;
   align-items: center;
+  background: white;
   // position: fixed;
   // bottom: 0;
   // right: 0;
@@ -277,11 +304,11 @@ p {
   // background: white;
 }
 .title{
-  padding-left: 27px;
+  padding-left: 20px;
   h3 {
     margin: 0;
     text-align: left;
-    padding-top: 15px;
+    padding-top: 10px;
     font-size: 22px;
     color: #000000;
   }
@@ -301,7 +328,7 @@ p {
 }
 .selected-supplierV2{
    justify-content: space-between;
-   padding-bottom: 15px;
+   padding-bottom: 10px;
    border-bottom: 1px solid #E5E5E5;
    margin: 0 30px;
 }
@@ -316,7 +343,7 @@ p {
   flex-wrap: wrap;
   flex-direction: column;
   justify-content: space-between;
-  flex: 0 0 40%;
+  flex: 0 0 45%;
 }
 .col2-v2{
   flex: 0 0 50%;
@@ -372,7 +399,7 @@ p {
   display: flex;
   flex-direction: column;
   align-items: end;
-  padding: 15px 0;
+  padding: 10px 0;
   color: #000000;
   font-size: 16px;
   h4{
@@ -401,12 +428,6 @@ p {
   color: #ADADAD;
   align-items: center;
   cursor: pointer;
-  i {
-    font-size: 45px;
-  }
-  &:hover{
-    color: #E4405F;
-  }
 }
 .powrot-v2{
   padding-left: 10px;
@@ -431,10 +452,10 @@ p {
 }
 @media only screen and (max-width: 1000px) {
  .titleV2 h3 {
-   font-size: 20px;
+   font-size: 18px;
  }
  .title h3{
-   font-size: 20px;
+   font-size: 18px;
  }
  .address{
     h4, p {
@@ -448,29 +469,32 @@ p {
  }
  .hours-title{
    p {
-     font-size: 14px;
+     font-size: 13px;
    }
  }
  .first-half{
    p{
-     font-size: 14px;
+     font-size: 13px;
    }
  }
  .second-half{
    p{
-     font-size: 14px;
+     font-size: 13px;
    }
  }
- .road{
-   p{
-     font-size: 12px;
-     i {
-       font-size: 22px;
-     }
-   }
+ .info-box{
+  .road{
+    a{
+      font-size: 12px;
+      i {
+        height: 16px;
+        width: 16px;
+      }
+    }
+  }
  }
  .img{
-   width: 75px;
+   width: 70px;
  }
  .powrot{
    font-size: 15px;

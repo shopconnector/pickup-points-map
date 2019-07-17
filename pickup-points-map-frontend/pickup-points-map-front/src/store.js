@@ -48,31 +48,6 @@ export default new Vuex.Store({
         }
       },
       {
-        id: 'm2',
-        position: { lat: 52.239050, lng: 21.046113 },
-        address1: 'Jasna 3A',
-        address2: ' Kraków',
-        zip: '05423',
-        shop: 'Przesyłki kurierskie',
-        phone: '444555666',
-        openTime: 'pn - pt: 8:00 - 18:00',
-        openTime2: 'so: 8:00 - 16:00',
-        visible: true,
-        openSat: true,
-        openSun: true,
-        openNight: true,
-        disabledPeople: false,
-        parking: false,
-        cashOnDelivery: true,
-        type: 'dpd',
-        icon: {
-          iconUrl: require('./assets/logos/dpd.png'),
-          iconSize: [52, 52],
-          iconAnchor: [26, 52],
-          alt: 'DPD image'
-        }
-      },
-      {
         id: 'm3',
         position: { lat: 52.228740, lng: 21.033668 },
         address1: 'Kalinowa 13',
@@ -249,15 +224,21 @@ export default new Vuex.Store({
     },
     updatePosition (state, newPosition) {
       var point = newPosition[0]
+      // if (point.zoom) {
+      //   state.zoom = point.zoom
+      // }
+      // if (point.lat) {
+      //   state.lat = point.lat
+      // }
+      // if (point.lng) {
+      //   state.lng = point.lng
+      // }
       state.zoom = point.zoom ? point.zoom : state.zoom
       state.lat = point.lat ? point.lat : state.lat
       state.lng = point.lng ? point.lng : state.lng
     }
   },
   actions: {
-    controlMutation ({commit}, name) {
-      commit(`${name}`)
-    },
     get_points ({commit}, query) {
       return new Promise((resolve, reject) => {
         commit('get_points')

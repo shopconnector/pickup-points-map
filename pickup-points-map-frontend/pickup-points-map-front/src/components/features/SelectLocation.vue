@@ -1,7 +1,7 @@
 <template>
   <div :class="isWidgetVersion ? 'location' : 'locationV2'">
     <div :class="isWidgetVersion ? 'location-header' : 'location-headerV2'" v-if="!isMobile">
-      <h1 class="title">Wybierz lokalizację</h1>
+      <h2 class="title">Wybierz lokalizację</h2>
     </div>
     <div class="choose-location" v-if="!isMobile">
         <h3 :class="isWidgetVersion ? 'my-location' : 'my-locationV2'" @click="currentPos()">Użyj mojej lokalizacji</h3>
@@ -23,12 +23,11 @@
             <small>({{ suggestion.item.voiv + ' ' + suggestion.item.pov + ' ' + suggestion.item.mun }})</small>
           </template>
         </vue-autosuggest>
-        <span class="span-location" :class="{'span-locationV2' : isWidgetVersion}" @click="locitAddress = ''"><i class="material-icons clear-input">clear</i></span>
+        <span class="span-location" :class="{'span-locationV2' : isWidgetVersion}" @click="locitAddress = ''"><i class="clear-input"/></span>
         </div>
     </div>
     <vue-over-body :dim="false" :open="IsFooterModalOpen" before="beforeFooterModal" after="afterFooterModal" :transition="0.3">
       <div class="footer-box">
-        <!-- v-closable="{ exclude: [], handler: 'closeFooterModal'}" -->
         <h3 class="my-location" @click="currentPos()">Użyj mojej lokalizacji</h3>
         <div class='input-modal-button' :class="{ 'active' : suggestionText }" @click="openLocitModal()">
           <template v-if="suggestionText">{{ suggestionText.city + ', ' + suggestionText.prefix + ' ' + suggestionText.street + ' ' + suggestionText.building }}</template>
@@ -55,7 +54,7 @@
             <small>({{ suggestion.item.voiv + ' ' + suggestion.item.pov + ' ' + suggestion.item.mun }})</small>
           </template>
         </vue-autosuggest>
-        <span class="span-location" @click="locitAddress = ''"><i class="material-icons clear-input">clear</i></span>
+        <span class="span-location" @click="locitAddress = ''"><i class="clear-input"/></span>
       </div>
     </vue-over-body>
   </div>
@@ -64,33 +63,6 @@
 <script>
 import vueOverBody from 'vue-over-body'
 import { MobileDetected } from '../../components/mobileDetected.ts'
-// import Vue from 'vue'
-
-// let handleOutsideClick
-// Vue.directive('closable', {
-//   bind (el, binding, vnode) {
-//     handleOutsideClick = (e) => {
-//       e.stopPropagation()
-//       const { handler, exclude } = binding.value
-//       let clickedOnExcludedEl = false
-//       exclude.forEach(refName => {
-//         if (!clickedOnExcludedEl) {
-//           const excludedEl = vnode.context.$refs[refName]
-//           clickedOnExcludedEl = excludedEl.contains(e.target)
-//         }
-//       })
-//       if (!el.contains(e.target) && !clickedOnExcludedEl) {
-//         vnode.context[handler]()
-//       }
-//     }
-//     document.addEventListener('click', handleOutsideClick)
-//     document.addEventListener('touchstart', handleOutsideClick)
-//   },
-//   unbind () {
-//     document.removeEventListener('click', handleOutsideClick)
-//     document.removeEventListener('touchstart', handleOutsideClick)
-//   }
-// })
 
 export default {
   name: 'SelectLocation',
@@ -136,6 +108,12 @@ export default {
       this.$store.commit('closeFooterModal')
     },
     currentPos () {
+      // this.$vuexGeolocation.getCurrentPosition()
+      // setTimeout(
+      //   () =>
+      //     this.$store.commit('updatePosition', [{ lat: this.$store.state.geolocation.lat, lng: this.$store.state.geolocation.lng, zoom: 16 }])
+      //   , 1
+      // )
       this.$store.commit('updatePosition', [{ lat: this.$store.state.geolocation.lat, lng: this.$store.state.geolocation.lng, zoom: 16 }])
       if (this.IsFooterModalOpen) {
         this.closeFooterModal()
@@ -268,10 +246,10 @@ export default {
 .span-location{
   position: absolute;
   right: 5px;
-  top: 16px;
+  top: 20px;
 }
 .span-locationV2{
-  top: 12px;
+  top: 16px;
 }
 .locit-box {
   .close-button {
@@ -283,7 +261,7 @@ export default {
     right: 10px;
     top: 10px;
     position: absolute;
-    background: url('../../assets/clear.png') 0 0 no-repeat;
+    background: url('../../assets/icons/clear.png') 0 0 no-repeat;
     background-size: cover;
   }
   .span-location {
@@ -320,11 +298,16 @@ export default {
   display: block;
 }
 .clear-input{
-  color: #b4b1b1;
-  font-size: 30px;
+  width: 22px;
+  height: 22px;
+  display: flex;
   cursor: pointer;
+  filter: grayscale(0.5) opacity(0.5);
+  background: url('../../assets/icons/clear.png') 0 0 no-repeat;
+  background-size: cover;
 }
 .title{
+  padding-left: 20px;
   font-family: 'Lato', sans-serif;
   font-size: 22px;
   font-weight: 900;
@@ -354,7 +337,7 @@ export default {
   }
   &:before{
     content: '';
-    background: url('../../assets/gps24px.svg') 0 0 no-repeat;
+    background: url('../../assets/icons/gps24px.svg') 0 0 no-repeat;
     background-size: cover;
     margin-right: 10px;
     width: 25px;
@@ -387,7 +370,7 @@ export default {
   text-align: right;
   position: relative;
   &:before{
-    content: url(../../assets/gps24px.svg);
+    content: url(../../assets/icons/gps24px.svg);
     position: absolute;
     left: 5px;
     padding-right: 10px;
