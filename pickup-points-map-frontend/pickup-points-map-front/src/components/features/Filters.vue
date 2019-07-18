@@ -58,7 +58,7 @@ export default {
       checkedSuppliers: [],
       suppliers: [{
         id: 'Poczta Polska',
-        value: 'pocztaPolska',
+        value: 'Poczta Polska',
         name: 'Poczta Polska',
         src: 'pocztapolska.png',
         alt: 'Poczta Polska img'
@@ -71,47 +71,47 @@ export default {
         alt: 'DPD pickup img'
       }, {
         id: 'Zabka',
-        value: 'zabka',
+        value: 'Żabka',
         name: 'Żabka',
         src: 'żabka.png',
         alt: 'Żabka png'
       }, {
         id: 'Fresh',
-        value: 'fresh',
+        value: 'Fresh Market',
         name: 'Fresh',
         src: 'freshmarket.png',
         alt: 'Fresh png'
       }, {
         id: 'Paczkomaty In-post',
-        value: 'inpost',
+        value: 'In Post',
         name: 'Paczkomaty In-Post',
         src: 'inpost.png',
         alt: 'Paczkomaty In-Post img'
       }, {
         id: 'Paczka w ruchu',
-        value: 'paczkaWRuchu',
+        value: 'Paczka w Ruchu',
         name: 'Paczka w ruchu',
         src: 'paczka_w_ruchu.jpg',
         alt: 'Paczka w ruchu image'
       }],
       checkboxes: [{
         id: 'otwarteDoPozna',
-        value: 'openNight',
+        value: 'open_late',
         info: 'Otwarte do póżna',
         icon: 'pozna'
       }, {
         id: 'otwarteWSobotu',
-        value: 'openSat',
+        value: 'open_saturday',
         info: 'Otwarte w soboty',
         icon: 'sobota'
       }, {
         id: 'otwarteWNiedziele',
-        value: 'openSun',
+        value: 'open_sunday',
         info: 'Otwarte w niedziele',
         icon: 'niedziela'
       }, {
         id: 'dlaOsobNiepelnosprawnych',
-        value: 'disabledPeople',
+        value: 'disabled_friendly',
         info: 'Ułatwienie dla osób niepełnosprawnych',
         icon: 'niepelnosprawni'
       }, {
@@ -121,7 +121,7 @@ export default {
         icon: 'parking'
       }, {
         id: 'odbiorZaPobraniem',
-        value: 'cashOnDelivery',
+        value: 'cash_on_delivery',
         info: 'Odbiór za pobraniem',
         icon: 'pobraniem'
       }],
@@ -137,11 +137,17 @@ export default {
       return this.$store.state.isFilterMobilOpen
     },
     activeFilter () {
-      if (this.filters.length > 0 || this.checkedSuppliers.length > 0) {
-        return this.$store.getters.filterMarkers(this.filters, this.checkedSuppliers)
-      } else if (this.filters.length === 0) {
-        return this.$store.getters.clearFilters
-      }
+      // if (this.filters.length > 0 || this.checkedSuppliers.length > 0) {
+      //   // return this.$store.getters.filterMarkers(this.filters, this.checkedSuppliers)
+      //   this.$store.dispatch('get_pickup_points_map', {
+      //     lat: this.$store.state.lat,
+      //     lng: this.$store.state.lng,
+      //     dist: this.$store.state.radiusOfVisibily,
+      //     filter: metoh
+      //   })
+      // } else if (this.filters.length === 0) {
+      //   return this.$store.getters.clearFilters
+      // }
     }
   },
 
