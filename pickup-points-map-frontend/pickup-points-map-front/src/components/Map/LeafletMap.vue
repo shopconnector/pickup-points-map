@@ -144,7 +144,7 @@ export default {
       selectedPoint: Number,
       toogleMap: false,
       toogleModal: false,
-      url: 'https://{s}.tile.osm.org/{z}/{x}/{y}.png',
+      url: 'https://atileosmorg-luldmjs.stackpathdns.com/{z}/{x}/{y}.png',
       attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
       iconsUrl: {
         'Żabka': require('../../assets/logos/żabka.png'),
