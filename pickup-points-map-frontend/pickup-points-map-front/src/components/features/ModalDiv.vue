@@ -6,13 +6,13 @@
           <div class="selected-supplier" :class="{'selected-supplierV2' : isWidgetVersion}">
             <div class="col-1" :class="{'col1-v2' : isWidgetVersion}">
               <div class="address">
-                <h4>{{parentData.address1}}</h4>
-                <p>{{parentData.zip}} {{parentData.address2}}</p>
-                <p>PL13883</p>
+                <h4>{{ parentData.street }}</h4>
+                <p>{{ parentData.zip }} {{ parentData.city }}</p>
+                <p v-if="parentData.points[0].id.length" >{{ parentData.points[0].id }}</p>
               </div>
               <div class="shop paddbott">
-                <p>{{parentData.shop}}</p>
-                <p>{{parentData.phone}}</p>
+                <p>{{ parentData.pickup_type }}</p>
+                <p v-if="parentData.points[0].phones.length" >{{ parentData.points[0].phones }}</p>
               </div>
               <div class="shop additional">
                 <p>Parking</p>
@@ -24,7 +24,7 @@
             <div class="col-2" :class="{'col2-v2' : isWidgetVersion}">
               <div class="info-box">
                 <div class="logo">
-                  <img :src="parentData.icon.iconUrl" :alt="parentData.icon.alt" class="img">
+                  <!-- <img :src="parentData.icon.iconUrl" :alt="parentData.icon.alt" class="img"> -->
                 </div>
                 <div class="road">
                   <a :href="linkToRoad" target="_blank">Wyznacz trasę dojazdu <i class="play_arrow"/></a>
@@ -51,8 +51,8 @@
           </div>
        </div>
        <div class="footer">
-         <p class="powrot" @click ="closeModal()" :class="{'powrot-v2' : isWidgetVersion}"><i class="arrow_left"/>POWRÓT</p>
-         <p class="zamknij" :class="{'zamknij-v2' : isWidgetVersion}">WYBIERZ DPD I ZAMKNIJ</p>
+         <p class="powrot" @click="closeModal()" :class="{'powrot-v2' : isWidgetVersion}"><i class="arrow_left"/>POWRÓT</p>
+         <p class="zamknij" :class="{'zamknij-v2' : isWidgetVersion}">Wybierz {{ parentData.pickup_type }} i zamknij</p>
        </div>
     </div>
     <!-- Modal DIV for mobile map -->
@@ -102,14 +102,8 @@ import { MobileDetected } from '../mobileDetected.ts'
 export default {
   name: 'ModalDiv',
   mixins: [MobileDetected],
-  props: {
-    parentData: Object,
-    toogleModal: Boolean,
-    parentSelectedId: String
-  },
   data () {
     return {
-      mutableToogleModal: this.toogleModal,
       logosUrl: {
         zabka: require('../../assets/logos/żabka.png'),
         dpd: require('../../assets/logos/dpd.png'),
@@ -121,11 +115,14 @@ export default {
     }
   },
   computed: {
+    parentData () {
+      return this.$store.state.markerDetails
+    },
     isWidgetVersion () {
       return this.$store.state.WidgetVersion
     },
     linkToRoad () {
-      let url = 'https://www.google.pl/maps/dir/' + this.$store.state.lat + ',' + this.$store.state.lng + '/' + this.parentData.position.lat + ',' + this.parentData.position.lng + '/@52.2502198,21.0280249 + ,16z/data=!4m2!4m1!3e3?hl=pl'
+      let url = 'https://www.google.pl/maps/dir/' + this.$store.state.lat + ',' + this.$store.state.lng + '/' + this.parentData.lat + ',' + this.parentData.lon + '/@52.2502198,21.0280249 + ,16z/data=!4m2!4m1!3e3?hl=pl'
       return url
     }
   },

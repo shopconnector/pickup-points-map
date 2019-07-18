@@ -63,30 +63,33 @@
           :center="center"
           :options="{zoomControl: false}"
           @update:bounds="boundsUpdated"
-          @update:zoom="zoomUpdated"
           @update:center="centerUpdated"
+          @update:zoom="zoomUpdated"
+          @popupopen="popupOpen"
+          @popupclose="popupClose"
         >
             <l-tile-layer :url="url" :attribution="attribution" />
             <template v-if="markers[0] !== 'empty'">
               <l-marker
-                v-for="(marker, index) in pointMarkers"
+                v-for="marker in pointMarkers"
                 :key="marker.id"
                 :visible="true"
                 :lat-lng="{ lat: marker.lat, lng: marker.lon }"
                 class-name="markertype"
-                v-on="isMobile ? { click: () => selectedPopup(index, index) } : {} "
+                @click="getPointDetails(marker.lat, marker.lon, marker.pickup_type)"
               >
+              <!-- v-on="isMobile ? { click: () => testTest(marker.lat, marker.lon, marker.pickup_type) } : {} " -->
                 <l-icon :icon-anchor="[iconsUrl[marker.pickup_type]]" :icon-size="[52, 52]" class-name="someExtraClass">
                   <img :src="pinsUrl[marker.pickup_type]" width="52" height="52"/>
                 </l-icon>
-                <!-- <transition name="bounce">
+                <transition name="bounce">
                   <l-popup v-if="!isMobile">
                     <div class="popup-box">
                       <img class="popup-marker" :src="pinsUrl[marker.pickup_type]" width="102" height="102"/>
                       <div class="popup-info">
                         <div class="popup-text-box">
-                          <p class="popup-text">
-                            <b>{{ marker.address1 }}</b><br> {{ marker.zip}} {{marker.address2}}, <br>PL13883
+                          <p class="popup-text" v-if="$store.state.markerDetails.length !== 0">
+                            <b>{{ $store.state.markerDetails.street }}</b><br> {{ $store.state.markerDetails.zip }} {{ $store.state.markerDetails.city }}, <br> {{ $store.state.markerDetails.points[0].id }}
                           </p>
                         </div>
                         <div class="popup-img" >
@@ -94,11 +97,11 @@
                         </div>
                       </div>
                       <div class="popup-action">
-                        <p class="popup-button" @click="selectedPopup(marker.id, index)">Wybierz</p>
+                        <p class="popup-button" @click="toogleMethod()" @close="onCloseChild">Wybierz</p>
                       </div>
                     </div>
                   </l-popup>
-                </transition> -->
+                </transition>
               </l-marker>
             </template>
         </l-map>
@@ -107,7 +110,7 @@
     <div>
       <transition :name="isMobile ? 'fade-in-up' : 'bounce'">
         <div class="modal-position" :class="{'modal-positionV2' : !isWidgetVersion}" v-if="toogleModal">
-          <ModalDiv :parentData="selectedMarker" :parentSelectedId = "selectedMarkerId" :toogleModal="toogleModal" @close="onCloseChild"/>
+          <ModalDiv/>
         </div>
       </transition>
     </div>
@@ -137,13 +140,10 @@ export default {
   mixins: [MobileDetected],
   data () {
     return {
-      isOpenModalMap: 0,
-      isListFooter: false,
+      isPopupOpen: false,
       selectedPoint: Number,
       toogleMap: false,
       toogleModal: false,
-      selectedMarker: Object,
-      selectedMarkerId: String,
       url: 'https://{s}.tile.osm.org/{z}/{x}/{y}.png',
       attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
       iconsUrl: {
@@ -173,7 +173,21 @@ export default {
     }
   },
   computed: {
-
+    // zoomClosest () {
+    //   let pins = this.$store.state.pointMarkers
+    //   var dist = Math.max.apply(Math, pins.map((pin) => {
+    //     var fromLng = this.$store.state.lng / 180.0 * Math.PI
+    //     var fromLat = this.$store.state.lat / 180.0 * Math.PI
+    //     var pointLng = pin.lon / 180.0 * Math.PI
+    //     var pointLat = pin.lat / 180.0 * Math.PI
+    //     return Math.acos(Math.sin(fromLat) * Math.sin(pointLat) + (Math.cos(fromLat) * Math.cos(pointLat) * Math.cos(pointLng - fromLng))) * 6371000
+    //   }))
+    //   var x = Math.pow(dist, 2)
+    //   var C = 2 * Math.PI * 6378137.000
+    //   var temp = Math.abs((C * Math.cos(53.06616)) / x)
+    //   var zoom = Math.round(Math.log2(temp) + 14)
+    //   return zoom
+    // },
     // calc () {
     //   console.log(Math.sqrt((52.2353 - 52.2241)*(52.2353 - 52.2241)+(21.0150 - 21.0032) * (21.0150 - 21.0032)))
     // },
@@ -207,7 +221,7 @@ export default {
     zoomOrCenterUpdate: {
       handler () {
         this.$store.commit('changePageNumber', 1)
-        if (this.$store.state.radiusOfVisibily < 6700) {
+        if (this.$store.state.zoom >= 13 && !this.isPopupOpen) {
           this.$store.dispatch('get_points', {
             lat: this.$store.state.lat,
             lng: this.$store.state.lng,
@@ -237,23 +251,20 @@ export default {
     // })
   },
   methods: {
-    // zoomClosest () {
-    //   let pins = this.$store.state.testMarkers
-    //   var dist = Math.max.apply(Math, pins.map((pin) => {
-    //     var fromLng = this.$store.state.lng / 180.0 * Math.PI
-    //     var fromLat = this.$store.state.lat / 180.0 * Math.PI
-    //     var pointLng = pin.lon / 180.0 * Math.PI
-    //     var pointLat = pin.lat / 180.0 * Math.PI
-    //     var dist = Math.acos(Math.sin(fromLat) * Math.sin(pointLat) + (Math.cos(fromLat) * Math.cos(pointLat) * Math.cos(pointLng - fromLng))) * 6371000
-    //     console.log(pin.lat, pin.lon, dist)
-    //     return dist
-    //   }))
-    //   var x = Math.pow(dist, 2)
-    //   var C = 2 * Math.PI * 6378137.000
-    //   var temp = Math.abs((C * Math.cos(53.06616)) / x)
-    //   var zoom = Math.round(Math.log2(temp) + 14)
-    //   return zoom
-    // },
+    popupOpen () {
+      this.isPopupOpen = true
+    },
+    popupClose () {
+      this.isPopupOpen = false
+      this.$store.commit('clear_point_details')
+    },
+    getPointDetails (lat, lng, type) {
+      this.$store.dispatch('get_point_details', {
+        lat: lat,
+        lng: lng,
+        type: type
+      })
+    },
     loadMorePoints () {
       var newPage = this.$store.state.pageNumber + 1
       this.$store.commit('changePageNumber', newPage)
@@ -271,11 +282,11 @@ export default {
       }
       this.$store.commit('closeListFooter')
     },
-    zoomUpdated (zoom) {
-      this.$store.commit('updatePosition', [{ lat: null, lng: null, zoom: zoom }])
-    },
     centerUpdated (center) {
-      this.$store.commit('updatePosition', [{ lat: center.lat, lng: center.lng, zoom: null }])
+      this.$store.commit('updatePosition2', [{ lat: center.lat, lng: center.lng, zoom: null }])
+    },
+    zoomUpdated (zoom) {
+      this.$store.commit('updatePosition2', [{ lat: null, lng: null, zoom: zoom }])
     },
     boundsUpdated (bounds) {
       var fromLng = bounds._northEast.lng / 180.0 * Math.PI
@@ -286,22 +297,15 @@ export default {
       var rad = Math.round(dist / 2)
       this.$store.commit('changeRadiusOfVisibility', rad)
     },
-    selectedPopup (id, index) {
-      this.toogleModal = false
-      setTimeout(() => this.toogleMethod(id, index), 500)
-    },
-    toogleMethod (id, index) {
-      if (this.selectedMarkerId !== id) {
-        this.toogleModal = true
-        this.selectedMarkerId = id
-      } else {
-        this.selectedMarkerId = ''
-      }
-      this.selectedMarker = this.markers[index]
+    // selectedPopup (id, index) {
+    //   this.toogleModal = false
+    //   setTimeout(() => this.toogleMethod(id, index), 500)
+    // },
+    toogleMethod () {
+      this.toogleModal = !this.toogleModal
     },
     onCloseChild () {
       this.toogleModal = false
-      this.selectedMarkerId = ''
     },
     openListModal (index) {
       this.selectedPoint = index

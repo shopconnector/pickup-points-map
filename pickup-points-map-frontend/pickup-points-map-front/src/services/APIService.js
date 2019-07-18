@@ -12,5 +12,10 @@ export default {
     return axios({
       url: `${API_URL}/pickup-points-map?lat=${query.lat}&lon=${query.lng}&dist=${query.dist}`
     })
+  },
+  get_point_details (query) {
+    return axios({
+      url: `${API_URL}/address-details?lat=${query.lat}&lon=${query.lng}&pickup_type=${query.type}`
+    })
   }
 }

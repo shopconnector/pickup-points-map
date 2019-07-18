@@ -114,6 +114,11 @@ export default {
           this.$store.commit('updatePosition', [{ lat: this.$store.state.geolocation.lat, lng: this.$store.state.geolocation.lng, zoom: 16 }])
         , 100
       )
+      setTimeout(
+        () =>
+          this.$store.commit('updatePosition2', [{ lat: this.$store.state.geolocation.lat, lng: this.$store.state.geolocation.lng, zoom: 16 }])
+        , 100
+      )
       if (this.IsFooterModalOpen) {
         this.closeFooterModal()
       }
@@ -353,7 +358,7 @@ export default {
 }
 .my-locationV2{
   cursor: pointer;
-  flex-basis: 30%;
+  flex-basis: 25%;
   padding-left: 25px;
   color: #989898;
   font-size: 14px;
@@ -428,7 +433,7 @@ export default {
 }
 .input-tagV2{
   display: flex;
-  flex: 0 0 45%;
+  flex: 0 0 65%;
   border: 3px solid #E5E5E5;
   background-color: transparent;
   border-radius: 9px;
