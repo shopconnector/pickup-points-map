@@ -255,6 +255,7 @@ export default {
       this.isPopupOpen = true
     },
     popupClose () {
+      this.toogleModal = false
       this.isPopupOpen = false
       this.$store.commit('clear_point_details')
     },
