@@ -33,6 +33,7 @@
         </div>
       </div>
     </div>
+    <h1 @click="filteredPoints()">Test</h1>
     <!-- Mobile version -->
     <div class="mobile-filters-footer">
       <div class="wyczysc">
@@ -138,16 +139,25 @@ export default {
     },
     activeFilter () {
       // if (this.filters.length > 0 || this.checkedSuppliers.length > 0) {
-      //   // return this.$store.getters.filterMarkers(this.filters, this.checkedSuppliers)
+      //    return this.$store.getters.filterMarkers(this.filters, this.checkedSuppliers)
       //   this.$store.dispatch('get_pickup_points_map', {
       //     lat: this.$store.state.lat,
       //     lng: this.$store.state.lng,
-      //     dist: this.$store.state.radiusOfVisibily,
+      //     dist: this.$store.state.radiusOfVisibily
       //     filter: metoh
       //   })
       // } else if (this.filters.length === 0) {
       //   return this.$store.getters.clearFilters
       // }
+
+      if (this.filters.length > 0 || this.checkedSuppliers.length > 0) {
+        return this.$store.dispatch('get_filtered_points', {
+          lat: this.$store.state.lat,
+          lng: this.$store.state.lng,
+          dist: this.$store.state.radiusOfVisibily,
+          filtered: this.filteredPoints()
+        })
+      }
     }
   },
 
@@ -161,6 +171,33 @@ export default {
   },
 
   methods: {
+    filteredPoints () {
+      var features = []
+      var pickupTypes = []
+      if (this.filters.length > 0) {
+        features = this.filters.map(x => {
+          return `&features[]=${x}`
+        })
+      }
+      if (this.checkedSuppliers.length > 0) {
+        pickupTypes = this.checkedSuppliers.map(x => {
+          return `&pickup_types[]=${x}`
+        })
+      }
+      var temp = features.concat(pickupTypes)
+      console.log(temp)
+      return temp.join('')
+      // var temp = []
+      // for (let i = 0; i < Math.max(features.length, pickupTypes.length); i++) {
+      //   if (features[i] != null) {
+      //     temp.push(features[i])
+      //   }
+      //   if (pickupTypes[i] != null) {
+      //     temp.push(pickupTypes[i])
+      //   }
+      // }
+      // console.log(temp)
+    },
     clearFilter () {
       this.checkedSuppliers = []
       this.filters = []

@@ -22,6 +22,8 @@ export default new Vuex.Store({
     radiusOfVisibily: 0,
     filteredMarkers: [],
     markerDetails: [],
+    filteredMapPoints: [],
+    filteredListPoints: [],
     // testMarkers: [
     //   {lat: 53.06616, pickup_type: 'Poczta Polska', lon: 19.287343},
     //   {lat: 53.08668, pickup_type: 'Poczta Polska', lon: 19.195922},
@@ -274,7 +276,6 @@ export default new Vuex.Store({
       } else {
         state.pointMarkers = points
         state.zoom = 13
-        console.log('tests')
         state.status = 'success, points loaded'
       }
     },
@@ -313,6 +314,43 @@ export default new Vuex.Store({
     },
     clear_point_details (state) {
       state.markerDetails = []
+    },
+    // FILTERED POINTS COMMIT
+    get_filtered_points (state) {
+      state.state = 'loading filtered points'
+    },
+    get_filtered_points_succ (state, filteredPoints) {
+      if (state.zoom < 13) {
+        state.pointMarkers = []
+        state.status = 'success, but distance too long'
+      } else {
+        state.pointMarkers = filteredPoints
+        state.status = 'success, filtered points loaded'
+      }
+    },
+    get_filtered_points_err (state) {
+      state.status = 'error, filtered points couldnt be loaded'
+    },
+    // FILTERED LIST POINTS COMMIT
+    get_filtered_list_points (state) {
+      state.status = 'loading filtered list points'
+    },
+    get_filtered_list_points_succ (state, filteredListPoints) {
+      if (state.zoom < 13) {
+        state.filteredListPoints = []
+        state.status = 'success, but distance too long for list'
+      } else {
+        if (state.pageNumber === 1) {
+          state.filteredListPoints = filteredListPoints
+          state.status = 'success, filtered list points loaded'
+        } else {
+          state.filteredListPoints = state.filteredListPoints.concat(filteredListPoints)
+          state.status = 'success, more filtered list points loaded'
+        }
+      }
+    },
+    get_filtered_list_points_err (state) {
+      state.status = 'loading filtered list points'
     }
   },
   actions: {
@@ -346,6 +384,37 @@ export default new Vuex.Store({
             resolve(res)
           }).catch(err => {
             commit('get_list_points_err')
+            reject(err)
+          })
+      })
+    },
+    get_filtered_points ({commit}, query) {
+      return new Promise((resolve, reject) => {
+        console.log(query)
+        commit('get_filtered_points')
+        APIService.get_filtered_points(query)
+          .then(res => {
+            console.log(res)
+            const filteredPoints = res.data.response.pickupPoints
+            commit('get_filtered_points_succ', filteredPoints)
+            resolve(res)
+          }).catch(err => {
+            commit('get_filtered_points_err')
+            reject(err)
+          })
+      })
+    },
+    get_filtered_list_points ({commit}, query) {
+      return new Promise((resolve, reject) => {
+        commit('get_filtered_list_points')
+        APIService.get_filtered_list_points(query)
+          .then(res => {
+            console.log(res)
+            const filteredListPoints = res.data.response.pickupPoints
+            commit('get_filtered_list_points_succ', filteredListPoints)
+            resolve(res)
+          }).catch(err => {
+            commit('get_filtered_list_points_err')
             reject(err)
           })
       })
