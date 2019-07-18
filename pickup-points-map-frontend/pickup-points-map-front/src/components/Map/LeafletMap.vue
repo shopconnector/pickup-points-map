@@ -2,7 +2,7 @@
 <div :class="{'list-background-mobile-fix' : isMobile}">
   <div :class="isWidgetVersion ? 'map-v2' : 'map'">
     <div class="type-actions" :class="{'type-actions-v2' : !isWidgetVersion}">
-      <p class="button-action" :class="{ 'active' : !toogleMap }" @click="toogleMapMethod('show')">Mapa</p>
+      <p class="button-action" :class="{ 'active' : !toogleMap }" @click="toogleMapMethod('show')">Mapa {{ test() }}</p>
       <p class="button-action" :class="{ 'active' : toogleMap }" @click="toogleMapMethod('hide')">Lista</p>
     </div>
     <div v-if="$store.state.radiusOfVisibily > 6700" class="error-info">
@@ -171,6 +171,7 @@ export default {
     }
   },
   computed: {
+
     // calc () {
     //   console.log(Math.sqrt((52.2353 - 52.2241)*(52.2353 - 52.2241)+(21.0150 - 21.0032) * (21.0150 - 21.0032)))
     // },
@@ -234,6 +235,22 @@ export default {
     // })
   },
   methods: {
+    zoomClosest () {
+      let pins = this.$store.state.testMarkers
+      var dist = Math.max.apply(Math, pins.map((pin) => {
+        var fromLng = this.$store.state.lng / 180.0 * Math.PI
+        var fromLat = this.$store.state.lat / 180.0 * Math.PI
+        var pointLng = pin.lon / 180.0 * Math.PI
+        var pointLat = pin.lat / 180.0 * Math.PI
+        var dist = Math.acos(Math.sin(fromLat) * Math.sin(pointLat) + (Math.cos(fromLat) * Math.cos(pointLat) * Math.cos(pointLng - fromLng))) * 6371000
+        console.log(pin.lat, pin.lon, dist)
+        return dist
+      }))
+      var x = Math.pow(dist, 2)
+      var C = 2 * Math.PI * 6378137.000
+      var temp = Math.abs((C * Math.cos(53.06616)) / x)
+      var zoom = Math.round(Math.log2(temp) + 14)
+    },
     loadMorePoints () {
       var newPage = this.$store.state.pageNumber + 1
       this.$store.commit('changePageNumber', newPage)
