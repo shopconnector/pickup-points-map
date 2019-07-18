@@ -21,6 +21,19 @@ export default new Vuex.Store({
     lng: 19.2850,
     radiusOfVisibily: 0,
     filteredMarkers: [],
+    testMarkers: [
+      {lat: 53.06616, pickup_type: 'Poczta Polska', lon: 19.287343},
+      {lat: 53.08668, pickup_type: 'Poczta Polska', lon: 19.195922},
+      {lat: 53.0675, pickup_type: 'In Post', lon: 19.406469},
+      {lat: 53.064636, pickup_type: 'Żabka', lon: 19.409622},
+      {lat: 53.063569, pickup_type: 'In Post', lon: 19.41083},
+      {lat: 53.0659, pickup_type: 'Poczta Polska', lon: 19.411677},
+      {lat: 53.07249, pickup_type: 'In Post', lon: 19.41168},
+      {lat: 53.06452, pickup_type: 'Poczta Polska', lon: 19.418736},
+      {lat: 53.0626, pickup_type: 'In Post', lon: 19.4202},
+      {lat: 53.06826, pickup_type: 'Poczta Polska', lon: 19.417981}
+    ],
+    // markers: []
     markers: [
       {
         id: 'm1',
@@ -212,19 +225,19 @@ export default new Vuex.Store({
       state.filtersCount = n
     },
     // API CALLS
-    get_points (state) {
+    get_points_map (state) {
       state.status = 'loading points'
     },
-    get_points_succ (state, points) {
+    get_points_map_succ (state, points) {
       state.markers = points
       state.status = 'success, points loaded'
     },
-    get_points_err (state) {
+    get_points_map_err (state) {
       state.status = 'error, points couldnt be loaded'
     },
+    // API CALLS ENDS
     updatePosition (state, newPosition) {
       var point = newPosition[0]
-      console.log(point)
       if (state.geolocation.lat !== null && state.geolocation.lng !== null) {
         if (point.zoom) {
           state.zoom = point.zoom
@@ -239,16 +252,17 @@ export default new Vuex.Store({
     }
   },
   actions: {
-    get_points ({commit}, query) {
+    // GET POINTS FOR MAP
+    get_points_map ({commit}, query) {
       return new Promise((resolve, reject) => {
-        commit('get_points')
-        APIService.get_points(query)
+        commit('get_points_map')
+        APIService.get_points_map(query)
           .then(res => {
-            const points = res.response.pickupPoints
-            commit('get_points_succ', points)
+            // const points = res.response.pickupPoints
+            // commit('get_points_map_succ', points)
             resolve(res)
           }).catch(err => {
-            commit('get_points_err')
+            commit('get_points_map_err')
             reject(err)
           })
       })
