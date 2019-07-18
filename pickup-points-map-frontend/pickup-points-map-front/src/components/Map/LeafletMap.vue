@@ -5,16 +5,15 @@
       <p class="button-action" :class="{ 'active' : !toogleMap }" @click="toogleMapMethod('show')">Mapa</p>
       <p class="button-action" :class="{ 'active' : toogleMap }" @click="toogleMapMethod('hide')">Lista</p>
     </div>
-    <div v-if="$store.state.radiusOfVisibily > 6700" class="error-info">
+    <div v-if="$store.state.zoom < 13" class="error-info">
       <p>Wybierz adres/lokalizację aby<br>zobaczyć najbliższe punkty odbioru</p>
     </div>
     <transition name="fade">
       <div  v-if="toogleMap" class="list-box" :class="{'listbox-margin-top' : isWidgetVersion}">
           <div class="list-title hidden-xs"><h1>Punkty odbioru w pobliżu Twojej lokalizacji</h1></div>
-          <div class="scroll-box" :class="{'change-vh' : !isWidgetVersion}">
+          <div v-show="listMarkers.length !== 0" class="scroll-box" :class="{'change-vh' : !isWidgetVersion}">
               <div class="list-row" :class="{'list-row-modal' : isOpenListModal(index)}"
                 v-for="(listMarker, index) in listMarkers"
-                v-show="markers[0] !== 'empty'"
                 :key="index"
                 @click="openListModal(index)">
                   <div class="list-elem list-elem-img">
@@ -52,6 +51,9 @@
                     </transition> -->
               </div>
               <div v-if="$store.state.listMarkers.length !== 0" class="load-box" @click="loadMorePoints()"><p class="load-button">Załaduj więcej</p></div>
+          </div>
+          <div v-show="listMarkers.length === 0">
+            <p class="empty-text">Wybierz adres/lokalizację aby zobaczyć najbliższe punkty odbioru</p>
           </div>
       </div>
     </transition>
@@ -235,23 +237,23 @@ export default {
     // })
   },
   methods: {
-    zoomClosest () {
-      let pins = this.$store.state.testMarkers
-      var dist = Math.max.apply(Math, pins.map((pin) => {
-        var fromLng = this.$store.state.lng / 180.0 * Math.PI
-        var fromLat = this.$store.state.lat / 180.0 * Math.PI
-        var pointLng = pin.lon / 180.0 * Math.PI
-        var pointLat = pin.lat / 180.0 * Math.PI
-        var dist = Math.acos(Math.sin(fromLat) * Math.sin(pointLat) + (Math.cos(fromLat) * Math.cos(pointLat) * Math.cos(pointLng - fromLng))) * 6371000
-        console.log(pin.lat, pin.lon, dist)
-        return dist
-      }))
-      var x = Math.pow(dist, 2)
-      var C = 2 * Math.PI * 6378137.000
-      var temp = Math.abs((C * Math.cos(53.06616)) / x)
-      var zoom = Math.round(Math.log2(temp) + 14)
-      return zoom
-    },
+    // zoomClosest () {
+    //   let pins = this.$store.state.testMarkers
+    //   var dist = Math.max.apply(Math, pins.map((pin) => {
+    //     var fromLng = this.$store.state.lng / 180.0 * Math.PI
+    //     var fromLat = this.$store.state.lat / 180.0 * Math.PI
+    //     var pointLng = pin.lon / 180.0 * Math.PI
+    //     var pointLat = pin.lat / 180.0 * Math.PI
+    //     var dist = Math.acos(Math.sin(fromLat) * Math.sin(pointLat) + (Math.cos(fromLat) * Math.cos(pointLat) * Math.cos(pointLng - fromLng))) * 6371000
+    //     console.log(pin.lat, pin.lon, dist)
+    //     return dist
+    //   }))
+    //   var x = Math.pow(dist, 2)
+    //   var C = 2 * Math.PI * 6378137.000
+    //   var temp = Math.abs((C * Math.cos(53.06616)) / x)
+    //   var zoom = Math.round(Math.log2(temp) + 14)
+    //   return zoom
+    // },
     loadMorePoints () {
       var newPage = this.$store.state.pageNumber + 1
       this.$store.commit('changePageNumber', newPage)
@@ -370,6 +372,13 @@ export default {
 </style>
 
 <style lang="scss" scoped>
+.empty-text {
+  margin: 0;
+  color: #E54C69;
+  @media (max-width: 767px) {
+    text-align: center;
+  }
+}
 .load-box {
   display: flex;
   justify-content: center;
