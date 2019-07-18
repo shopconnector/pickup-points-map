@@ -27,7 +27,7 @@
                   </div>
                   <div class="list-elem hours-elem">
                     <b>Godziny otwarcia:</b>
-                    {{ listMarker.address.working_hours }}
+                    {{ listMarker.working_hours }}
                   </div>
                   <div class="list-elem btn-elem">
                     <!-- @click="selectedPopup(marker.id, index)" -->
@@ -51,7 +51,7 @@
                       </div>
                     </transition> -->
               </div>
-              <div @click="loadMorePoints()">Załaduj więcej</div>
+              <div v-if="$store.state.listMarkers.length !== 0" class="load-box" @click="loadMorePoints()"><p class="load-button">Załaduj więcej</p></div>
           </div>
       </div>
     </transition>
@@ -216,7 +216,6 @@ export default {
             page: this.$store.state.pageNumber
           })
         }
-        console.log('!!!!!!!!!!!!! UPDATE !!!!!!!!!!!!')
       },
       deep: true
     }
@@ -254,35 +253,9 @@ export default {
     },
     zoomUpdated (zoom) {
       this.$store.commit('updatePosition', [{ lat: null, lng: null, zoom: zoom }])
-      // this.$store.commit('changePageNumber', 1)
-      // if (this.$store.state.radiusOfVisibily < 6700) {
-      //   this.$store.dispatch('get_points', {
-      //     lat: this.$store.state.lat,
-      //     lng: this.$store.state.lng,
-      //     dist: this.$store.state.radiusOfVisibily
-      //   })
-      //   this.$store.dispatch('get_list_points', {
-      //     lat: this.$store.state.lat,
-      //     lng: this.$store.state.lng,
-      //     page: this.$store.state.pageNumber
-      //   })
-      // }
     },
     centerUpdated (center) {
       this.$store.commit('updatePosition', [{ lat: center.lat, lng: center.lng, zoom: null }])
-      // this.$store.commit('changePageNumber', 1)
-      // if (this.$store.state.radiusOfVisibily < 6700) {
-      //   this.$store.dispatch('get_points', {
-      //     lat: center.lat,
-      //     lng: center.lng,
-      //     dist: this.$store.state.radiusOfVisibily
-      //   })
-      //   this.$store.dispatch('get_list_points', {
-      //     lat: this.$store.state.lat,
-      //     lng: this.$store.state.lng,
-      //     page: 1
-      //   })
-      // }
     },
     boundsUpdated (bounds) {
       var fromLng = bounds._northEast.lng / 180.0 * Math.PI
@@ -379,6 +352,20 @@ export default {
 </style>
 
 <style lang="scss" scoped>
+.load-box {
+  display: flex;
+  justify-content: center;
+  .load-button {
+    margin: 40px 0;
+    background-color: #E4405F;
+    padding: 10px 15px;
+    border-radius: 50px;
+    color: white;
+    display: inline;
+    text-align: center;
+    cursor: pointer;
+  }
+}
 .list-background-mobile-fix{
   background: #F5F5F5;
 }
@@ -546,7 +533,6 @@ display: flex;
 .hours-elem{
   flex-basis: 30% !important;
   max-width: 30% !important;
-  text-align: right !important;
 }
 .btn-elem{
   flex-basis: 20% !important;
@@ -573,6 +559,7 @@ display: flex;
         text-align: center;
         cursor: pointer;
       }
+      text-align: center;
       flex-basis: 25%;
       max-width: 25%;
       display: flex;

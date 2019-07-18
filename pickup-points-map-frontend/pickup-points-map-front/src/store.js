@@ -255,11 +255,9 @@ export default new Vuex.Store({
       } else {
         if (state.pageNumber === 1) {
           state.listMarkers = points
-          console.log('success')
           state.status = 'success, list points loaded'
         } else {
           state.listMarkers = state.listMarkers.concat(points)
-          console.log('success list')
           state.status = 'success, more list points loaded'
         }
       }

@@ -12,9 +12,6 @@
         </div>
       </div>
       <!-- Select suppliers second version -->
-      zoom: {{ $store.state.zoom }}
-      promień: {{ $store.state.radiusOfVisibily }} metrów
-      {{ $store.state.status }}
       <div v-if="!isWidgetVersion || isMobile">
         <h2 class="title-dostawcow">Wybierz dostawców</h2>
         <div class="suppliers-menu-dostawcow">

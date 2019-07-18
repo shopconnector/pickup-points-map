@@ -4,7 +4,7 @@
       <h2 class="title">Wybierz lokalizację</h2>
     </div>
     <div class="choose-location" v-if="!isMobile">
-        <h3 :class="isWidgetVersion ? 'my-location' : 'my-locationV2'" @click="currentPos()">Użyj mojej lokalizacji</h3>
+        <h3 :class="[ isWidgetVersion ? 'my-location' : 'my-locationV2', $store.state.geolocation.lat ? 'active' : '']" @click="currentPos()">Użyj mojej lokalizacji</h3>
         <p class="lub">lub</p>
         <div style="position: relative; display: block; width: 72%; flex: 0 0 40%;">
         <vue-autosuggest
@@ -330,7 +330,7 @@ export default {
   height: 35px;
   margin: 10px 0;
   cursor: pointer;
-  &:hover{
+  &.active{
     background-color: #E5E5E5;
     border-radius: 3px;
   }
@@ -377,7 +377,7 @@ export default {
     height: 25px;
     filter: opacity(0.4)
   }
-  &:hover{
+  &.active{
     background-color: #3F87F5;
     color:#FFFFFF;
     cursor: pointer;
