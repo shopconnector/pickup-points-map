@@ -2,7 +2,7 @@
 <div :class="{'list-background-mobile-fix' : isMobile}">
   <div :class="isWidgetVersion ? 'map-v2' : 'map'">
     <div class="type-actions" :class="{'type-actions-v2' : !isWidgetVersion}">
-      <p class="button-action" :class="{ 'active' : !toogleMap }" @click="toogleMapMethod('show')">Mapa {{ test() }}</p>
+      <p class="button-action" :class="{ 'active' : !toogleMap }" @click="toogleMapMethod('show')">Mapa</p>
       <p class="button-action" :class="{ 'active' : toogleMap }" @click="toogleMapMethod('hide')">Lista</p>
     </div>
     <div v-if="$store.state.radiusOfVisibily > 6700" class="error-info">
@@ -250,6 +250,7 @@ export default {
       var C = 2 * Math.PI * 6378137.000
       var temp = Math.abs((C * Math.cos(53.06616)) / x)
       var zoom = Math.round(Math.log2(temp) + 14)
+      return zoom
     },
     loadMorePoints () {
       var newPage = this.$store.state.pageNumber + 1
@@ -595,6 +596,8 @@ display: flex;
     flex-wrap: wrap;
   }
   .scroll-box {
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
     overflow-y: scroll;
     height: 70vh;
     border: 1px solid #AAAAAA;

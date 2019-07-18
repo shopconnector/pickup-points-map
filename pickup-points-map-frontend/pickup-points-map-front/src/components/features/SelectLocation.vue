@@ -352,6 +352,7 @@ export default {
   }
 }
 .my-locationV2{
+  cursor: pointer;
   flex-basis: 30%;
   padding-left: 25px;
   color: #989898;

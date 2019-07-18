@@ -243,7 +243,7 @@ export default new Vuex.Store({
       }
     },
     // API CALLS
-    get_points_map (state) {
+    get_points (state) {
       state.status = 'loading points'
     },
     get_points_succ (state, points) {
@@ -255,7 +255,7 @@ export default new Vuex.Store({
         state.status = 'success, points loaded'
       }
     },
-    get_points_map_err (state) {
+    get_points_err (state) {
       state.status = 'error, points couldnt be loaded'
     },
     get_list_points (state) {
@@ -281,16 +281,16 @@ export default new Vuex.Store({
   },
   actions: {
     // GET POINTS FOR MAP
-    get_points_map ({commit}, query) {
+    get_points ({commit}, query) {
       return new Promise((resolve, reject) => {
-        commit('get_points_map')
-        APIService.get_points_map(query)
+        commit('get_points')
+        APIService.get_points(query)
           .then(res => {
             const points = res.data.response.pickupPoints
             commit('get_points_succ', points)
             resolve(res)
           }).catch(err => {
-            commit('get_points_map_err')
+            commit('get_points_err')
             reject(err)
           })
       })
