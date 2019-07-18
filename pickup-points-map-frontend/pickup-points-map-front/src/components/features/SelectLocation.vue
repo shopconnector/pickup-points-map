@@ -121,7 +121,7 @@ export default {
     getSuggestionValue (suggestion) {
       if (suggestion) {
         this.suggestionText = suggestion.item
-        this.$store.commit('updatePosition', [{ lat: suggestion.item.y, lng: suggestion.item.x, zoom: 16 }])
+        this.$store.commit('updatePosition', [{ lat: Number(suggestion.item.y), lng: Number(suggestion.item.x), zoom: 16 }])
         this.customSuggestion = suggestion.item
         return this.suggestionText.city + ', ' + this.suggestionText.prefix + ' ' + this.suggestionText.street + ' ' + this.suggestionText.building
       } else {

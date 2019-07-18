@@ -3,9 +3,14 @@ import axios from 'axios'
 const API_URL = 'https://api.pickuppointsmap.dev.beecommerce.pl'
 
 export default {
+  get_list_points (query) {
+    return axios({
+      url: `${API_URL}/pickup-points-list?lat=${query.lat}&lon=${query.lng}&page=${query.page}`
+    })
+  },
   get_points (query) {
     return axios({
-      url: `${API_URL}/pickup-points&${query.lat}&${query.lon}&${query.dist}`
+      url: `${API_URL}/pickup-points-map?lat=${query.lat}&lon=${query.lng}&dist=${query.dist}`
     })
   }
 }
