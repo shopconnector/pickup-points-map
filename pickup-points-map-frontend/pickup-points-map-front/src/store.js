@@ -21,6 +21,9 @@ export default new Vuex.Store({
     lng: 19.2850,
     radiusOfVisibily: 0,
     filteredMarkers: [],
+    pointMarkers: [],
+    pageNumber: 1,
+    listMarkers: [],
     markers: [
       {
         id: 'm1',
@@ -187,6 +190,9 @@ export default new Vuex.Store({
     changeRadiusOfVisibility (state, newRadius) {
       if (newRadius) state.radiusOfVisibily = newRadius
     },
+    changePageNumber (state, number) {
+      state.pageNumber = number
+    },
     openFooterModal (state) {
       state.isFooterModalOpen = 1
     },
@@ -211,31 +217,55 @@ export default new Vuex.Store({
     howManyFiltersApplies (state, n) {
       state.filtersCount = n
     },
+    updatePosition (state, newPosition) {
+      var point = newPosition[0]
+      if (point.zoom) {
+        state.zoom = point.zoom
+      }
+      if (point.lat) {
+        state.lat = point.lat
+      }
+      if (point.lng) {
+        state.lng = point.lng
+      }
+    },
     // API CALLS
     get_points (state) {
       state.status = 'loading points'
     },
     get_points_succ (state, points) {
-      state.markers = points
-      state.status = 'success, points loaded'
+      if (state.radiusOfVisibily > 6700) {
+        state.pointMarkers = []
+        state.status = 'success, but distance too long'
+      } else {
+        state.pointMarkers = points
+        state.status = 'success, points loaded'
+      }
     },
     get_points_err (state) {
       state.status = 'error, points couldnt be loaded'
     },
-    updatePosition (state, newPosition) {
-      var point = newPosition[0]
-      console.log(point)
-      if (state.geolocation.lat !== null && state.geolocation.lng !== null) {
-        if (point.zoom) {
-          state.zoom = point.zoom
-        }
-        if (point.lat) {
-          state.lat = point.lat
-        }
-        if (point.lng) {
-          state.lng = point.lng
+    get_list_points (state) {
+      state.status = 'loading list points'
+    },
+    get_list_points_succ (state, points) {
+      if (state.radiusOfVisibily > 6700) {
+        state.listMarkers = []
+        state.status = 'success, but distance too long for list'
+      } else {
+        if (state.pageNumber === 1) {
+          state.listMarkers = points
+          console.log('success')
+          state.status = 'success, list points loaded'
+        } else {
+          state.listMarkers = state.listMarkers.concat(points)
+          console.log('success list')
+          state.status = 'success, more list points loaded'
         }
       }
+    },
+    get_list_points_err (state) {
+      state.status = 'error, list points couldnt be loaded'
     }
   },
   actions: {
@@ -244,11 +274,25 @@ export default new Vuex.Store({
         commit('get_points')
         APIService.get_points(query)
           .then(res => {
-            const points = res.response.pickupPoints
+            const points = res.data.response.pickupPoints
             commit('get_points_succ', points)
             resolve(res)
           }).catch(err => {
             commit('get_points_err')
+            reject(err)
+          })
+      })
+    },
+    get_list_points ({commit}, query) {
+      return new Promise((resolve, reject) => {
+        commit('get_list_points')
+        APIService.get_list_points(query)
+          .then(res => {
+            const newPoints = res.data.response.pickupPoints
+            commit('get_list_points_succ', newPoints)
+            resolve(res)
+          }).catch(err => {
+            commit('get_list_points_err')
             reject(err)
           })
       })

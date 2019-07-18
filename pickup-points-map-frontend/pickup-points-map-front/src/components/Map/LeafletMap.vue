@@ -5,51 +5,53 @@
       <p class="button-action" :class="{ 'active' : !toogleMap }" @click="toogleMapMethod('show')">Mapa</p>
       <p class="button-action" :class="{ 'active' : toogleMap }" @click="toogleMapMethod('hide')">Lista</p>
     </div>
+    <div v-if="$store.state.radiusOfVisibily > 6700" class="error-info">
+      <p>Wybierz adres/lokalizację aby<br>zobaczyć najbliższe punkty odbioru</p>
+    </div>
     <transition name="fade">
       <div  v-if="toogleMap" class="list-box" :class="{'listbox-margin-top' : isWidgetVersion}">
           <div class="list-title hidden-xs"><h1>Punkty odbioru w pobliżu Twojej lokalizacji</h1></div>
           <div class="scroll-box" :class="{'change-vh' : !isWidgetVersion}">
               <div class="list-row" :class="{'list-row-modal' : isOpenListModal(index)}"
-                v-for="(marker, index) in markers"
+                v-for="(listMarker, index) in listMarkers"
                 v-show="markers[0] !== 'empty'"
-                :key="marker.id"
+                :key="index"
                 @click="openListModal(index)">
-                <div class="list-elem list-elem-img">
-                  <img :class="{'img-modal' : isOpenListModal(index)}" :src="logosUrl[marker.type]" :alt="marker.icon.alt" width="auto" height="70px" />
-                </div>
-                <div class="list-elem list-elem-address">
-                  <b>{{ marker.address1 }}</b>
-                  <p class="address-parag">{{ marker.zip }}
-                  {{ marker.address2 }}</p>
-                </div>
-                <div class="list-elem hours-elem">
-                  <b>Godziny otwarcia:</b>
-                  {{ marker.openTime }}<br>
-                  {{ marker.openTime2 }}
-                </div>
-                <div class="list-elem btn-elem">
-                  <p class="list-button" @click="selectedPopup(marker.id, index)">Wybierz</p>
-                </div>
-                  <!-- List Modal Section -->
-                  <transition name="fade">
-                  <div class="list-modal" v-if="isOpenListModal(index) && isMobile">
-                    <div class="list-modal-hours">
-                      <b>Godziny otwarcia:</b>
-                      {{ marker.openTime }}<br>
-                      {{ marker.openTime2 }}
-                    </div>
-                    <div class="list-modal-additional">
-                      <i v-if="marker.openNight" class="icon hours"/>
-                      <i v-if="marker.openSat" class="icon sobota"/>
-                      <i v-if="marker.openSun" class="icon niedziela"/>
-                      <i v-if="marker.parking" class="icon parking"/>
-                      <i v-if="marker.cashOnDelivery" class="icon pobraniem"/>
-                      <i v-if="marker.niepelnosprawni" class="icon niepelnosprawni"/>
-                    </div>
+                  <div class="list-elem list-elem-img">
+                    <img :class="{'img-modal' : isOpenListModal(index)}" :src="logosUrl[listMarker.pickup_point_type]" width="auto" height="70px" />
                   </div>
-                  </transition>
-                  <!-- List Modal Section END -->
+                  <div class="list-elem list-elem-address">
+                    <b>{{ listMarker.address.street }}</b>
+                    <p class="address-parag">{{ listMarker.zip }}
+                    {{ listMarker.address.zip }} {{ listMarker.address.city }}</p>
+                  </div>
+                  <div class="list-elem hours-elem">
+                    <b>Godziny otwarcia:</b>
+                    {{ listMarker.address.working_hours }}
+                  </div>
+                  <div class="list-elem btn-elem">
+                    <!-- @click="selectedPopup(marker.id, index)" -->
+                    <p class="list-button">Wybierz</p>
+                  </div>
+                    <!-- <transition name="fade">
+                      <div class="list-modal" v-if="isOpenListModal(index) && isMobile">
+                        <div class="list-modal-hours">
+                          <b>Godziny otwarcia:</b>
+                          {{ marker.openTime }}<br>
+                          {{ marker.openTime2 }}
+                        </div>
+                        <div class="list-modal-additional">
+                          <i v-if="marker.openNight" class="icon hours"/>
+                          <i v-if="marker.openSat" class="icon sobota"/>
+                          <i v-if="marker.openSun" class="icon niedziela"/>
+                          <i v-if="marker.parking" class="icon parking"/>
+                          <i v-if="marker.cashOnDelivery" class="icon pobraniem"/>
+                          <i v-if="marker.niepelnosprawni" class="icon niepelnosprawni"/>
+                        </div>
+                      </div>
+                    </transition> -->
               </div>
+              <div @click="loadMorePoints()">Załaduj więcej</div>
           </div>
       </div>
     </transition>
@@ -65,36 +67,36 @@
             <l-tile-layer :url="url" :attribution="attribution" />
             <template v-if="markers[0] !== 'empty'">
               <l-marker
-                v-for="(marker, index) in markers"
+                v-for="(marker, index) in pointMarkers"
                 :key="marker.id"
-                :visible="marker.visible"
-                :lat-lng="marker.position"
+                :visible="true"
+                :lat-lng="{ lat: marker.lat, lng: marker.lon }"
                 class-name="markertype"
-                v-on="isMobile ? { click: () => selectedPopup(marker.id, index) } : {} "
+                v-on="isMobile ? { click: () => selectedPopup(index, index) } : {} "
               >
-                <l-icon :icon-anchor="marker.iconAnchor" :icon-size="marker.iconSize" class-name="someExtraClass">
-                  <img :src="pinsUrl[marker.type]" :alt="marker.icon.alt" width="52" height="52"/>
+                <l-icon :icon-anchor="[iconsUrl[marker.pickup_type]]" :icon-size="[52, 52]" class-name="someExtraClass">
+                  <img :src="pinsUrl[marker.pickup_type]" width="52" height="52"/>
                 </l-icon>
-                <transition name="bounce">
-                <l-popup v-if="!isMobile">
-                  <div class="popup-box">
-                    <img class="popup-marker" :src="pinsUrl[marker.type]" :alt="marker.icon.alt" width="102" height="102"/>
-                    <div class="popup-info">
-                      <div class="popup-text-box">
-                        <p class="popup-text">
-                          <b>{{ marker.address1 }}</b><br> {{ marker.zip}} {{marker.address2}}, <br>PL13883
-                        </p>
+                <!-- <transition name="bounce">
+                  <l-popup v-if="!isMobile">
+                    <div class="popup-box">
+                      <img class="popup-marker" :src="pinsUrl[marker.pickup_type]" width="102" height="102"/>
+                      <div class="popup-info">
+                        <div class="popup-text-box">
+                          <p class="popup-text">
+                            <b>{{ marker.address1 }}</b><br> {{ marker.zip}} {{marker.address2}}, <br>PL13883
+                          </p>
+                        </div>
+                        <div class="popup-img" >
+                          <img :src="logosUrl[marker.pickup_type]" width="100%" height="auto"/>
+                        </div>
                       </div>
-                      <div class="popup-img" >
-                        <img :src="logosUrl[marker.type]" :alt="marker.icon.alt" width="100%" height="auto"/>
+                      <div class="popup-action">
+                        <p class="popup-button" @click="selectedPopup(marker.id, index)">Wybierz</p>
                       </div>
                     </div>
-                    <div class="popup-action">
-                      <p class="popup-button" @click="selectedPopup(marker.id, index)">Wybierz</p>
-                    </div>
-                  </div>
-                </l-popup>
-                </transition>
+                  </l-popup>
+                </transition> -->
               </l-marker>
             </template>
         </l-map>
@@ -142,21 +144,29 @@ export default {
       selectedMarkerId: String,
       url: 'https://{s}.tile.osm.org/{z}/{x}/{y}.png',
       attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
+      iconsUrl: {
+        'Żabka': require('../../assets/logos/żabka.png'),
+        'Orlen': require('../../assets/logos/dpd-pickup.png'),
+        'Fresh Market': require('../../assets/logos/freshmarket.png'),
+        'In Post': require('../../assets/logos/inpost.png'),
+        'Poczta Polska': require('../../assets/logos/pocztapolska.png'),
+        'Ruch': require('../../assets/logos/paczka_w_ruchu.jpg')
+      },
       logosUrl: {
-        zabka: require('../../assets/logos/żabka.png'),
-        dpdPickup: require('../../assets/logos/dpd-pickup.png'),
-        fresh: require('../../assets/logos/freshmarket.png'),
-        inpost: require('../../assets/logos/inpost.png'),
-        pocztaPolska: require('../../assets/logos/pocztapolska.png'),
-        paczkaWRuchu: require('../../assets/logos/paczka_w_ruchu.jpg')
+        'Żabka': require('../../assets/logos/żabka.png'),
+        'Orlen': require('../../assets/logos/dpd-pickup.png'),
+        'Fresh Market': require('../../assets/logos/freshmarket.png'),
+        'In Post': require('../../assets/logos/inpost.png'),
+        'Poczta Polska': require('../../assets/logos/pocztapolska.png'),
+        'Ruch': require('../../assets/logos/paczka_w_ruchu.jpg')
       },
       pinsUrl: {
-        zabka: require('../../assets/zabka.png'),
-        dpdPickup: require('../../assets/dpdpickup.png'),
-        fresh: require('../../assets/fresh.png'),
-        inpost: require('../../assets/inpost.png'),
-        pocztaPolska: require('../../assets/poczta-polska.png'),
-        paczkaWRuchu: require('../../assets/paczka-w-ruchu.png')
+        'Żabka': require('../../assets/zabka.png'),
+        'Orlen': require('../../assets/dpdpickup.png'),
+        'Fresh Market': require('../../assets/fresh.png'),
+        'In Post': require('../../assets/inpost.png'),
+        'Poczta Polska': require('../../assets/poczta-polska.png'),
+        'Ruch': require('../../assets/paczka-w-ruchu.png')
       }
     }
   },
@@ -177,11 +187,63 @@ export default {
         return this.$store.state.markers
       }
     },
+    pointMarkers () {
+      return this.$store.state.pointMarkers
+    },
+    listMarkers () {
+      return this.$store.state.listMarkers
+    },
     isWidgetVersion () {
       return this.$store.state.WidgetVersion
+    },
+    zoomOrCenterUpdate () {
+      return [this.$store.state.zoom, this.$store.state.lat, this.$store.state.lng].join()
     }
   },
+  watch: {
+    zoomOrCenterUpdate: {
+      handler () {
+        this.$store.commit('changePageNumber', 1)
+        if (this.$store.state.radiusOfVisibily < 6700) {
+          this.$store.dispatch('get_points', {
+            lat: this.$store.state.lat,
+            lng: this.$store.state.lng,
+            dist: this.$store.state.radiusOfVisibily
+          })
+          this.$store.dispatch('get_list_points', {
+            lat: this.$store.state.lat,
+            lng: this.$store.state.lng,
+            page: this.$store.state.pageNumber
+          })
+        }
+        console.log('!!!!!!!!!!!!! UPDATE !!!!!!!!!!!!')
+      },
+      deep: true
+    }
+  },
+  mounted () {
+    // this.$store.subscribe((mutation, state) => {
+    //   if (mutation.type === 'geolocation/LOCATION_CHANGED') {
+    //     console.log('geolocation/LOCATION_CHANGED')
+    //   }
+    //   if (mutation.type === 'get_points_succ') {
+    //     console.log('get_points_succ')
+    //   }
+    //   if (mutation.type === 'get_list_points_succ') {
+    //     console.log('get_list_points_succ')
+    //   }
+    // })
+  },
   methods: {
+    loadMorePoints () {
+      var newPage = this.$store.state.pageNumber + 1
+      this.$store.commit('changePageNumber', newPage)
+      this.$store.dispatch('get_list_points', {
+        lat: this.$store.state.lat,
+        lng: this.$store.state.lng,
+        page: this.$store.state.pageNumber
+      })
+    },
     toogleMapMethod (text) {
       if (text === 'show') {
         this.toogleMap = false
@@ -192,9 +254,35 @@ export default {
     },
     zoomUpdated (zoom) {
       this.$store.commit('updatePosition', [{ lat: null, lng: null, zoom: zoom }])
+      // this.$store.commit('changePageNumber', 1)
+      // if (this.$store.state.radiusOfVisibily < 6700) {
+      //   this.$store.dispatch('get_points', {
+      //     lat: this.$store.state.lat,
+      //     lng: this.$store.state.lng,
+      //     dist: this.$store.state.radiusOfVisibily
+      //   })
+      //   this.$store.dispatch('get_list_points', {
+      //     lat: this.$store.state.lat,
+      //     lng: this.$store.state.lng,
+      //     page: this.$store.state.pageNumber
+      //   })
+      // }
     },
     centerUpdated (center) {
       this.$store.commit('updatePosition', [{ lat: center.lat, lng: center.lng, zoom: null }])
+      // this.$store.commit('changePageNumber', 1)
+      // if (this.$store.state.radiusOfVisibily < 6700) {
+      //   this.$store.dispatch('get_points', {
+      //     lat: center.lat,
+      //     lng: center.lng,
+      //     dist: this.$store.state.radiusOfVisibily
+      //   })
+      //   this.$store.dispatch('get_list_points', {
+      //     lat: this.$store.state.lat,
+      //     lng: this.$store.state.lng,
+      //     page: 1
+      //   })
+      // }
     },
     boundsUpdated (bounds) {
       var fromLng = bounds._northEast.lng / 180.0 * Math.PI
@@ -342,6 +430,7 @@ export default {
   height: 100vh;
   overflow: hidden;
   max-height: 100vh;
+  position: relative;
 }
 .map-v2{
   position: relative;
@@ -352,6 +441,28 @@ export default {
   @media (max-width: 767px) {
     height: 100vh;
     max-height: 100vh;
+  }
+}
+.error-info {
+  position: absolute;
+  z-index: 1000;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  margin: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #00000054;
+  p {
+    margin: 0;
+    padding: 15px;
+    border-radius: 5px;
+    color: #e4405f;
+    font-weight: 700;
+    text-transform: uppercase;
+    background-color: #ffffff;
   }
 }
 .popup-info {
