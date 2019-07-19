@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class='filters add-scroll-filters'>
+    <div class='filters add-scroll-filters' :class="{ 'filtersV2' : !isWidgetVersion }">
       <!-- Select suppliers first version -->
       <div class="suppliers" v-if="isWidgetVersion && !isMobile">
         <h2 class="title-supp">Wybierz dostawców</h2>
@@ -260,6 +260,9 @@ export default {
 }
 .filters{
   margin: 0 20px;
+}
+.filtersV2 {
+  margin: 0 20px 0 0;
 }
 .header{
   display: flex;

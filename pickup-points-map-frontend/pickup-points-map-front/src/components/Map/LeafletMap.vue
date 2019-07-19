@@ -5,53 +5,55 @@
       <p class="button-action" :class="{ 'active' : !toogleMap }" @click="toogleMapMethod('show')">Mapa</p>
       <p class="button-action" :class="{ 'active' : toogleMap }" @click="toogleMapMethod('hide')">Lista</p>
     </div>
-    <div v-if="$store.state.zoom < 13" class="error-info">
+    <div v-if="!$store.state.pointMarkers.length" class="first-enter-info">
       <p>Wybierz adres/lokalizację aby<br>zobaczyć najbliższe punkty odbioru</p>
+    </div>
+    <div v-else-if="($store.state.zoom < 13 || $store.state.pointMarkers.length > 100) && !toogleMap" class="error-info">
+      <p>Powiększ zoom żeby zobaczyć punkty</p>
     </div>
     <transition name="fade">
       <div  v-if="toogleMap" class="list-box" :class="{'listbox-margin-top' : isWidgetVersion}">
           <div class="list-title hidden-xs"><h1>Punkty odbioru w pobliżu Twojej lokalizacji</h1></div>
-          <div v-if="listMarkers[0] !== 'empty'" class="scroll-box" :class="{'change-vh' : !isWidgetVersion}">
-              <template>
-                <div class="list-row" :class="{'list-row-modal' : isOpenListModal(index)}"
-                  v-for="(listMarker, index) in listMarkers"
-                  :key="index"
-                  @click="openListModal(index)">
-                    <div class="list-elem list-elem-img">
-                      <img :class="{'img-modal' : isOpenListModal(index)}" :src="logosUrl[listMarker.pickup_point_type]" width="auto" height="70px" />
+          <div v-if="listMarkers[0] !== 'empty' || listMarkers.length !== 0" class="scroll-box" :class="{'change-vh' : !isWidgetVersion}">
+              <div class="list-row" :class="{'list-row-modal' : isOpenListModal(index)}"
+                v-for="(listMarker, index) in listMarkers"
+                :key="index"
+                @click="openListModal(index)"
+                v-on="isMobile ? { click: () => getPointDetails(listMarker.lat, listMarker.lon, listMarker.pickup_point_type) } : {} "
+                >
+                  <div class="list-elem list-elem-img">
+                    <img :class="{'img-modal' : isOpenListModal(index)}" :src="logosUrl[listMarker.pickup_point_type]" width="auto" height="70px" />
+                  </div>
+                  <div class="list-elem list-elem-address">
+                    <b>{{ listMarker.address.street }}</b>
+                    <p class="address-parag">{{ listMarker.zip }}
+                    {{ listMarker.address.zip }} {{ listMarker.address.city }}</p>
+                  </div>
+                  <div class="list-elem hours-elem">
+                    <b>Godziny otwarcia:</b>
+                    {{ listMarker.working_hours }}
+                  </div>
+                  <div class="list-elem btn-elem">
+                    <!-- @click="selectedPopup(marker.id, index)" -->
+                    <p class="list-button" @click="getPointDetails(listMarker.lat, listMarker.lon, listMarker.pickup_point_type),toogleMethod('true')">Wybierz</p>
+                  </div>
+                  <transition name="fade">
+                    <div class="list-modal" v-if="isOpenListModal(index) && isMobile && $store.state.markerDetails">
+                      <div class="list-modal-hours" v-if="$store.state.markerDetails.points[0].features.working_hours">
+                        <b>Godziny otwarcia:</b>
+                        {{ $store.state.markerDetails.points[0].features.working_hours }}
+                      </div>
+                      <div class="list-modal-additional">
+                        <p v-if="$store.state.markerDetails.points[0].features.open_late" class="icon hours"/>
+                        <p v-if="$store.state.markerDetails.points[0].features.open_saturday" class="icon sobota"/>
+                        <p v-if="$store.state.markerDetails.points[0].features.open_sunday" class="icon niedziela"/>
+                        <p v-if="$store.state.markerDetails.points[0].features.parking" class="icon parking"/>
+                        <p v-if="$store.state.markerDetails.points[0].features.disabled_friendly" class="icon pobraniem"/>
+                        <p v-if="$store.state.markerDetails.points[0].features.cash_on_delivery" class="icon niepelnosprawni"/>
+                      </div>
                     </div>
-                    <div class="list-elem list-elem-address">
-                      <b>{{ listMarker.address.street }}</b>
-                      <p class="address-parag">{{ listMarker.zip }}
-                      {{ listMarker.address.zip }} {{ listMarker.address.city }}</p>
-                    </div>
-                    <div class="list-elem hours-elem">
-                      <b>Godziny otwarcia:</b>
-                      {{ listMarker.working_hours }}
-                    </div>
-                    <div class="list-elem btn-elem">
-                      <!-- @click="selectedPopup(marker.id, index)" -->
-                      <p class="list-button">Wybierz</p>
-                    </div>
-                      <!-- <transition name="fade">
-                        <div class="list-modal" v-if="isOpenListModal(index) && isMobile">
-                          <div class="list-modal-hours">
-                            <b>Godziny otwarcia:</b>
-                            {{ marker.openTime }}<br>
-                            {{ marker.openTime2 }}
-                          </div>
-                          <div class="list-modal-additional">
-                            <i v-if="marker.openNight" class="icon hours"/>
-                            <i v-if="marker.openSat" class="icon sobota"/>
-                            <i v-if="marker.openSun" class="icon niedziela"/>
-                            <i v-if="marker.parking" class="icon parking"/>
-                            <i v-if="marker.cashOnDelivery" class="icon pobraniem"/>
-                            <i v-if="marker.niepelnosprawni" class="icon niepelnosprawni"/>
-                          </div>
-                        </div>
-                      </transition> -->
-                </div>
-              </template>
+                  </transition>
+              </div>
               <div v-if="$store.state.listMarkers.length !== 0" class="load-box" @click="loadMorePoints()"><p class="load-button">Załaduj więcej</p></div>
           </div>
           <div v-if="listMarkers.length === 0 || listMarkers[0] === 'empty'">
@@ -79,8 +81,8 @@
                 :lat-lng="{ lat: marker.lat, lng: marker.lon }"
                 class-name="markertype"
                 @click="getPointDetails(marker.lat, marker.lon, marker.pickup_type)"
+                v-on="isMobile ? { click: () => toogleMethod('true') } : {} "
               >
-              <!-- v-on="isMobile ? { click: () => testTest(marker.lat, marker.lon, marker.pickup_type) } : {} " -->
                 <l-icon :icon-anchor="[iconsUrl[marker.pickup_type]]" :icon-size="[52, 52]" class-name="someExtraClass">
                   <img :src="pinsUrl[marker.pickup_type]" width="52" height="52"/>
                 </l-icon>
@@ -99,7 +101,7 @@
                         </div>
                       </div>
                       <div class="popup-action">
-                        <p class="popup-button" @click="toogleMethod()" @close="onCloseChild">Wybierz</p>
+                        <p class="popup-button" @click="toogleMethod('true')">Wybierz</p>
                       </div>
                     </div>
                   </l-popup>
@@ -112,7 +114,7 @@
     <div>
       <transition :name="isMobile ? 'fade-in-up' : 'bounce'">
         <div class="modal-position" :class="{'modal-positionV2' : !isWidgetVersion}" v-if="toogleModal">
-          <ModalDiv/>
+          <ModalDiv @closed="onCloseChild"/>
         </div>
       </transition>
     </div>
@@ -146,7 +148,7 @@ export default {
       selectedPoint: Number,
       toogleMap: false,
       toogleModal: false,
-      url: 'https://atileosmorg-luldmjs.stackpathdns.com/{z}/{x}/{y}.png',
+      url: 'https://scorch.openstreetmap.org/{z}/{x}/{y}.png',
       attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
       iconsUrl: {
         'Żabka': require('../../assets/logos/żabka.png'),
@@ -199,16 +201,9 @@ export default {
     center () {
       return latLng(this.$store.state.lat, this.$store.state.lng)
     },
-    // markers () {
-    //   if (this.$store.state.filteredMarkers.length > 0) {
-    //     return this.$store.state.filteredMarkers
-    //   } else {
-    //     return this.$store.state.markers
-    //   }
-    // },
     pointMarkers () {
-      if (typeof this.$store.state.filteredMapPoints !== 'undefined' && this.$store.state.filteredMapPoints !== null && this.$store.state.filteredMapPoints.length !== null && this.$store.state.filteredMapPoints.length > 0) {
-        return this.$store.state.filteredMapPoints
+      if (this.$store.state.zoom < 13 || this.$store.state.pointMarkers.length > 100) {
+        return []
       } else {
         return this.$store.state.pointMarkers
       }
@@ -293,13 +288,14 @@ export default {
       } else if (text === 'hide') {
         this.toogleMap = true
       }
+      this.toogleMethod('false')
       this.$store.commit('closeListFooter')
     },
     centerUpdated (center) {
-      this.$store.commit('updatePosition2', [{ lat: center.lat, lng: center.lng, zoom: null }])
+      this.$store.commit('updatePosition', [{ lat: center.lat, lng: center.lng, zoom: null }])
     },
     zoomUpdated (zoom) {
-      this.$store.commit('updatePosition2', [{ lat: null, lng: null, zoom: zoom }])
+      this.$store.commit('updatePosition', [{ lat: null, lng: null, zoom: zoom }])
     },
     boundsUpdated (bounds) {
       var fromLng = bounds._northEast.lng / 180.0 * Math.PI
@@ -310,12 +306,14 @@ export default {
       var rad = Math.round(dist / 2)
       this.$store.commit('changeRadiusOfVisibility', rad)
     },
-    // selectedPopup (id, index) {
-    //   this.toogleModal = false
-    //   setTimeout(() => this.toogleMethod(id, index), 500)
-    // },
-    toogleMethod () {
-      this.toogleModal = !this.toogleModal
+    toogleMethod (bool) {
+      if (bool === 'true') {
+        this.toogleModal = true
+      } else if (bool === 'false') {
+        this.toogleModal = false
+      } else {
+        this.toogleModal = !this.toogleModal
+      }
     },
     onCloseChild () {
       this.toogleModal = false
@@ -474,7 +472,7 @@ export default {
     max-height: 100vh;
   }
 }
-.error-info {
+.first-enter-info {
   position: absolute;
   z-index: 1000;
   top: 0;
@@ -486,6 +484,27 @@ export default {
   align-items: center;
   justify-content: center;
   background-color: #00000054;
+  p {
+    margin: 0;
+    padding: 15px;
+    border-radius: 5px;
+    color: #e4405f;
+    font-weight: 700;
+    text-transform: uppercase;
+    background-color: #ffffff;
+  }
+}
+.error-info {
+  position: absolute;
+  z-index: 1000;
+  top: 47%;
+  left: 0;
+  margin: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  // background-color: #00000054;
   p {
     margin: 0;
     padding: 15px;

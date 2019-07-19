@@ -7,12 +7,10 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
     status: '',
-    places: {},
-    lastvisit: {},
     filtersCount: 0,
     showListFooter: false,
     isFilterMobileOpen: 0,
-    isFooterModalOpen: 0,
+    isFooterModalOpen: 1,
     isLocitModalOpen: 0,
     WidgetVersion: false,
     isFilterMobilOpen: 1,
@@ -24,176 +22,9 @@ export default new Vuex.Store({
     markerDetails: [],
     filteredMapPoints: [],
     filteredListPoints: [],
-    // Test
-    filtersStore: [],
-    checkedSuppliersStore: [],
-    // testMarkers: [
-    //   {lat: 53.06616, pickup_type: 'Poczta Polska', lon: 19.287343},
-    //   {lat: 53.08668, pickup_type: 'Poczta Polska', lon: 19.195922},
-    //   {lat: 53.0675, pickup_type: 'In Post', lon: 19.406469},
-    //   {lat: 53.064636, pickup_type: 'Żabka', lon: 19.409622},
-    //   {lat: 53.063569, pickup_type: 'In Post', lon: 19.41083},
-    //   {lat: 53.0659, pickup_type: 'Poczta Polska', lon: 19.411677},
-    //   {lat: 53.07249, pickup_type: 'In Post', lon: 19.41168},
-    //   {lat: 53.06452, pickup_type: 'Poczta Polska', lon: 19.418736},
-    //   {lat: 53.0626, pickup_type: 'In Post', lon: 19.4202},
-    //   {lat: 53.06826, pickup_type: 'Poczta Polska', lon: 19.417981}
-    // ],
     pointMarkers: [],
     pageNumber: 1,
-    listMarkers: [],
-    markers: [
-      // {
-      //   id: 'm1',
-      //   position: { lat: 52.229676, lng: 21.012229 },
-      //   address1: 'Mazowiecka 50A',
-      //   address2: 'Warszawa',
-      //   zip: '02776',
-      //   shop: 'Sklep Spożywcy',
-      //   phone: '111222333',
-      //   openTime: 'pn - pt: 8:00 - 18:00',
-      //   openTime2: 'so: 8:00 - 16:00',
-      //   visible: true,
-      //   openSat: true,
-      //   openSun: true,
-      //   openNight: true,
-      //   disabledPeople: false,
-      //   parking: true,
-      //   cashOnDelivery: true,
-      //   type: 'zabka',
-      //   icon: {
-      //     iconUrl: require('./assets/logos/żabka.png'),
-      //     iconSize: [52, 52],
-      //     iconAnchor: [26, 52],
-      //     alt: 'Żabka image'
-      //   }
-      // },
-      // {
-      //   id: 'm3',
-      //   position: { lat: 52.228740, lng: 21.033668 },
-      //   address1: 'Kalinowa 13',
-      //   address2: 'Poznań',
-      //   zip: '33145',
-      //   shop: 'Prywatny operator logistyczny',
-      //   phone: '12334555',
-      //   openTime: 'pn - pt: 8:00 - 18:00',
-      //   openTime2: 'so: 8:00 - 16:00',
-      //   visible: true,
-      //   openSat: true,
-      //   openSun: false,
-      //   openNight: false,
-      //   disabledPeople: false,
-      //   parking: true,
-      //   cashOnDelivery: true,
-      //   type: 'inpost',
-      //   icon: {
-      //     iconUrl: require('./assets/logos/inpost.png'),
-      //     iconSize: [52, 52],
-      //     iconAnchor: [26, 52],
-      //     alt: 'Inpost image'
-      //   }
-      // },
-      // {
-      //   id: 'm4',
-      //   position: { lat: 52.235238, lng: 21.008434 },
-      //   address1: 'Romualda Gutta 5B',
-      //   address2: 'Chorzów',
-      //   zip: '12213',
-      //   shop: 'Szybka wysyłka',
-      //   phone: '12334132',
-      //   openTime: 'pn - pt: 8:00 - 18:00',
-      //   openTime2: 'so: 8:00 - 16:00',
-      //   visible: true,
-      //   openSat: false,
-      //   openSun: true,
-      //   openNight: false,
-      //   disabledPeople: false,
-      //   parking: true,
-      //   cashOnDelivery: true,
-      //   type: 'dpdPickup',
-      //   icon: {
-      //     iconUrl: require('./assets/logos/dpd-pickup.png'),
-      //     iconSize: [52, 52],
-      //     iconAnchor: [26, 52],
-      //     alt: 'DpdPickup image'
-      //   }
-      // },
-      // {
-      //   id: 'm5',
-      //   position: { lat: 52.233949, lng: 21.017360 },
-      //   address1: 'Fregaty 50A',
-      //   address2: 'Lublin',
-      //   zip: '01277',
-      //   shop: 'Sklep FreshMarket',
-      //   phone: '233332221',
-      //   openTime: 'pn - pt: 8:00 - 18:00',
-      //   openTime2: 'so: 8:00 - 16:00',
-      //   visible: true,
-      //   openSat: true,
-      //   openSun: true,
-      //   openNight: false,
-      //   disabledPeople: true,
-      //   parking: true,
-      //   cashOnDelivery: true,
-      //   type: 'fresh',
-      //   icon: {
-      //     iconUrl: require('./assets/logos/freshmarket.png'),
-      //     iconSize: [52, 52],
-      //     iconAnchor: [26, 52],
-      //     alt: 'Freshmarket image'
-      //   }
-      // },
-      // {
-      //   id: 'm6',
-      //   position: { lat: 52.234949, lng: 21.015360 },
-      //   address1: 'Brazylijska 45',
-      //   address2: 'Białystok',
-      //   zip: '98233',
-      //   shop: 'Usługi pocztowe',
-      //   phone: '445566123',
-      //   openTime: 'pn - pt: 8:00 - 18:00',
-      //   openTime2: 'so: 8:00 - 16:00',
-      //   visible: true,
-      //   openSat: true,
-      //   openSun: true,
-      //   openNight: false,
-      //   disabledPeople: true,
-      //   parking: true,
-      //   cashOnDelivery: true,
-      //   type: 'pocztaPolska',
-      //   icon: {
-      //     iconUrl: require('./assets/logos/pocztapolska.png'),
-      //     iconSize: [52, 52],
-      //     iconAnchor: [26, 52],
-      //     alt: 'PocztaPolska image'
-      //   }
-      // },
-      // {
-      //   id: 'm7',
-      //   position: { lat: 52.244960, lng: 21.014360 },
-      //   address1: 'Pod Strzechą 4',
-      //   address2: 'Warszawa',
-      //   zip: '12263',
-      //   shop: 'Dostawa przesyłek ',
-      //   phone: '334412343',
-      //   openTime: 'pn - pt: 8:00 - 18:00',
-      //   openTime2: 'so: 8:00 - 16:00',
-      //   visible: true,
-      //   openSat: true,
-      //   openSun: true,
-      //   openNight: false,
-      //   disabledPeople: false,
-      //   parking: false,
-      //   cashOnDelivery: false,
-      //   type: 'paczkaWRuchu',
-      //   icon: {
-      //     iconUrl: require('./assets/logos/paczka_w_ruchu.jpg'),
-      //     iconSize: [52, 52],
-      //     iconAnchor: [26, 52],
-      //     alt: 'Paczka w Ruchu image'
-      //   }
-      // }
-    ]
+    listMarkers: []
   },
   mutations: {
     openListFooter (state) {
@@ -236,18 +67,6 @@ export default new Vuex.Store({
       state.filtersCount = n
     },
     updatePosition (state, newPosition) {
-      var point = newPosition[0]
-      if (point.zoom) {
-        state.zoom = point.zoom
-      }
-      if (point.lat) {
-        state.lat = point.lat
-      }
-      if (point.lng) {
-        state.lng = point.lng
-      }
-    },
-    updatePosition2 (state, newPosition) {
       var point = newPosition[0]
       if (point.zoom) {
         state.zoom = point.zoom

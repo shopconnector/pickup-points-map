@@ -4,9 +4,9 @@
       <h2 class="title">Wybierz lokalizację</h2>
     </div>
     <div class="choose-location" v-if="!isMobile">
-        <h3 :class="[ isWidgetVersion ? 'my-location' : 'my-locationV2', $store.state.geolocation.lat ? 'active' : '']" @click="currentPos()">Użyj mojej lokalizacji</h3>
+        <h3 :class="[ isWidgetVersion ? 'my-location' : 'my-locationV2', $store.state.geolocation.lat ? 'active' : '']" @click="currentPos()">Moja lokalizacja</h3>
         <p class="lub">lub</p>
-        <div style="position: relative; display: block; width: 72%; flex: 0 0 40%;">
+        <div class="suggest-box">
         <vue-autosuggest
             class='input-tag'
             :class="{'input-tagV2' : !isWidgetVersion}"
@@ -26,7 +26,7 @@
         <span class="span-location" :class="{'span-locationV2' : isWidgetVersion}" @click="locitAddress = ''"><i class="clear-input"/></span>
         </div>
     </div>
-    <vue-over-body :dim="false" :open="IsFooterModalOpen" before="beforeFooterModal" after="afterFooterModal" :transition="0.3">
+    <vue-over-body v-if="isMobile" :dim="false" :open="IsFooterModalOpen" before="beforeFooterModal" after="afterFooterModal" :transition="0.3">
       <div class="footer-box">
         <h3 class="my-location" @click="currentPos()">Użyj mojej lokalizacji</h3>
         <div class='input-modal-button' :class="{ 'active' : suggestionText }" @click="openLocitModal()">
@@ -112,11 +112,6 @@ export default {
       setTimeout(
         () =>
           this.$store.commit('updatePosition', [{ lat: this.$store.state.geolocation.lat, lng: this.$store.state.geolocation.lng, zoom: 16 }])
-        , 100
-      )
-      setTimeout(
-        () =>
-          this.$store.commit('updatePosition2', [{ lat: this.$store.state.geolocation.lat, lng: this.$store.state.geolocation.lng, zoom: 16 }])
         , 100
       )
       if (this.IsFooterModalOpen) {
@@ -247,6 +242,11 @@ export default {
 </style>
 
 <style lang="scss" scoped>
+.suggest-box {
+  position: relative;
+  display: block;
+  width: 75%;
+}
 .span-location{
   position: absolute;
   right: 5px;
@@ -311,7 +311,7 @@ export default {
   background-size: cover;
 }
 .title{
-  padding-left: 20px;
+  // padding-left: 20px;
   font-family: 'Lato', sans-serif;
   font-size: 22px;
   font-weight: 900;
@@ -358,7 +358,7 @@ export default {
 }
 .my-locationV2{
   cursor: pointer;
-  flex-basis: 25%;
+  flex-basis: 30%;
   padding-left: 25px;
   color: #989898;
   font-size: 14px;
@@ -394,7 +394,7 @@ export default {
   font-family: 'Lato', sans-serif;
   color: #AAAAAA;
   margin: 0;
-  padding: 0 25px;
+  padding: 0 15px;
 }
 .input-tag{
   position: relative;

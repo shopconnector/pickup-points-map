@@ -8,42 +8,41 @@
               <div class="address">
                 <h4>{{ parentData.street }}</h4>
                 <p>{{ parentData.zip }} {{ parentData.city }}</p>
-                <p v-if="parentData.points[0].id.length" >{{ parentData.points[0].id }}</p>
+                <p v-if="parentData.points[0].id.length > 0 && parentData.length" >{{ parentData.points[0].id }}</p>
               </div>
               <div class="shop paddbott">
                 <p>{{ parentData.pickup_type }}</p>
-                <p v-if="parentData.points[0].phones.length" >{{ parentData.points[0].phones }}</p>
+                <p v-if="parentData.points[0].phones.length && parentData.length" >
+                  <template v-for="phone in parentData.points[0].phones">
+                    {{ phone }}
+                  </template>
+                </p>
               </div>
-              <div class="shop additional">
-                <p>Parking</p>
-                <p>Odbiór</p>
-                <p>Nadanie opłaconej przesyłki</p>
-                <p>Nadanie na miejscu + płatność i BZT</p>
+              <div class="shop additional" v-if="parentData.length">
+                <p v-if="parentData.points[0].features.open_late"> Otwarte do pózna</p>
+                <p v-if="parentData.points[0].features.open_saturday"> Otwarte w soboty</p>
+                <p v-if="parentData.points[0].features.open_sunday"> Otwarte w niedziele</p>
+                <p v-if="parentData.points[0].features.parking"> Parking</p>
+                <p v-if="parentData.points[0].features.disabled_friendly"> Ułatwienie dla osób niepełnosprawnych</p>
+                <p v-if="parentData.points[0].features.cash_on_delivery" > Odbiór za pobraniem</p>
               </div>
             </div>
             <div class="col-2" :class="{'col2-v2' : isWidgetVersion}">
               <div class="info-box">
                 <div class="logo">
-                  <!-- <img :src="parentData.icon.iconUrl" :alt="parentData.icon.alt" class="img"> -->
+                  <img :src="logosUrl[parentData.pickup_type]" class="img">
                 </div>
                 <div class="road">
                   <a :href="linkToRoad" target="_blank">Wyznacz trasę dojazdu <i class="play_arrow"/></a>
                 </div>
               </div>
-              <div class="open-hours">
+              <div class="open-hours" v-if="parentData.points[0].features.working_hours && parentData.length">
                 <div class="hours-title">
                   <p>Godziny otwarcia</p>
                 </div>
                 <div class="week">
                   <div class="first-half">
-                    <p>Pon: 06:00-20:00</p>
-                    <p>Wt: 06:00-20:00</p>
-                    <p>Śr: 06:00-20:00</p>
-                  </div>
-                  <div class="second-half">
-                    <p>Czw: 06:00-20:00</p>
-                    <p>Pt: 06:00-20:00</p>
-                    <p>Sob: 06:00-20:00</p>
+                    <p>{{ parentData.points[0].features.working_hours }}</p>
                   </div>
                 </div>
               </div>
@@ -63,33 +62,32 @@
       </div>
       <div class="mobile-map-row">
         <div class="mobile-map-logo">
-          <img :src="parentData.icon.iconUrl" :alt="parentData.icon.alt" class="img">
+          <img :src="logosUrl[parentData.pickup_type]" class="img">
         </div>
         <div class="mobile-map-address">
-          <h4 class="mobile-map-title">{{parentData.address1}}</h4>
-          <p class="mobile-map-street">{{parentData.zip}} {{parentData.address2}}</p>
-          <p class="mobile-map-street">PL13883</p>
+          <h4 class="mobile-map-title">{{ parentData.street }}</h4>
+          <p class="mobile-map-street">{{ parentData.zip }} {{ parentData.city }}</p>
+          <p v-if="parentData.points[0].id.length && parentData.length" class="mobile-map-street">{{ parentData.points[0].id }}</p>
         </div>
       </div>
-      <div class="mobile-map-hours">
+      <div class="mobile-map-hours" v-if="parentData.points[0].features.working_hours && parentData.length">
         <div class="mobile-map-hours-title">
           <b>Godziny otwarcia:</b>
         </div>
         <div class="mobile-map-hours-info">
-          <p>{{ parentData.openTime }}</p>
-          <p>{{ parentData.openTime2 }}</p>
+          <p>{{ parentData.points[0].features.working_hours }}</p>
         </div>
       </div>
       <div class="mobile-map-additional">
-        <p v-if="parentData.openNight" class="additional-info"><span class="mobile-map-icon-padding"><i class="icon hours"/></span> - otwarte do pózna</p>
-        <p v-if="parentData.openSat" class="additional-info"><span class="mobile-map-icon-padding"><i class="icon sobota"/></span> - otwarte w soboty</p>
-        <p v-if="parentData.openSun" class="additional-info"><span class="mobile-map-icon-padding"><i class="icon niedziela"/></span> - otwarte w niedziele</p>
-        <p v-if="parentData.parking" class="additional-info"><span class="mobile-map-icon-padding"><i class="icon parking"/></span> - parking</p>
-        <p v-if="parentData.disabledPeople" class="additional-info"><span class="mobile-map-icon-padding"><i class="icon niepelnosprawni"/></span> - ułatwienie dla osób niepełnosprawnych</p>
-        <p v-if="parentData.cashOnDelivery" class="additional-info"><span class="mobile-map-icon-padding"><i class="icon pobraniem"/></span> - odbiór za pobraniem</p>
+        <p v-if="parentData.points[0].features.open_late && parentData.length" class="additional-info"><span class="mobile-map-icon-padding"><i class="icon hours"/></span> - otwarte do pózna</p>
+        <p v-if="parentData.points[0].features.open_saturday && parentData.length" class="additional-info"><span class="mobile-map-icon-padding"><i class="icon sobota"/></span> - otwarte w soboty</p>
+        <p v-if="parentData.points[0].features.open_sunday && parentData.length" class="additional-info"><span class="mobile-map-icon-padding"><i class="icon niedziela"/></span> - otwarte w niedziele</p>
+        <p v-if="parentData.points[0].features.parking && parentData.length" class="additional-info"><span class="mobile-map-icon-padding"><i class="icon parking"/></span> - parking</p>
+        <p v-if="parentData.points[0].features.disabled_friendly && parentData.length" class="additional-info"><span class="mobile-map-icon-padding"><i class="icon niepelnosprawni"/></span> - ułatwienie dla osób niepełnosprawnych</p>
+        <p v-if="parentData.points[0].features.cash_on_delivery && parentData.length" class="additional-info"><span class="mobile-map-icon-padding"><i class="icon pobraniem"/></span> - odbiór za pobraniem</p>
       </div>
       <div class="mobile-map-footer">
-        <p class="mobile-map-btn-close" @click="closeModal()">WYBIERZ I ZAMKNIJ</p>
+        <p class="mobile-map-btn-close" @click="closeModal">WYBIERZ I ZAMKNIJ</p>
       </div>
     </div>
     <!-- End -->
@@ -105,12 +103,12 @@ export default {
   data () {
     return {
       logosUrl: {
-        zabka: require('../../assets/logos/żabka.png'),
-        dpd: require('../../assets/logos/dpd.png'),
-        dpdPickup: require('../../assets/logos/dpd-pickup.png'),
-        fresh: require('../../assets/logos/freshmarket.png'),
-        inpost: require('../../assets/logos/inpost.png'),
-        pocztaPolska: require('../../assets/logos/pocztapolska.png')
+        'Żabka': require('../../assets/logos/żabka.png'),
+        'Orlen': require('../../assets/logos/dpd-pickup.png'),
+        'Fresh Market': require('../../assets/logos/freshmarket.png'),
+        'In Post': require('../../assets/logos/inpost.png'),
+        'Poczta Polska': require('../../assets/logos/pocztapolska.png'),
+        'Ruch': require('../../assets/logos/paczka_w_ruchu.jpg')
       }
     }
   },
@@ -128,7 +126,7 @@ export default {
   },
   methods: {
     closeModal () {
-      this.$emit('close')
+      this.$emit('closed')
     }
   }
 }
@@ -208,7 +206,7 @@ export default {
     display: flex;
     flex-direction: column;
     flex-wrap: wrap;
-    height: 75px;
+    // height: 75px;
     padding: 15px;
     font-size: 15px;
     .additional-info{
