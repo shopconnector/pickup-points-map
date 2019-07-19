@@ -58,7 +58,6 @@ export default {
   methods: {
     openFooterModal () {
       this.$store.commit('openFooterModal')
-      // this.$store.dispatch('controlMutation', 'openFooterModal')
     },
     openFilterMobile () {
       this.$store.commit('openFilterMobile')
@@ -81,19 +80,19 @@ export default {
 
 <style lang="scss" >
 .beforeFilters{
-  top: -100vh;
+  top: -100%;
   width: 100%;
-  height: 100vh;
+  height: 100%;
   background-color: #FFFFFF;
 }
 .afterFilters{
   top: 0;
 }
 .before {
-  bottom: -100vh;
+  bottom: -100%;
   width: 100%;
   height: 200px;
-  margin-top: calc( 100vh - 200px);
+  margin-top: calc( 100% - 200px);
   background-color:yellow;
   position:absolute;
 }
@@ -107,6 +106,10 @@ export default {
 </style>
 
 <style lang="scss" scoped>
+.scroll-box-filters{
+  height: 100%;
+  overflow-y: scroll;
+}
 .home-page{
   display: flex;
 }
@@ -170,7 +173,7 @@ export default {
   margin-left: 20px;
   width: 35px;
   height: 30px;
-  background: url(../assets/lejek.png) 0 0 no-repeat;
+  background: url(../assets/icons/lejek.png) 0 0 no-repeat;
   &:after{
     content: attr(data-content);
     position: absolute;
@@ -178,9 +181,13 @@ export default {
     right: -11px;
     background-color: #E54C69;
     color: #FFFFFF;
-    padding: 3px 7px;
     border-radius: 50%;
     font-size: 14px;
+    display: flex;
+    width: 23px;
+    justify-content: center;
+    align-items: center;
+    height: 23px;
   }
 }
 .mobile-footer {
@@ -192,7 +199,7 @@ export default {
     bottom: 20px;
     left: calc( 50% - 20px);
     position: absolute;
-    background: url('../assets/Group-12.png') 0 0 no-repeat;
+    background: url('../assets/icons/Group-12.png') 0 0 no-repeat;
     background-size: cover;
   }
   position: fixed;
@@ -212,7 +219,7 @@ export default {
 .list-modal-footer{
   position: fixed;
   background-color: white;
-  z-index: 1001;
+  z-index: 999;
   left: 0;
   right: 0;
   bottom: 0;
@@ -231,8 +238,8 @@ export default {
     background-color: #E4405F;
     border-radius: 9px;
     margin: 0;
-    bottom: 20px;
-    right: 105px;
+    bottom: calc(50% - 25px);
+    right: calc(50% - 85px);
     padding: 10px 12px;
   }
 }

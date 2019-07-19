@@ -6,44 +6,47 @@
           <div class="selected-supplier" :class="{'selected-supplierV2' : isWidgetVersion}">
             <div class="col-1" :class="{'col1-v2' : isWidgetVersion}">
               <div class="address">
-                <h4>{{parentData.address1}}</h4>
-                <p>{{parentData.zip}} {{parentData.address2}}</p>
-                <p>PL13883</p>
+                <h4>{{ parentData.street }}</h4>
+                <p>{{ parentData.zip }} {{ parentData.city }}</p>
+                <p v-if="parentData.points[0].id.length > 0" >{{ parentData.points[0].id }}</p>
               </div>
               <div class="shop paddbott">
-                <p>{{parentData.shop}}</p>
-                <p>{{parentData.phone}}</p>
+                <p>{{ parentData.pickup_type }}</p>
+                <p v-if="parentData.points[0].phones.length" >
+                  <template v-for="phone in parentData.points[0].phones">
+                    {{ phone }}
+                  </template>
+                </p>
               </div>
-              <div class="shop additional">
-                <p>Parking</p>
-                <p>Odbiór</p>
-                <p>Nadanie opłaconej przesyłki</p>
-                <p>Nadanie na miejscu + płatność i BZT</p>
+              <div class="shop additional" v-if="parentData.length">
+                <p v-if="parentData.points[0].features.open_late"> Otwarte do pózna</p>
+                <p v-if="parentData.points[0].features.open_saturday"> Otwarte w soboty</p>
+                <p v-if="parentData.points[0].features.open_sunday"> Otwarte w niedziele</p>
+                <p v-if="parentData.points[0].features.parking"> Parking</p>
+                <p v-if="parentData.points[0].features.disabled_friendly"> Ułatwienie dla osób niepełnosprawnych</p>
+                <p v-if="parentData.points[0].features.cash_on_delivery" > Odbiór za pobraniem</p>
               </div>
             </div>
             <div class="col-2" :class="{'col2-v2' : isWidgetVersion}">
               <div class="info-box">
                 <div class="logo">
-                  <img :src="parentData.icon.iconUrl" :alt="parentData.icon.alt" class="img">
+                  <img :src="logosUrl[parentData.pickup_type]" class="img">
                 </div>
                 <div class="road">
-                  <a :href="'https://www.google.pl/maps/dir//' + parentData.position.lat + ',' + parentData.position.lng + '/@52.2502198,21.0280249 + ,16z/data=!4m2!4m1!3e3?hl=pl'" target="_blank">Wyznacz trasę dojazdu <i class="material-icons">play_arrow</i></a>
+                  <a :href="linkToRoad" target="_blank">Wyznacz trasę dojazdu <i class="play_arrow"/></a>
                 </div>
               </div>
-              <div class="open-hours">
+              <div class="open-hours" v-if="parentData.points[0].working_hours">
                 <div class="hours-title">
                   <p>Godziny otwarcia</p>
                 </div>
                 <div class="week">
                   <div class="first-half">
-                    <p>Pon: 06:00-20:00</p>
-                    <p>Wt: 06:00-20:00</p>
-                    <p>Śr: 06:00-20:00</p>
-                  </div>
-                  <div class="second-half">
-                    <p>Czw: 06:00-20:00</p>
-                    <p>Pt: 06:00-20:00</p>
-                    <p>Sob: 06:00-20:00</p>
+                    <p>
+                      <template v-for="day in parentData.points[0].working_hours">
+                        {{ day }}
+                      </template>
+                    </p>
                   </div>
                 </div>
               </div>
@@ -51,43 +54,48 @@
           </div>
        </div>
        <div class="footer">
-         <p class="powrot" @click ="closeModal()" :class="{'powrot-v2' : isWidgetVersion}"><i class="material-icons">arrow_left</i>POWRÓT</p>
-         <p class="zamknij" :class="{'zamknij-v2' : isWidgetVersion}">WYBIERZ DPD I ZAMKNIJ</p>
+         <p class="powrot" @click="closeModal()" :class="{'powrot-v2' : isWidgetVersion}"><i class="arrow_left"/>POWRÓT</p>
+         <p class="zamknij" :class="{'zamknij-v2' : isWidgetVersion}">Wybierz {{ parentData.pickup_type }} i zamknij</p>
        </div>
     </div>
     <!-- Modal DIV for mobile map -->
     <div class="mobile-map-modal" v-if="isMobile">
       <div class="mobile-map-header">
         <p>Wybrany punky</p>
-        <i class="material-icons close-mobile-map-modal" @click="closeModal()">clear</i>
+        <i class="close-icon close-mobile-map-modal" @click="closeModal()"/>
       </div>
       <div class="mobile-map-row">
         <div class="mobile-map-logo">
-          <img :src="parentData.icon.iconUrl" :alt="parentData.icon.alt" class="img">
+          <img :src="logosUrl[parentData.pickup_type]" class="img">
         </div>
         <div class="mobile-map-address">
-          <h4 class="mobile-map-title">{{parentData.address1}}</h4>
-          <p class="mobile-map-street">{{parentData.zip}} {{parentData.address2}}</p>
-          <p class="mobile-map-street">PL13883</p>
+          <h4 class="mobile-map-title">{{ parentData.street }}</h4>
+          <p class="mobile-map-street">{{ parentData.zip }} {{ parentData.city }}</p>
+          <p v-if="parentData.points[0].id.length" class="mobile-map-street">{{ parentData.points[0].id }}</p>
         </div>
       </div>
-      <div class="mobile-map-hours">
+      <div class="mobile-map-hours" v-if="parentData.points[0].working_hours">
         <div class="mobile-map-hours-title">
           <b>Godziny otwarcia:</b>
         </div>
         <div class="mobile-map-hours-info">
-          <p>{{ parentData.openTime }}</p>
-          <p>{{ parentData.openTime2 }}</p>
+          <p>
+            <template v-for="day in parentData.points[0].working_hours">
+              {{ day }}
+            </template>
+          </p>
         </div>
       </div>
       <div class="mobile-map-additional">
-        <p class="additional-info"><span class="mobile-map-icon-padding"><i class="icon hours"/></span> - otwarte do pózna</p>
-        <p class="additional-info"><span class="mobile-map-icon-padding"><i class="icon sobota"/></span> - otwarte w soboty</p>
-        <p class="additional-info"><span class="mobile-map-icon-padding"><i class="icon niedziela"/></span> - otwarte w niediele</p>
-        <p class="additional-info"><span class="mobile-map-icon-padding"><i class="icon parking"/></span> - parking</p>
+        <p v-if="parentData.points[0].features.open_late" class="additional-info"><span class="mobile-map-icon-padding"><i class="icon hours"/></span> - otwarte do pózna</p>
+        <p v-if="parentData.points[0].features.open_saturday" class="additional-info"><span class="mobile-map-icon-padding"><i class="icon sobota"/></span> - otwarte w soboty</p>
+        <p v-if="parentData.points[0].features.open_sunday" class="additional-info"><span class="mobile-map-icon-padding"><i class="icon niedziela"/></span> - otwarte w niedziele</p>
+        <p v-if="parentData.points[0].features.parking" class="additional-info"><span class="mobile-map-icon-padding"><i class="icon parking"/></span> - parking</p>
+        <p v-if="parentData.points[0].features.disabled_friendly" class="additional-info"><span class="mobile-map-icon-padding"><i class="icon niepelnosprawni"/></span> - ułatwienie dla osób niepełnosprawnych</p>
+        <p v-if="parentData.points[0].features.cash_on_delivery" class="additional-info"><span class="mobile-map-icon-padding"><i class="icon pobraniem"/></span> - odbiór za pobraniem</p>
       </div>
       <div class="mobile-map-footer">
-        <p class="mobile-map-btn-close" @click="closeModal()">WYBIERZ I ZAMKNIJ</p>
+        <p class="mobile-map-btn-close" @click="closeModal">WYBIERZ I ZAMKNIJ</p>
       </div>
     </div>
     <!-- End -->
@@ -100,38 +108,56 @@ import { MobileDetected } from '../mobileDetected.ts'
 export default {
   name: 'ModalDiv',
   mixins: [MobileDetected],
-  props: {
-    parentData: Object,
-    toogleModal: Boolean
-  },
   data () {
     return {
-      mutableToogleModal: this.toogleModal,
       logosUrl: {
-        zabka: require('../../assets/logos/żabka.png'),
-        dpd: require('../../assets/logos/dpd.png'),
-        dpdPickup: require('../../assets/logos/dpd-pickup.png'),
-        fresh: require('../../assets/logos/freshmarket.png'),
-        inpost: require('../../assets/logos/inpost.png'),
-        pocztaPolska: require('../../assets/logos/pocztapolska.png')
+        'Żabka': require('../../assets/logos/żabka.png'),
+        'Orlen': require('../../assets/logos/dpd-pickup.png'),
+        'Fresh Market': require('../../assets/logos/freshmarket.png'),
+        'In Post': require('../../assets/logos/inpost.png'),
+        'Poczta Polska': require('../../assets/logos/pocztapolska.png'),
+        'Ruch': require('../../assets/logos/paczka_w_ruchu.jpg')
       }
     }
   },
   computed: {
+    parentData () {
+      return this.$store.state.markerDetails
+    },
     isWidgetVersion () {
       return this.$store.state.WidgetVersion
+    },
+    linkToRoad () {
+      let url = 'https://www.google.pl/maps/dir/' + this.$store.state.lat + ',' + this.$store.state.lng + '/' + this.parentData.lat + ',' + this.parentData.lon + '/@52.2502198,21.0280249 + ,16z/data=!4m2!4m1!3e3?hl=pl'
+      return url
     }
   },
   methods: {
     closeModal () {
-      this.mutableToogleModal = false
-      this.$emit('close', this.mutableToogleModal)
+      this.$emit('closed')
     }
   }
 }
 </script>
 
 <style lang="scss" scoped>
+.arrow_left{
+  width: 35px;
+  height: 35px;
+  display: flex;
+  cursor: pointer;
+  filter: grayscale(0.5) opacity(0.3);
+  background: url('../../assets/icons/arrow_left.png') 0 0 no-repeat;
+  background-size: cover;
+}
+.play_arrow{
+  width: 22px;
+  height: 22px;
+  display: flex;
+  cursor: pointer;
+  background: url('../../assets/icons/play_arrow.png') 0 0 no-repeat;
+  background-size: cover;
+}
 .mobile-map-modal{
   background: white;
   .mobile-map-header{
@@ -143,7 +169,16 @@ export default {
     .close-mobile-map-modal{
       position: absolute;
       right: 15px;
-      top: 6px;
+      top: 10px;
+    }
+    .close-icon{
+      width: 22px;
+      height: 22px;
+      display: flex;
+      cursor: pointer;
+      filter: grayscale(0.5) opacity(0.8);
+      background: url('../../assets/icons/clear.png') 0 0 no-repeat;
+      background-size: cover;
     }
   }
   .mobile-map-row{
@@ -179,7 +214,7 @@ export default {
     display: flex;
     flex-direction: column;
     flex-wrap: wrap;
-    height: 75px;
+    // height: 75px;
     padding: 15px;
     font-size: 15px;
     .additional-info{
@@ -194,19 +229,27 @@ export default {
         display: flex;
       }
       .hours{
-        background: url('../../assets/ZEGAR.png') 0 0 no-repeat;
+        background: url('../../assets/icons/ZEGAR.png') 0 0 no-repeat;
         background-size: cover;
       }
       .sobota{
-        background: url('../../assets/sobota.png') 0 0 no-repeat;
+        background: url('../../assets/icons/sobota.png') 0 0 no-repeat;
         background-size: cover;
       }
       .niedziela{
-        background: url('../../assets/niedziela.png') 0 0 no-repeat;
+        background: url('../../assets/icons/niedziela.png') 0 0 no-repeat;
         background-size: cover;
       }
       .parking{
-        background: url('../../assets/parking.png') 0 0 no-repeat;
+        background: url('../../assets/icons/parking.png') 0 0 no-repeat;
+        background-size: cover;
+      }
+      .pobraniem{
+        background: url('../../assets/icons/za-pobraniem.png') 0 0 no-repeat;
+        background-size: cover;
+      }
+      .niepelnosprawni{
+        background: url('../../assets/icons/niepelnosprawni.png') 0 0 no-repeat;
         background-size: cover;
       }
     }
@@ -238,7 +281,7 @@ p {
 }
 .content{
   background: #F5F5F5;
-  padding-bottom: 15px;
+  padding-bottom: 10px;
 }
 .modal{
   width: 100%;
@@ -258,8 +301,9 @@ p {
 .footer{
   display: flex;
   justify-content: space-between;
-  padding: 10px 0;
+  padding: 6px 0;
   align-items: center;
+  background: white;
   // position: fixed;
   // bottom: 0;
   // right: 0;
@@ -267,11 +311,11 @@ p {
   // background: white;
 }
 .title{
-  padding-left: 27px;
+  padding-left: 20px;
   h3 {
     margin: 0;
     text-align: left;
-    padding-top: 15px;
+    padding-top: 10px;
     font-size: 22px;
     color: #000000;
   }
@@ -291,7 +335,7 @@ p {
 }
 .selected-supplierV2{
    justify-content: space-between;
-   padding-bottom: 15px;
+   padding-bottom: 10px;
    border-bottom: 1px solid #E5E5E5;
    margin: 0 30px;
 }
@@ -306,7 +350,7 @@ p {
   flex-wrap: wrap;
   flex-direction: column;
   justify-content: space-between;
-  flex: 0 0 40%;
+  flex: 0 0 45%;
 }
 .col2-v2{
   flex: 0 0 50%;
@@ -362,7 +406,7 @@ p {
   display: flex;
   flex-direction: column;
   align-items: end;
-  padding: 15px 0;
+  padding: 10px 0;
   color: #000000;
   font-size: 16px;
   h4{
@@ -391,12 +435,6 @@ p {
   color: #ADADAD;
   align-items: center;
   cursor: pointer;
-  i {
-    font-size: 45px;
-  }
-  &:hover{
-    color: #E4405F;
-  }
 }
 .powrot-v2{
   padding-left: 10px;
@@ -421,10 +459,10 @@ p {
 }
 @media only screen and (max-width: 1000px) {
  .titleV2 h3 {
-   font-size: 20px;
+   font-size: 18px;
  }
  .title h3{
-   font-size: 20px;
+   font-size: 18px;
  }
  .address{
     h4, p {
@@ -438,29 +476,32 @@ p {
  }
  .hours-title{
    p {
-     font-size: 14px;
+     font-size: 13px;
    }
  }
  .first-half{
    p{
-     font-size: 14px;
+     font-size: 13px;
    }
  }
  .second-half{
    p{
-     font-size: 14px;
+     font-size: 13px;
    }
  }
- .road{
-   p{
-     font-size: 12px;
-     i {
-       font-size: 22px;
-     }
-   }
+ .info-box{
+  .road{
+    a{
+      font-size: 12px;
+      i {
+        height: 16px;
+        width: 16px;
+      }
+    }
+  }
  }
  .img{
-   width: 75px;
+   width: 70px;
  }
  .powrot{
    font-size: 15px;

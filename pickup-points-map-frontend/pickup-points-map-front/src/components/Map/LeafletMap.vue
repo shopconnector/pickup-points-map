@@ -5,48 +5,64 @@
       <p class="button-action" :class="{ 'active' : !toogleMap }" @click="toogleMapMethod('show')">Mapa</p>
       <p class="button-action" :class="{ 'active' : toogleMap }" @click="toogleMapMethod('hide')">Lista</p>
     </div>
+    <div v-if="!$store.state.pointMarkers.length" class="first-enter-info">
+      <p>Wybierz adres/lokalizację aby<br>zobaczyć najbliższe punkty odbioru</p>
+    </div>
+    <div v-else-if="listMarkers.length === 0 || listMarkers[0] === 'empty'" class="first-enter-info">
+      <p>Nie znaleźiono żadnego punktu. Zmień kryteria wyboru.</p>
+    </div>
+    <div v-else-if="($store.state.zoom < 13 || $store.state.pointMarkers.length > 100 || $store.state.filteredMapPoints.length > 100) && !toogleMap" class="error-info">
+      <p>Powiększ zoom żeby zobaczyć punkty</p>
+    </div>
     <transition name="fade">
       <div  v-if="toogleMap" class="list-box" :class="{'listbox-margin-top' : isWidgetVersion}">
-        <div class="list-title hidden-xs">Punkty odbioru w pobliżu Twojej lokalizacji</div>
-        <div class="scroll-box" :class="{'change-vh' : !isWidgetVersion}">
-          <div class="list-row" :class="{'list-row-modal' : isOpenListModal(index)}"
-            v-for="(marker, index) in markers"
-            :key="marker.id"
-            @click="openListModal(index)">
-            <div class="list-elem list-elem-img">
-              <img :class="{'img-modal' : isOpenListModal(index)}" :src="logosUrl[marker.type]" width="auto" height="70px" />
-            </div>
-            <div class="list-elem">
-              <b>{{ marker.address1 }}</b>
-              {{ marker.zip }}
-              {{ marker.address2 }}
-            </div>
-            <div class="list-elem hours-elem">
-              <b>Godziny otwarcia:</b>
-              {{ marker.openTime }}<br>
-              {{ marker.openTime2 }}
-            </div>
-            <div class="list-elem btn-elem">
-              <p class="list-button" @click="selectedPopup(marker.id, index)">Wybierz</p>
-            </div>
-              <!-- List Modal Section -->
-              <transition name="fade">
-              <div class="list-modal" v-if="isOpenListModal(index) && isMobile">
-                <div class="list-modal-hours">
-                  <b>Godziny otwarcia:</b>
-                  {{ marker.openTime }}<br>
-                  {{ marker.openTime2 }}
-                </div>
-                <div class="list-modal-additional">
-                  <i class="icon hours"/>
-                  <i class="icon sobota"/>
-                  <i class="icon niedziela"/>
-                </div>
-              </div>
-              </transition>
-              <!-- List Modal Section END -->
+          <div class="list-title hidden-xs"><h1>Punkty odbioru w pobliżu Twojej lokalizacji</h1></div>
+          <div v-if="listMarkers.length === 0 || listMarkers[0] === 'empty'">
+            <p class="empty-text">Wybierz adres/lokalizację aby zobaczyć najbliższe punkty odbioru</p>
           </div>
-        </div>
+          <div v-else class="scroll-box" :class="{'change-vh' : !isWidgetVersion}">
+              <div class="list-row" :class="{'list-row-modal' : isOpenListModal(index)}"
+                v-for="(listMarker, index) in listMarkers"
+                :key="index"
+                @click="openListModal(index)"
+                v-on="isMobile ? { click: () => getPointDetails(listMarker.lat, listMarker.lon, listMarker.pickup_point_type) } : {} "
+                >
+                  <div class="list-elem list-elem-img">
+                    <img :class="{'img-modal' : isOpenListModal(index)}" :src="logosUrl[listMarker.pickup_point_type]" width="auto" height="70px" />
+                  </div>
+                  <div class="list-elem list-elem-address">
+                    <b>{{ listMarker.address.street }}</b>
+                    <p class="address-parag">{{ listMarker.zip }}
+                    {{ listMarker.address.zip }} {{ listMarker.address.city }}</p>
+                  </div>
+                  <div class="list-elem hours-elem">
+                    <b>Godziny otwarcia:</b>
+                    {{ listMarker.working_hours }}
+                  </div>
+                  <div class="list-elem btn-elem">
+                    <p class="list-button" @click="getPointDetails(listMarker.lat, listMarker.lon, listMarker.pickup_point_type),toogleMethod('true')">Wybierz</p>
+                  </div>
+                  <transition name="fade">
+                    <div class="list-modal" v-if="isOpenListModal(index) && isMobile && $store.state.markerDetails">
+                      <div class="list-modal-hours" v-if="$store.state.markerDetails.points[0].working_hours.length">
+                        <b>Godziny otwarcia:</b>
+                        <template v-for="day in $store.state.markerDetails.points[0].working_hours">
+                          {{ day }}
+                        </template>
+                      </div>
+                      <div class="list-modal-additional">
+                        <p v-if="$store.state.markerDetails.points[0].features.open_late" class="icon hours"/>
+                        <p v-if="$store.state.markerDetails.points[0].features.open_saturday" class="icon sobota"/>
+                        <p v-if="$store.state.markerDetails.points[0].features.open_sunday" class="icon niedziela"/>
+                        <p v-if="$store.state.markerDetails.points[0].features.parking" class="icon parking"/>
+                        <p v-if="$store.state.markerDetails.points[0].features.disabled_friendly" class="icon niepelnosprawni"/>
+                        <p v-if="$store.state.markerDetails.points[0].features.cash_on_delivery" class="icon pobraniem"/>
+                      </div>
+                    </div>
+                  </transition>
+              </div>
+              <div v-if="$store.state.listMarkers.length !== 0" class="load-box" @click="loadMorePoints()"><p class="load-button">Załaduj więcej</p></div>
+          </div>
       </div>
     </transition>
     <transition name="fade">
@@ -54,42 +70,46 @@
           :zoom="zoom"
           :center="center"
           :options="{zoomControl: false}"
-          @update:zoom="zoomUpdated"
-          @update:center="centerUpdated"
           @update:bounds="boundsUpdated"
+          @update:center="centerUpdated"
+          @update:zoom="zoomUpdated"
+          @popupopen="popupOpen"
+          @popupclose="popupClose"
         >
             <l-tile-layer :url="url" :attribution="attribution" />
-            <template v-if="markers[0] !== 'empty'">
+            <template v-if="pointMarkers[0] !== 'empty'">
               <l-marker
-                v-for="(marker, index) in markers"
+                v-for="marker in pointMarkers"
                 :key="marker.id"
-                :visible="marker.visible"
-                :lat-lng="marker.position"
+                :visible="true"
+                :lat-lng="{ lat: marker.lat, lng: marker.lon }"
                 class-name="markertype"
-                v-on="isMobile ? { click: () => selectedPopup(marker.id, index) } : {} "
+                @click="getPointDetails(marker.lat, marker.lon, marker.pickup_type)"
+                v-on="isMobile ? { click: () => toogleMethod('true') } : {} "
               >
-                <l-icon :icon-anchor="marker.iconAnchor" :icon-size="marker.iconSize" class-name="someExtraClass">
-                  <img :src="pinsUrl[marker.type]" width="52" height="52"/>
+                <l-icon :icon-anchor="[iconsUrl[marker.pickup_type]]" :icon-size="[52, 52]" class-name="someExtraClass">
+                  <img :src="pinsUrl[marker.pickup_type]" width="52" height="52"/>
                 </l-icon>
                 <transition name="bounce">
-                <l-popup v-if="!isMobile">
-                  <div class="popup-box">
-                    <img class="popup-marker" :src="pinsUrl[marker.type]" width="102" height="102"/>
-                    <div class="popup-info">
-                      <div class="popup-text-box">
-                        <p class="popup-text">
-                          <b>Mniszew 25 </b><br> 26910 Magnuszew, <br>PL13883
-                        </p>
+                  <l-popup v-if="!isMobile">
+                    <div class="popup-box">
+                      <img class="popup-marker" :src="pinsUrl[marker.pickup_type]" width="102" height="102"/>
+                      <div class="popup-info">
+                        <div class="popup-text-box">
+                          <p class="popup-text" v-if="$store.state.markerDetails.length !== 0">
+                            <b>{{ $store.state.markerDetails.points[0].name }}</b><br>
+                            <b>{{ $store.state.markerDetails.street }}</b><br> {{ $store.state.markerDetails.zip }} {{ $store.state.markerDetails.city }}, <br> {{ $store.state.markerDetails.points[0].id }}
+                          </p>
+                        </div>
+                        <div class="popup-img" >
+                          <img :src="logosUrl[marker.pickup_type]" width="100%" height="auto"/>
+                        </div>
                       </div>
-                      <div class="popup-img" >
-                        <img :src="logosUrl[marker.type]" width="100%" height="auto"/>
+                      <div class="popup-action">
+                        <p class="popup-button" @click="toogleMethod('true')">Wybierz</p>
                       </div>
                     </div>
-                    <div class="popup-action">
-                      <p class="popup-button" @click="selectedPopup(marker.id, index)">Wybierz</p>
-                    </div>
-                  </div>
-                </l-popup>
+                  </l-popup>
                 </transition>
               </l-marker>
             </template>
@@ -97,9 +117,9 @@
     </transition>
   </div>
     <div>
-      <transition name="bounce">
+      <transition :name="isMobile ? 'fade-in-up' : 'bounce'">
         <div class="modal-position" :class="{'modal-positionV2' : !isWidgetVersion}" v-if="toogleModal">
-          <ModalDiv :parentData="selectedMarker" :toogleModal="toogleModal" @close="onCloseChild"/>
+          <ModalDiv @closed="onCloseChild"/>
         </div>
       </transition>
     </div>
@@ -129,39 +149,54 @@ export default {
   mixins: [MobileDetected],
   data () {
     return {
-      isOpenModalMap: 0,
-      isListFooter: false,
+      isPopupOpen: false,
       selectedPoint: Number,
       toogleMap: false,
       toogleModal: false,
-      geoCenter: {
-        lat: 0,
-        lng: 0
-      },
-      // markers: null,
-      selectedMarker: Object,
-      selectedMarkerId: String,
-      url: 'http://{s}.tile.osm.org/{z}/{x}/{y}.png',
+      url: 'https://scorch.openstreetmap.org/{z}/{x}/{y}.png',
       attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
+      iconsUrl: {
+        'Żabka': require('../../assets/logos/żabka.png'),
+        'Orlen': require('../../assets/logos/dpd-pickup.png'),
+        'Fresh Market': require('../../assets/logos/freshmarket.png'),
+        'In Post': require('../../assets/logos/inpost.png'),
+        'Poczta Polska': require('../../assets/logos/pocztapolska.png'),
+        'Ruch': require('../../assets/logos/paczka_w_ruchu.jpg')
+      },
       logosUrl: {
-        zabka: require('../../assets/logos/żabka.png'),
-        dpd: require('../../assets/logos/dpd.png'),
-        dpdPickup: require('../../assets/logos/dpd-pickup.png'),
-        fresh: require('../../assets/logos/freshmarket.png'),
-        inpost: require('../../assets/logos/inpost.png'),
-        pocztaPolska: require('../../assets/logos/pocztapolska.png')
+        'Żabka': require('../../assets/logos/żabka.png'),
+        'Orlen': require('../../assets/logos/dpd-pickup.png'),
+        'Fresh Market': require('../../assets/logos/freshmarket.png'),
+        'In Post': require('../../assets/logos/inpost.png'),
+        'Poczta Polska': require('../../assets/logos/pocztapolska.png'),
+        'Ruch': require('../../assets/logos/paczka_w_ruchu.jpg')
       },
       pinsUrl: {
-        zabka: require('../../assets/zabka.png'),
-        dpd: require('../../assets/dpd.png'),
-        dpdPickup: require('../../assets/dpdpickup.png'),
-        fresh: require('../../assets/fresh.png'),
-        inpost: require('../../assets/inpost.png'),
-        pocztaPolska: require('../../assets/poczta-polska.png')
+        'Żabka': require('../../assets/zabka.png'),
+        'Orlen': require('../../assets/dpdpickup.png'),
+        'Fresh Market': require('../../assets/fresh.png'),
+        'In Post': require('../../assets/inpost.png'),
+        'Poczta Polska': require('../../assets/poczta-polska.png'),
+        'Ruch': require('../../assets/paczka-w-ruchu.png')
       }
     }
   },
   computed: {
+    // zoomClosest () {
+    //   let pins = this.$store.state.pointMarkers
+    //   var dist = Math.max.apply(Math, pins.map((pin) => {
+    //     var fromLng = this.$store.state.lng / 180.0 * Math.PI
+    //     var fromLat = this.$store.state.lat / 180.0 * Math.PI
+    //     var pointLng = pin.lon / 180.0 * Math.PI
+    //     var pointLat = pin.lat / 180.0 * Math.PI
+    //     return Math.acos(Math.sin(fromLat) * Math.sin(pointLat) + (Math.cos(fromLat) * Math.cos(pointLat) * Math.cos(pointLng - fromLng))) * 6371000
+    //   }))
+    //   var x = Math.pow(dist, 2)
+    //   var C = 2 * Math.PI * 6378137.000
+    //   var temp = Math.abs((C * Math.cos(53.06616)) / x)
+    //   var zoom = Math.round(Math.log2(temp) + 14)
+    //   return zoom
+    // },
     // calc () {
     //   console.log(Math.sqrt((52.2353 - 52.2241)*(52.2353 - 52.2241)+(21.0150 - 21.0032) * (21.0150 - 21.0032)))
     // },
@@ -171,31 +206,109 @@ export default {
     center () {
       return latLng(this.$store.state.lat, this.$store.state.lng)
     },
-    markers () {
-      if (this.$store.state.filteredMarkers.length > 0) {
-        return this.$store.state.filteredMarkers
+    pointMarkers () {
+      if (this.$store.state.filteredMapPoints.length > 0) {
+        if (this.$store.state.zoom < 13 || this.$store.state.filteredMapPoints.length > 100) {
+          return []
+        } else {
+          return this.$store.state.filteredMapPoints
+        }
       } else {
-        return this.$store.state.markers
+        if (this.$store.state.zoom < 13 || this.$store.state.pointMarkers.length > 100) {
+          return []
+        } else {
+          return this.$store.state.pointMarkers
+        }
+      }
+    },
+    listMarkers () {
+      if (this.$store.state.filteredListPoints.length > 0) {
+        return this.$store.state.filteredListPoints
+      } else {
+        return this.$store.state.listMarkers
       }
     },
     isWidgetVersion () {
       return this.$store.state.WidgetVersion
+    },
+    zoomOrCenterUpdate () {
+      return [this.$store.state.zoom, this.$store.state.lat, this.$store.state.lng].join()
     }
   },
+  watch: {
+    zoomOrCenterUpdate: {
+      handler () {
+        this.$store.commit('changePageNumber', 1)
+        if (this.$store.state.filteredMapPoints.length === 0 || this.$store.state.filteredListPoints.length === 0) {
+          if (this.$store.state.zoom >= 13 && !this.isPopupOpen) {
+            this.$store.dispatch('get_points', {
+              lat: this.$store.state.lat,
+              lng: this.$store.state.lng,
+              dist: this.$store.state.radiusOfVisibily
+            })
+            this.$store.dispatch('get_list_points', {
+              lat: this.$store.state.lat,
+              lng: this.$store.state.lng,
+              page: this.$store.state.pageNumber
+            })
+          }
+        }
+      },
+      deep: true
+    }
+  },
+  mounted () {
+    // this.$store.subscribe((mutation, state) => {
+    //   if (mutation.type === 'geolocation/LOCATION_CHANGED') {
+    //     console.log('geolocation/LOCATION_CHANGED')
+    //   }
+    //   if (mutation.type === 'get_points_succ') {
+    //     console.log('get_points_succ')
+    //   }
+    //   if (mutation.type === 'get_list_points_succ') {
+    //     console.log('get_list_points_succ')
+    //   }
+    // })
+  },
   methods: {
+    popupOpen () {
+      this.isPopupOpen = true
+    },
+    popupClose () {
+      this.toogleModal = false
+      this.isPopupOpen = false
+      this.$store.commit('clear_point_details')
+    },
+    getPointDetails (lat, lng, type) {
+      this.$store.dispatch('get_point_details', {
+        lat: lat,
+        lng: lng,
+        type: type
+      })
+    },
+    loadMorePoints () {
+      var newPage = this.$store.state.pageNumber + 1
+      this.$store.commit('changePageNumber', newPage)
+      this.$store.dispatch('get_list_points', {
+        lat: this.$store.state.lat,
+        lng: this.$store.state.lng,
+        page: this.$store.state.pageNumber
+      })
+    },
     toogleMapMethod (text) {
       if (text === 'show') {
         this.toogleMap = false
       } else if (text === 'hide') {
         this.toogleMap = true
       }
+      this.toogleMethod('false')
       this.$store.commit('closeListFooter')
-    },
-    zoomUpdated (zoom) {
-      this.$store.commit('updatePosition', [{ lat: null, lng: null, zoom: zoom }])
     },
     centerUpdated (center) {
       this.$store.commit('updatePosition', [{ lat: center.lat, lng: center.lng, zoom: null }])
+    },
+    zoomUpdated (zoom) {
+      this.$store.commit('updatePosition', [{ lat: null, lng: null, zoom: zoom }])
     },
     boundsUpdated (bounds) {
       var fromLng = bounds._northEast.lng / 180.0 * Math.PI
@@ -206,21 +319,17 @@ export default {
       var rad = Math.round(dist / 2)
       this.$store.commit('changeRadiusOfVisibility', rad)
     },
-    selectedPopup (id, index) {
-      this.toogleModal = false
-      setTimeout(() => this.toogleMethod(id, index), 500)
-    },
-    toogleMethod (id, index) {
-      if (this.selectedMarkerId !== id) {
+    toogleMethod (bool) {
+      if (bool === 'true') {
         this.toogleModal = true
-        this.selectedMarkerId = id
+      } else if (bool === 'false') {
+        this.toogleModal = false
       } else {
-        this.selectedMarkerId = ''
+        this.toogleModal = !this.toogleModal
       }
-      this.selectedMarker = this.markers[index]
     },
-    onCloseChild (value) {
-      this.toogleModal = value
+    onCloseChild () {
+      this.toogleModal = false
     },
     openListModal (index) {
       this.selectedPoint = index
@@ -240,6 +349,7 @@ export default {
 <style lang="scss">
 .leaflet-popup {
   .leaflet-popup-content-wrapper {
+    // height: 145px;
     border: 3px solid #3F87F5;
   }
   .leaflet-popup-tip-container {
@@ -251,7 +361,7 @@ export default {
     color: #333333;
   }
   padding-right: 210px !important;
-  bottom: -210px !important;
+  bottom: -230px !important;
   margin-left: 210px !important;
   margin-bottom: 0 !important;
  }
@@ -291,10 +401,32 @@ export default {
 </style>
 
 <style lang="scss" scoped>
+.empty-text {
+  margin: 0;
+  color: #E54C69;
+  @media (max-width: 767px) {
+    text-align: center;
+  }
+}
+.load-box {
+  display: flex;
+  justify-content: center;
+  .load-button {
+    margin: 40px 0;
+    background-color: #E4405F;
+    padding: 10px 15px;
+    border-radius: 50px;
+    color: white;
+    display: inline;
+    text-align: center;
+    cursor: pointer;
+  }
+}
 .list-background-mobile-fix{
   background: #F5F5F5;
 }
 .list-modal{
+  width: 100%;
   .list-modal-hours{
     display: flex;
     flex-direction: column;
@@ -304,22 +436,34 @@ export default {
   }
   .list-modal-additional{
     display: flex;
-    justify-content: space-around;
+    justify-content: space-evenly;
     .icon{
       width: 17px;
       height: 17px;
       display: flex;
     }
     .hours{
-      background: url('../../assets/ZEGAR.png') 0 0 no-repeat;
+      background: url('../../assets/icons/ZEGAR.png') 0 0 no-repeat;
       background-size: cover;
     }
     .sobota{
-      background: url('../../assets/sobota.png') 0 0 no-repeat;
+      background: url('../../assets/icons/sobota.png') 0 0 no-repeat;
       background-size: cover;
     }
     .niedziela{
-      background: url('../../assets/niedziela.png') 0 0 no-repeat;
+      background: url('../../assets/icons/niedziela.png') 0 0 no-repeat;
+      background-size: cover;
+    }
+    .parking{
+      background: url('../../assets/icons/parking.png') 0 0 no-repeat;
+      background-size: cover;
+    }
+    .pobraniem{
+      background: url('../../assets/icons/za-pobraniem.png') 0 0 no-repeat;
+      background-size: cover;
+      }
+    .niepelnosprawni{
+      background: url('../../assets/icons/niepelnosprawni.png') 0 0 no-repeat;
       background-size: cover;
     }
   }
@@ -329,6 +473,7 @@ export default {
   height: 100vh;
   overflow: hidden;
   max-height: 100vh;
+  position: relative;
 }
 .map-v2{
   position: relative;
@@ -339,6 +484,49 @@ export default {
   @media (max-width: 767px) {
     height: 100vh;
     max-height: 100vh;
+  }
+}
+.first-enter-info {
+  position: absolute;
+  z-index: 1000;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  margin: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #00000054;
+  p {
+    margin: 0;
+    padding: 15px;
+    border-radius: 5px;
+    color: #e4405f;
+    font-weight: 700;
+    text-transform: uppercase;
+    background-color: #ffffff;
+  }
+}
+.error-info {
+  position: absolute;
+  z-index: 1000;
+  top: 47%;
+  left: 0;
+  margin: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  // background-color: #00000054;
+  p {
+    margin: 0;
+    padding: 15px;
+    border-radius: 5px;
+    color: #e4405f;
+    font-weight: 700;
+    text-transform: uppercase;
+    background-color: #ffffff;
   }
 }
 .popup-info {
@@ -376,16 +564,16 @@ display: flex;
 }
 .popup-marker {
   position: absolute;
-  left: -20px;
+  left: -15px;
   top: -92px;
 }
 .type-actions {
   .button-action {
     &.active {
       color: white;
-      background-color: #E54C69;
+      background-color: #DD2C54;
     }
-    color: #AAAAAA;
+    color: #4A4A4A;
     background-color: #E5E5E5;
     padding: 8px 40px 10px 40px;
     margin: 0;
@@ -400,6 +588,7 @@ display: flex;
   border-radius: 15px;
   overflow: hidden;
   @media (max-width: 767px) {
+    position: fixed;
     right: 20px;
     left: auto;
     top: 15px;
@@ -421,7 +610,6 @@ display: flex;
 .hours-elem{
   flex-basis: 30% !important;
   max-width: 30% !important;
-  text-align: right !important;
 }
 .btn-elem{
   flex-basis: 20% !important;
@@ -429,9 +617,12 @@ display: flex;
 }
 .list-box {
   .list-title {
-    font-weight: 700;
-    font-size: 22px;
-    padding: 10px 0;
+    h1 {
+      font-weight: 700;
+      font-size: 22px;
+      padding: 10px 0;
+      margin: 0;
+    }
   }
   .list-row {
     .list-elem {
@@ -445,12 +636,16 @@ display: flex;
         text-align: center;
         cursor: pointer;
       }
+      text-align: center;
       flex-basis: 25%;
       max-width: 25%;
       display: flex;
       flex-wrap: wrap;
       align-items: center;
       justify-content: center;
+      .address-parag{
+        margin: 0;
+      }
     }
     padding: 20px 0;
     border-bottom: 1px solid #AAAAAA;
@@ -460,6 +655,8 @@ display: flex;
     flex-wrap: wrap;
   }
   .scroll-box {
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
     overflow-y: scroll;
     height: 70vh;
     border: 1px solid #AAAAAA;
@@ -474,7 +671,7 @@ display: flex;
 }
 .modal-position {
   width: 55%;
-  position: absolute;
+  position: fixed;
   right: 0;
   bottom: 0;
   z-index: 999;
@@ -524,6 +721,31 @@ display: flex;
   }
 }
 
+.fade-in {
+  &-down-enter-active,
+  &-up-enter-active{
+    transition: all .4s cubic-bezier(0.4, 0.0, 0.2, 1);
+  }
+  &-down-leave-active,
+  &-up-leave-active {
+    transition: all .4s cubic-bezier(0.4, 0.0, 1, 1);
+  }
+  &-down-enter,
+  &-down-leave-to,
+  &-up-enter,
+  &-up-leave-to {
+    opacity: 0;
+  }
+  &-down-enter,
+  &-down-leave-to {
+    transform: translateY(-100%);
+  }
+  &-up-enter,
+  &-up-leave-to {
+    transform: translateY(100%);
+  }
+}
+// animation end
 @media only screen and (max-width: 1100px) {
  .type-actions{
    .button-action{
@@ -586,22 +808,31 @@ display: flex;
           margin-bottom: 15px;
         }
           .list-elem{
-            flex-basis: 37%;
-            max-width: 37%;
+            flex-basis: 50%;
+            max-width: 50%;
             justify-content: normal;
             .img-modal{
                filter: none;
                height: 65px;
-               padding-right: 20px;
             }
             img{
               filter: grayscale(1) opacity(0.6);
               height: 55px;
+              padding-right: 20px;
             }
           }
+          .list-elem-address{
+              display: flex;
+              flex-direction: column;
+              justify-content: center;
+              align-items: end;
+              .address-parag{
+                margin: 0;
+                padding-top: 5px;
+              }
+          }
           .list-elem-img{
-                justify-content: center;
-                margin-right: -25px;
+                justify-content: flex-end;
           }
           .hours-elem{
             display: none;

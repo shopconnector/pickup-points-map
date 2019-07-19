@@ -1,8 +1,9 @@
 <template>
-    <div class='filters'>
+  <div>
+    <div class='filters add-scroll-filters' :class="{ 'filtersV2' : !isWidgetVersion }">
       <!-- Select suppliers first version -->
       <div class="suppliers" v-if="isWidgetVersion && !isMobile">
-        <h1 class="title-supp">Wybierz dostawców</h1>
+        <h2 class="title-supp">Wybierz dostawców</h2>
         <div class="suppliers-menu">
           <div class="selectSuppliers" v-for="supp in suppliers" :key="supp.id">
             <input class="styled-checkbox" type="checkbox" :id="supp.id" :value="supp.value" v-model="checkedSuppliers">
@@ -12,7 +13,7 @@
       </div>
       <!-- Select suppliers second version -->
       <div v-if="!isWidgetVersion || isMobile">
-        <h1 class="title-dostawcow">Wybierz dostawców</h1>
+        <h2 class="title-dostawcow">Wybierz dostawców</h2>
         <div class="suppliers-menu-dostawcow">
           <div class="select-suppliers-dostawcow" v-for="supp in suppliers" :key="supp.id">
             <input class="styled-checkbox-dostawcow" type="checkbox" :id="supp.id" :value="supp.value" v-model="checkedSuppliers">
@@ -22,7 +23,7 @@
       </div>
       <!-- Filters Menu -->
       <div class="header">
-        <h1 class="title" :class="{'titleV2' : !isWidgetVersion}">Filtry</h1><p :class="isWidgetVersion ? 'subtitle' : 'subtitleV2'" @click="clearFilter()">
+        <h2 class="title" :class="{'titleV2' : !isWidgetVersion}">Filtry</h2><p :class="isWidgetVersion ? 'subtitle' : 'subtitleV2'" @click="clearAPIFilter()">
             Wyczyść filtry<span :class="isWidgetVersion ? 'clear' : 'clearV2'">X</span></p>
       </div>
       <div class="filters-menu">
@@ -31,13 +32,16 @@
           <label class="custom-icon" :class="box.icon" :for="box.id">{{box.info}}</label>
         </div>
       </div>
-      <!-- Mobile version -->
-      <div class="visible-xs">
-        <div class="mobile-filters-footer">
-          <p class="wyczysc" @click="clearFilter()">Wyczyść filtry</p>
-          <p class="zastosuj" @click="closeFilterMobile">Zastosuj filtry</p>
-        </div>
+    </div>
+    <!-- Mobile version -->
+    <div class="mobile-filters-footer">
+      <div class="wyczysc">
+        <p class="m0" @click="clearAPIFilter()" v-show="filters.length || checkedSuppliers.length" >Wyczyść filtry</p>
       </div>
+      <div class="zastosuj">
+        <p class="m0" @click="closeFilterMobile">Zastosuj filtry</p>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -54,17 +58,12 @@ export default {
       checkedSuppliers: [],
       suppliers: [{
         id: 'Poczta Polska',
-        value: 'pocztaPolska',
+        value: 'Poczta Polska',
         name: 'Poczta Polska',
         src: 'pocztapolska.png',
         alt: 'Poczta Polska img'
-      }, {
-        id: 'Kurier DPD',
-        value: 'dpd',
-        name: 'Kurier DPD',
-        src: 'dpd.png',
-        alt: 'DPD img'
-      }, {
+      },
+      {
         id: 'DPD Pickup',
         value: 'dpdPickup',
         name: 'DPD Pickup',
@@ -72,41 +71,47 @@ export default {
         alt: 'DPD pickup img'
       }, {
         id: 'Zabka',
-        value: 'zabka',
+        value: 'Żabka',
         name: 'Żabka',
         src: 'żabka.png',
         alt: 'Żabka png'
       }, {
         id: 'Fresh',
-        value: 'fresh',
+        value: 'Fresh Market',
         name: 'Fresh',
         src: 'freshmarket.png',
         alt: 'Fresh png'
       }, {
         id: 'Paczkomaty In-post',
-        value: 'inpost',
+        value: 'In Post',
         name: 'Paczkomaty In-Post',
         src: 'inpost.png',
         alt: 'Paczkomaty In-Post img'
+      }, {
+        id: 'Paczka w ruchu',
+        value: 'Paczka w Ruchu',
+        name: 'Paczka w ruchu',
+        src: 'paczka_w_ruchu.jpg',
+        alt: 'Paczka w ruchu image'
       }],
       checkboxes: [{
         id: 'otwarteDoPozna',
-        value: 'openNight',
+        value: 'open_late',
         info: 'Otwarte do póżna',
         icon: 'pozna'
       }, {
         id: 'otwarteWSobotu',
-        value: 'openSat',
+        value: 'open_saturday',
         info: 'Otwarte w soboty',
         icon: 'sobota'
       }, {
         id: 'otwarteWNiedziele',
-        value: 'openSun',
+        value: 'open_sunday',
         info: 'Otwarte w niedziele',
         icon: 'niedziela'
       }, {
         id: 'dlaOsobNiepelnosprawnych',
-        value: 'disabledPeople',
+        value: 'disabled_friendly',
         info: 'Ułatwienie dla osób niepełnosprawnych',
         icon: 'niepelnosprawni'
       }, {
@@ -116,7 +121,7 @@ export default {
         icon: 'parking'
       }, {
         id: 'odbiorZaPobraniem',
-        value: 'cashOnDelivery',
+        value: 'cash_on_delivery',
         info: 'Odbiór za pobraniem',
         icon: 'pobraniem'
       }],
@@ -131,12 +136,43 @@ export default {
     isFilterMobilOpen () {
       return this.$store.state.isFilterMobilOpen
     },
-    activeFilter () {
+    filteredPointsForMap () {
       if (this.filters.length > 0 || this.checkedSuppliers.length > 0) {
-        return this.$store.getters.filterMarkers(this.filters, this.checkedSuppliers)
-      } else if (this.filters.length === 0) {
-        return this.$store.getters.clearFilters
+        return this.$store.dispatch('get_filtered_points', {
+          lat: this.$store.state.lat,
+          lng: this.$store.state.lng,
+          dist: this.$store.state.radiusOfVisibily,
+          filtered: this.filteredPoints()
+        })
+      } else {
+        return this.$store.getters.clearAPIFilters
       }
+    },
+    filteredPointsForList () {
+      if (this.filters.length > 0 || this.checkedSuppliers.length > 0) {
+        return this.$store.dispatch('get_filtered_list_points', {
+          lat: this.$store.state.lat,
+          lng: this.$store.state.lng,
+          page: this.$store.state.pageNumber,
+          filtered: this.filteredPoints()
+        })
+      } else {
+        return this.$store.getters.clearAPIFilters
+      }
+    },
+    activeFilter () {
+      // if (this.filters.length > 0 || this.checkedSuppliers.length > 0) {
+      //    return this.$store.getters.filterMarkers(this.filters, this.checkedSuppliers)
+      //   this.$store.dispatch('get_pickup_points_map', {
+      //     lat: this.$store.state.lat,
+      //     lng: this.$store.state.lng,
+      //     dist: this.$store.state.radiusOfVisibily
+      //     filter: metoh
+      //   })
+      // } else if (this.filters.length === 0) {
+      //   return this.$store.getters.clearFilters
+      // }
+      return (this.filteredPointsForMap, this.filteredPointsForList)
     }
   },
 
@@ -148,13 +184,35 @@ export default {
   created () {
     this.markers = this.$store.state.markers
   },
-
   methods: {
-    clearFilter () {
+    // changeFilterStore () {
+    // },
+    filteredPoints () {
+      var features = []
+      var pickupTypes = []
+      if (this.filters.length > 0) {
+        features = this.filters.map(x => {
+          return `&features[]=${x}`
+        })
+      }
+      if (this.checkedSuppliers.length > 0) {
+        pickupTypes = this.checkedSuppliers.map(x => {
+          return `&pickup_types[]=${x}`
+        })
+      }
+      var temp = features.concat(pickupTypes)
+      return temp.join('')
+    },
+    clearAPIFilter () {
       this.checkedSuppliers = []
       this.filters = []
-      return this.$store.getters.clearFilters
+      return this.$store.getters.clearAPIFilter
     },
+    // clearFilter () {
+    //   this.checkedSuppliers = []
+    //   this.filters = []
+    //   return this.$store.getters.clearFilters
+    // },
     getImgUrl (pic) {
       return require('../../assets/logos/' + pic)
     },
@@ -171,21 +229,40 @@ export default {
 </script>
 
 <style lang='scss' scoped>
+.m0 {
+  margin: 0;
+}
 .mobile-filters-footer{
-  p {
+  background-color: white;
+  height: 20px;
+  position: absolute;
+  bottom: 16px;
+  left: 0;
+  right: 0;
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  @media (min-width: 767px) {
+    display: none
+  }
+  .wyczysc {
+    width: 50%;
+    align-items: center;
     margin: 0;
-    font-size: 16px;
-    bottom: 20px;
-    position: absolute;
     color: #000000;
   }
   .zastosuj{
-    right: 35px;
+    width: 50%;
+    align-items: center;
+    margin: 0;
     color: #E54C69;
   }
 }
 .filters{
   margin: 0 20px;
+}
+.filtersV2 {
+  margin: 0 20px 0 0;
 }
 .header{
   display: flex;
@@ -296,37 +373,37 @@ export default {
     }
 }
 .custom-checkbox + .pozna:before{
-    background: url('../../assets/ZEGAR.png');
+    background: url('../../assets/icons/ZEGAR.png');
     background-position: center;
     background-repeat: no-repeat;
     background-size: contain;
 }
 .custom-checkbox + .sobota:before{
-    background: url('../../assets/sobota.png');
+    background: url('../../assets/icons/sobota.png');
     background-position: center;
     background-repeat: no-repeat;
     background-size: contain;
 }
 .custom-checkbox + .niedziela:before{
-    background: url('../../assets/niedziela.png');
+    background: url('../../assets/icons/niedziela.png');
     background-position: center;
     background-repeat: no-repeat;
     background-size: contain;
 }
 .custom-checkbox + .niepelnosprawni:before{
-    background: url('../../assets/niepelnosprawni.png');
+    background: url('../../assets/icons/niepelnosprawni.png');
     background-position: center;
     background-repeat: no-repeat;
     background-size: contain;
 }
 .custom-checkbox + .parking:before{
-    background: url('../../assets/parking.png');
+    background: url('../../assets/icons/parking.png');
     background-position: center;
     background-repeat: no-repeat;
     background-size: contain;
 }
 .custom-checkbox + .pobraniem:before{
-    background: url('../../assets/za-pobraniem.png');
+    background: url('../../assets/icons/za-pobraniem.png');
     background-position: center;
     background-repeat: no-repeat;
     background-size: contain;
@@ -366,6 +443,7 @@ export default {
       height: 20px;
       line-height: 16px;
       align-items: center;
+      text-align: left;
     }
     & + label:before {
       content: '';
@@ -490,6 +568,10 @@ export default {
 
  // Styles for mobile
 @media (max-width: 767px) {
+.add-scroll-filters{
+  height: calc(100vh - 80px);
+  overflow: scroll;
+}
 .filters{
    padding: 30px 35px 0 35px;
    margin: 0;

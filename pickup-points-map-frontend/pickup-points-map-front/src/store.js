@@ -7,178 +7,24 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
     status: '',
-    places: {},
-    lastvisit: {},
     filtersCount: 0,
     showListFooter: false,
     isFilterMobileOpen: 0,
-    isFooterModalOpen: 0,
+    isFooterModalOpen: 1,
     isLocitModalOpen: 0,
-    WidgetVersion: true,
+    WidgetVersion: false,
     isFilterMobilOpen: 1,
     zoom: 7,
     lat: 53.0409,
     lng: 19.2850,
     radiusOfVisibily: 0,
     filteredMarkers: [],
-    markers: [
-      {
-        id: 'm1',
-        position: { lat: 52.229676, lng: 21.012229 },
-        tooltip: 'tooltip for marker1',
-        address1: 'Mazowiecka 50A',
-        address2: 'Warszawa',
-        zip: '02776',
-        shop: 'Sklep Spożywcy',
-        phone: '111222333',
-        openTime: 'pn - pt: 8:00 - 18:00',
-        openTime2: 'so: 8:00 - 16:00',
-        visible: true,
-        openSat: true,
-        openSun: true,
-        openNight: true,
-        disabledPeople: false,
-        parking: true,
-        cashOnDelivery: true,
-        type: 'zabka',
-        icon: {
-          iconUrl: require('./assets/logos/żabka.png'),
-          iconSize: [52, 52],
-          iconAnchor: [26, 52],
-          alt: 'Żabka image'
-        }
-      },
-      {
-        id: 'm2',
-        position: { lat: 52.239050, lng: 21.046113 },
-        tooltip: 'tooltip for marker2',
-        address1: 'Jasna 3A',
-        address2: ' Kraków',
-        zip: '05423',
-        shop: 'Przesyłki kurierskie',
-        phone: '444555666',
-        openTime: 'pn - pt: 8:00 - 18:00',
-        openTime2: 'so: 8:00 - 16:00',
-        visible: true,
-        openSat: true,
-        openSun: true,
-        openNight: true,
-        disabledPeople: false,
-        parking: false,
-        cashOnDelivery: true,
-        type: 'dpd',
-        icon: {
-          iconUrl: require('./assets/logos/dpd.png'),
-          iconSize: [52, 52],
-          iconAnchor: [26, 52],
-          alt: 'DPD image'
-        }
-      },
-      {
-        id: 'm3',
-        position: { lat: 52.228740, lng: 21.033668 },
-        tooltip: 'tooltip for marker3',
-        address1: 'Kalinowa 13',
-        address2: 'Poznań',
-        zip: '33145',
-        shop: 'Prywatny operator logistyczny',
-        phone: '12334555',
-        openTime: 'pn - pt: 8:00 - 18:00',
-        openTime2: 'so: 8:00 - 16:00',
-        visible: true,
-        openSat: true,
-        openSun: false,
-        openNight: false,
-        disabledPeople: false,
-        parking: true,
-        cashOnDelivery: true,
-        type: 'inpost',
-        icon: {
-          iconUrl: require('./assets/logos/inpost.png'),
-          iconSize: [52, 52],
-          iconAnchor: [26, 52],
-          alt: 'Inpost image'
-        }
-      },
-      {
-        id: 'm4',
-        position: { lat: 52.235238, lng: 21.008434 },
-        tooltip: 'tooltip for marker4',
-        address1: 'Romualda Gutta 5B',
-        address2: 'Chorzów',
-        zip: '12213',
-        shop: 'Szybka wysyłka',
-        phone: '12334132',
-        openTime: 'pn - pt: 8:00 - 18:00',
-        openTime2: 'so: 8:00 - 16:00',
-        visible: true,
-        openSat: false,
-        openSun: true,
-        openNight: false,
-        disabledPeople: false,
-        parking: true,
-        cashOnDelivery: true,
-        type: 'dpdPickup',
-        icon: {
-          iconUrl: require('./assets/logos/dpd-pickup.png'),
-          iconSize: [52, 52],
-          iconAnchor: [26, 52],
-          alt: 'DpdPickup image'
-        }
-      },
-      {
-        id: 'm5',
-        position: { lat: 52.233949, lng: 21.017360 },
-        tooltip: 'tooltip for marker5',
-        address1: 'Fregaty 50A',
-        address2: 'Lublin',
-        zip: '01277',
-        shop: 'Sklep FreshMarket',
-        phone: '233332221',
-        openTime: 'pn - pt: 8:00 - 18:00',
-        openTime2: 'so: 8:00 - 16:00',
-        visible: true,
-        openSat: true,
-        openSun: true,
-        openNight: false,
-        disabledPeople: true,
-        parking: true,
-        cashOnDelivery: true,
-        type: 'fresh',
-        icon: {
-          iconUrl: require('./assets/logos/freshmarket.png'),
-          iconSize: [52, 52],
-          iconAnchor: [26, 52],
-          alt: 'Freshmarket image'
-        }
-      },
-      {
-        id: 'm6',
-        position: { lat: 52.234949, lng: 21.015360 },
-        tooltip: 'tooltip for marker6',
-        address1: 'Brazylijska 45',
-        address2: 'Białystok',
-        zip: '98233',
-        shop: 'Usługi pocztowe',
-        phone: '445566123',
-        openTime: 'pn - pt: 8:00 - 18:00',
-        openTime2: 'so: 8:00 - 16:00',
-        visible: true,
-        openSat: true,
-        openSun: true,
-        openNight: false,
-        disabledPeople: true,
-        parking: true,
-        cashOnDelivery: true,
-        type: 'pocztaPolska',
-        icon: {
-          iconUrl: require('./assets/logos/pocztapolska.png'),
-          iconSize: [52, 52],
-          iconAnchor: [26, 52],
-          alt: 'PocztaPolska image'
-        }
-      }
-    ]
+    markerDetails: [],
+    filteredMapPoints: [],
+    filteredListPoints: [],
+    pointMarkers: [],
+    pageNumber: 1,
+    listMarkers: []
   },
   mutations: {
     openListFooter (state) {
@@ -192,6 +38,9 @@ export default new Vuex.Store({
     },
     changeRadiusOfVisibility (state, newRadius) {
       if (newRadius) state.radiusOfVisibily = newRadius
+    },
+    changePageNumber (state, number) {
+      state.pageNumber = number
     },
     openFooterModal (state) {
       state.isFooterModalOpen = 1
@@ -217,62 +66,229 @@ export default new Vuex.Store({
     howManyFiltersApplies (state, n) {
       state.filtersCount = n
     },
+    updatePosition (state, newPosition) {
+      var point = newPosition[0]
+      if (point.zoom) {
+        state.zoom = point.zoom
+      }
+      if (point.lat) {
+        state.lat = point.lat
+      }
+      if (point.lng) {
+        state.lng = point.lng
+      }
+    },
     // API CALLS
     get_points (state) {
       state.status = 'loading points'
     },
     get_points_succ (state, points) {
-      state.markers = points
-      state.status = 'success, points loaded'
+      if (state.zoom < 13) {
+        state.pointMarkers = []
+        state.status = 'success, but distance too long'
+      } else {
+        state.pointMarkers = points
+        state.status = 'success, points loaded'
+      }
+    },
+    get_closest_points_succ (state, points) {
+      if (state.zoom < 13) {
+        state.pointMarkers = []
+        state.status = 'success, but distance too long'
+      } else {
+        state.pointMarkers = points
+        state.zoom = 13
+        state.status = 'success, points loaded'
+      }
     },
     get_points_err (state) {
       state.status = 'error, points couldnt be loaded'
     },
-    updatePosition (state, newPosition) {
-      var point = newPosition[0]
-      state.zoom = point.zoom ? point.zoom : state.zoom
-      state.lat = point.lat ? point.lat : state.lat
-      state.lng = point.lng ? point.lng : state.lng
+    get_list_points (state) {
+      state.status = 'loading list points'
+    },
+    get_list_points_succ (state, points) {
+      if (state.zoom < 13) {
+        state.listMarkers = []
+        state.status = 'success, but distance too long for list'
+      } else {
+        if (state.pageNumber === 1) {
+          state.listMarkers = points
+          state.status = 'success, list points loaded'
+        } else {
+          state.listMarkers = state.listMarkers.concat(points)
+          state.status = 'success, more list points loaded'
+        }
+      }
+    },
+    get_list_points_err (state) {
+      state.status = 'error, list points couldnt be loaded'
+    },
+    get_point_details (state) {
+      state.status = 'loading details'
+    },
+    get_point_details_succ (state, point) {
+      state.markerDetails = point
+      state.status = 'success, details point loaded'
+    },
+    get_point_details_err (state) {
+      state.status = 'error, details couldnt be loaded'
+    },
+    clear_point_details (state) {
+      state.markerDetails = []
+    },
+    // FILTERED POINTS COMMIT
+    get_filtered_points (state) {
+      state.state = 'loading filtered points'
+    },
+    get_filtered_points_succ (state, filteredPoints) {
+      if (state.zoom < 13) {
+        state.filteredMapPoints = []
+        state.status = 'success, but distance too long'
+      } else {
+        state.filteredMapPoints = filteredPoints
+        state.status = 'success, filtered points loaded'
+      }
+    },
+    get_filtered_points_err (state) {
+      state.status = 'error, filtered points couldnt be loaded'
+    },
+    // FILTERED LIST POINTS COMMIT
+    get_filtered_list_points (state) {
+      state.status = 'loading filtered list points'
+    },
+    get_filtered_list_points_succ (state, filteredPointsList) {
+      if (state.zoom < 13) {
+        state.filteredListPoints = []
+        state.status = 'success, but distance too long for list'
+      } else {
+        if (state.pageNumber === 1) {
+          state.filteredListPoints = filteredPointsList
+          state.status = 'success, filtered list points loaded'
+        } else {
+          state.filteredListPoints = state.filteredListPoints.concat(filteredPointsList)
+          state.status = 'success, more filtered list points loaded'
+        }
+      }
+    },
+    get_filtered_list_points_err (state) {
+      state.status = 'loading filtered list points'
     }
   },
   actions: {
-    controlMutation ({commit}, name) {
-      commit(`${name}`)
-    },
+    // GET POINTS FOR MAP
     get_points ({commit}, query) {
       return new Promise((resolve, reject) => {
         commit('get_points')
         APIService.get_points(query)
           .then(res => {
-            const points = res.response.pickupPoints
+            // if (res.data.response_type === 'distance') {
+            const points = res.data.response.pickupPoints
             commit('get_points_succ', points)
+            // } else {
+            //   const pointsClosest = res.data.response.pickupPoints
+            //   commit('get_closest_points_succ', pointsClosest)
+            // }
             resolve(res)
           }).catch(err => {
             commit('get_points_err')
             reject(err)
           })
       })
+    },
+    get_list_points ({commit}, query) {
+      return new Promise((resolve, reject) => {
+        commit('get_list_points')
+        APIService.get_list_points(query)
+          .then(res => {
+            const newPoints = res.data.response.pickupPoints
+            commit('get_list_points_succ', newPoints)
+            resolve(res)
+          }).catch(err => {
+            commit('get_list_points_err')
+            reject(err)
+          })
+      })
+    },
+    get_filtered_points ({commit}, query) {
+      return new Promise((resolve, reject) => {
+        commit('get_filtered_points')
+        APIService.get_filtered_points(query)
+          .then(res => {
+            console.log('Get map')
+            let filteredPoints = []
+            if (res.data.response.pickupPoints.length) {
+              filteredPoints = res.data.response.pickupPoints
+            } else {
+              filteredPoints = ['empty']
+            }
+            commit('get_filtered_points_succ', filteredPoints)
+            resolve(res)
+          }).catch(err => {
+            commit('get_filtered_points_err')
+            reject(err)
+          })
+      })
+    },
+    get_filtered_list_points ({commit}, query) {
+      return new Promise((resolve, reject) => {
+        commit('get_filtered_list_points')
+        APIService.get_filtered_list_points(query)
+          .then(res => {
+            console.log('Get list')
+            let filteredPointsList = []
+            if (res.data.response.pickupPoints.length) {
+              filteredPointsList = res.data.response.pickupPoints
+            } else {
+              filteredPointsList = ['empty']
+            }
+            commit('get_filtered_list_points_succ', filteredPointsList)
+            resolve(res)
+          }).catch(err => {
+            commit('get_filtered_list_points_err')
+            reject(err)
+          })
+      })
+    },
+    get_point_details ({commit}, query) {
+      return new Promise((resolve, reject) => {
+        commit('get_point_details')
+        APIService.get_point_details(query)
+          .then(res => {
+            const point = res.data.response
+            commit('get_point_details_succ', point)
+            resolve(res)
+          }).catch(err => {
+            commit('get_point_details_err')
+            reject(err)
+          })
+      })
     }
   },
   getters: {
-    filterMarkers: (state) => (filters, suppliers) => {
-      state.filteredMarkers = state.markers
-      if (suppliers.length > 0) {
-        state.filteredMarkers = state.filteredMarkers.filter(marker => suppliers.includes(marker.type))
-      }
-      for (var filter of filters) {
-        state.filteredMarkers = state.filteredMarkers.filter(marker => marker[filter])
-      }
-      if (state.filteredMarkers.length > 0) {
-        return state.filteredMarkers
-      } else {
-        state.filteredMarkers = ['empty']
-        return state.filteredMarkers
-      }
-    },
-    clearFilters: state => {
-      state.filteredMarkers = []
-      return state.filteredMarkers
+    clearAPIFilters: state => {
+      state.filteredListPoints = []
+      state.filteredMapPoints = []
+      return (state.filteredListPoints, state.filteredMapPoints)
     }
+    // filterMarkers: (state) => (filters, suppliers) => {
+    //   state.filteredMarkers = state.markers
+    //   if (suppliers.length > 0) {
+    //     state.filteredMarkers = state.filteredMarkers.filter(marker => suppliers.includes(marker.type))
+    //   }
+    //   for (var filter of filters) {
+    //     state.filteredMarkers = state.filteredMarkers.filter(marker => marker[filter])
+    //   }
+    //   if (state.filteredMarkers.length > 0) {
+    //     return state.filteredMarkers
+    //   } else {
+    //     state.filteredMarkers = ['empty']
+    //     return state.filteredMarkers
+    //   }
+    // },
+    // clearFilters: state => {
+    //   state.filteredMarkers = []
+    //   return state.filteredMarkers
+    // }
   }
 })

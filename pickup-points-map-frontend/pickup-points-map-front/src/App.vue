@@ -13,6 +13,10 @@ export default {
 <style>
 body{
   margin: 0;
+  height: 100%;
+  max-height: 100%;
+  width: 100%;
+  padding: 0;
   /* overflow-x:hidden; */
 }
 #app {

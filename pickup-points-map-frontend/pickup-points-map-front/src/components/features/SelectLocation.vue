@@ -1,12 +1,12 @@
 <template>
   <div :class="isWidgetVersion ? 'location' : 'locationV2'">
     <div :class="isWidgetVersion ? 'location-header' : 'location-headerV2'" v-if="!isMobile">
-      <h1 class="title">Wybierz lokalizację</h1>
+      <h2 class="title">Wybierz lokalizację</h2>
     </div>
     <div class="choose-location" v-if="!isMobile">
-        <h3 :class="isWidgetVersion ? 'my-location' : 'my-locationV2'" @click="currentPos()">Użyj mojej lokalizacji</h3>
+        <h3 :class="[ isWidgetVersion ? 'my-location' : 'my-locationV2', $store.state.geolocation.lat ? 'active' : '']" @click="currentPos()">Moja lokalizacja</h3>
         <p class="lub">lub</p>
-        <div style="position: relative; display: block; width: 72%; flex: 0 0 40%;">
+        <div class="suggest-box">
         <vue-autosuggest
             class='input-tag'
             :class="{'input-tagV2' : !isWidgetVersion}"
@@ -23,12 +23,11 @@
             <small>({{ suggestion.item.voiv + ' ' + suggestion.item.pov + ' ' + suggestion.item.mun }})</small>
           </template>
         </vue-autosuggest>
-        <span class="span-location" @click="locitAddress = ''"><i class="material-icons clear-input">clear</i></span>
+        <span class="span-location" :class="{'span-locationV2' : isWidgetVersion}" @click="locitAddress = ''"><i class="clear-input"/></span>
         </div>
     </div>
-    <vue-over-body :dim="false" :open="IsFooterModalOpen" before="beforeFooterModal" after="afterFooterModal" :transition="0.3">
+    <vue-over-body v-if="isMobile" :dim="false" :open="IsFooterModalOpen" before="beforeFooterModal" after="afterFooterModal" :transition="0.3">
       <div class="footer-box">
-        <!-- v-closable="{ exclude: [], handler: 'closeFooterModal'}" -->
         <h3 class="my-location" @click="currentPos()">Użyj mojej lokalizacji</h3>
         <div class='input-modal-button' :class="{ 'active' : suggestionText }" @click="openLocitModal()">
           <template v-if="suggestionText">{{ suggestionText.city + ', ' + suggestionText.prefix + ' ' + suggestionText.street + ' ' + suggestionText.building }}</template>
@@ -55,7 +54,7 @@
             <small>({{ suggestion.item.voiv + ' ' + suggestion.item.pov + ' ' + suggestion.item.mun }})</small>
           </template>
         </vue-autosuggest>
-        <span class="span-location" @click="locitAddress = ''"><i class="material-icons clear-input">clear</i></span>
+        <span class="span-location" @click="locitAddress = ''"><i class="clear-input"/></span>
       </div>
     </vue-over-body>
   </div>
@@ -64,33 +63,6 @@
 <script>
 import vueOverBody from 'vue-over-body'
 import { MobileDetected } from '../../components/mobileDetected.ts'
-// import Vue from 'vue'
-
-// let handleOutsideClick
-// Vue.directive('closable', {
-//   bind (el, binding, vnode) {
-//     handleOutsideClick = (e) => {
-//       e.stopPropagation()
-//       const { handler, exclude } = binding.value
-//       let clickedOnExcludedEl = false
-//       exclude.forEach(refName => {
-//         if (!clickedOnExcludedEl) {
-//           const excludedEl = vnode.context.$refs[refName]
-//           clickedOnExcludedEl = excludedEl.contains(e.target)
-//         }
-//       })
-//       if (!el.contains(e.target) && !clickedOnExcludedEl) {
-//         vnode.context[handler]()
-//       }
-//     }
-//     document.addEventListener('click', handleOutsideClick)
-//     document.addEventListener('touchstart', handleOutsideClick)
-//   },
-//   unbind () {
-//     document.removeEventListener('click', handleOutsideClick)
-//     document.removeEventListener('touchstart', handleOutsideClick)
-//   }
-// })
 
 export default {
   name: 'SelectLocation',
@@ -123,6 +95,17 @@ export default {
     },
     IsLocitModalOpen () {
       return this.$store.state.isLocitModalOpen
+    },
+    geoSet () {
+      return this.$store.state.geolocation
+    }
+  },
+  watch: {
+    geoSet: {
+      handler () {
+        this.$store.commit('updatePosition', [{ lat: this.$store.state.geolocation.lat, lng: this.$store.state.geolocation.lng, zoom: 16 }])
+      },
+      deep: true
     }
   },
   methods: {
@@ -136,7 +119,14 @@ export default {
       this.$store.commit('closeFooterModal')
     },
     currentPos () {
-      this.$store.commit('updatePosition', [{ lat: this.$store.state.geolocation.lat, lng: this.$store.state.geolocation.lng, zoom: 16 }])
+      this.$vuexGeolocation.getCurrentPosition()
+      // if (this.$store.state.geolocation.lat) {
+      //   setTimeout(
+      //     () =>
+      //       this.$store.commit('updatePosition', [{ lat: this.$store.state.geolocation.lat, lng: this.$store.state.geolocation.lng, zoom: 16 }])
+      //     , 100
+      //   )
+      // }
       if (this.IsFooterModalOpen) {
         this.closeFooterModal()
       }
@@ -144,7 +134,7 @@ export default {
     getSuggestionValue (suggestion) {
       if (suggestion) {
         this.suggestionText = suggestion.item
-        this.$store.commit('updatePosition', [{ lat: suggestion.item.y, lng: suggestion.item.x, zoom: 16 }])
+        this.$store.commit('updatePosition', [{ lat: Number(suggestion.item.y), lng: Number(suggestion.item.x), zoom: 16 }])
         this.customSuggestion = suggestion.item
         return this.suggestionText.city + ', ' + this.suggestionText.prefix + ' ' + this.suggestionText.street + ' ' + this.suggestionText.building
       } else {
@@ -152,6 +142,7 @@ export default {
       }
     },
     logResult (item) {
+      this.closeLocitModal()
       if (item) {
         this.placeHolder = item.item.street
       }
@@ -220,7 +211,7 @@ export default {
 }
 .input-tag {
  input {
-    height: 40px;
+    height: 29px;
     text-align: center;
     background-color: #E5E5E5;
     width: 100%;
@@ -264,10 +255,18 @@ export default {
 </style>
 
 <style lang="scss" scoped>
+.suggest-box {
+  position: relative;
+  display: block;
+  width: 75%;
+}
 .span-location{
   position: absolute;
   right: 5px;
-  top: 18px;
+  top: 20px;
+}
+.span-locationV2{
+  top: 16px;
 }
 .locit-box {
   .close-button {
@@ -279,14 +278,14 @@ export default {
     right: 10px;
     top: 10px;
     position: absolute;
-    background: url('../../assets/clear.png') 0 0 no-repeat;
+    background: url('../../assets/icons/clear.png') 0 0 no-repeat;
     background-size: cover;
   }
   .span-location {
     right: 50px;
     top: 64px;
   }
-  padding: 50px 40px 0;
+  padding: 50px 15px 0;
   position: relative;
 }
 .footer-box {
@@ -316,11 +315,16 @@ export default {
   display: block;
 }
 .clear-input{
-  color: #b4b1b1;
-  font-size: 30px;
+  width: 22px;
+  height: 22px;
+  display: flex;
   cursor: pointer;
+  filter: grayscale(0.5) opacity(0.5);
+  background: url('../../assets/icons/clear.png') 0 0 no-repeat;
+  background-size: cover;
 }
 .title{
+  // padding-left: 20px;
   font-family: 'Lato', sans-serif;
   font-size: 22px;
   font-weight: 900;
@@ -341,16 +345,16 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 46px;
+  height: 35px;
   margin: 10px 0;
   cursor: pointer;
-  &:hover{
+  &.active{
     background-color: #E5E5E5;
     border-radius: 3px;
   }
   &:before{
     content: '';
-    background: url('../../assets/gps24px.svg') 0 0 no-repeat;
+    background: url('../../assets/icons/gps24px.svg') 0 0 no-repeat;
     background-size: cover;
     margin-right: 10px;
     width: 25px;
@@ -366,6 +370,7 @@ export default {
   }
 }
 .my-locationV2{
+  cursor: pointer;
   flex-basis: 30%;
   padding-left: 25px;
   color: #989898;
@@ -383,7 +388,7 @@ export default {
   text-align: right;
   position: relative;
   &:before{
-    content: url(../../assets/gps24px.svg);
+    content: url(../../assets/icons/gps24px.svg);
     position: absolute;
     left: 5px;
     padding-right: 10px;
@@ -391,7 +396,7 @@ export default {
     height: 25px;
     filter: opacity(0.4)
   }
-  &:hover{
+  &.active{
     background-color: #3F87F5;
     color:#FFFFFF;
     cursor: pointer;
@@ -402,7 +407,7 @@ export default {
   font-family: 'Lato', sans-serif;
   color: #AAAAAA;
   margin: 0;
-  padding: 0 25px;
+  padding: 0 15px;
 }
 .input-tag{
   position: relative;
@@ -441,7 +446,7 @@ export default {
 }
 .input-tagV2{
   display: flex;
-  flex: 0 0 45%;
+  flex: 0 0 65%;
   border: 3px solid #E5E5E5;
   background-color: transparent;
   border-radius: 9px;
