@@ -5,8 +5,11 @@
       <p class="button-action" :class="{ 'active' : !toogleMap }" @click="toogleMapMethod('show')">Mapa</p>
       <p class="button-action" :class="{ 'active' : toogleMap }" @click="toogleMapMethod('hide')">Lista</p>
     </div>
-    <div v-if="$store.state.zoom < 13" class="error-info">
+    <div v-if="!$store.state.pointMarkers.length" class="first-enter-info">
       <p>Wybierz adres/lokalizację aby<br>zobaczyć najbliższe punkty odbioru</p>
+    </div>
+    <div v-else-if="($store.state.zoom < 13 || $store.state.pointMarkers.length > 100) && !toogleMap" class="error-info">
+      <p>Powiększ zoom żeby zobaczyć punkty</p>
     </div>
     <transition name="fade">
       <div  v-if="toogleMap" class="list-box" :class="{'listbox-margin-top' : isWidgetVersion}">
@@ -70,7 +73,7 @@
           @popupclose="popupClose"
         >
             <l-tile-layer :url="url" :attribution="attribution" />
-            <template v-if="markers[0] !== 'empty'">
+            <template v-if="pointMarkers[0] !== 'empty'">
               <l-marker
                 v-for="marker in pointMarkers"
                 :key="marker.id"
@@ -80,7 +83,6 @@
                 @click="getPointDetails(marker.lat, marker.lon, marker.pickup_type)"
                 v-on="isMobile ? { click: () => toogleMethod('true') } : {} "
               >
-              <!-- v-on="isMobile ? { click: () => testTest(marker.lat, marker.lon, marker.pickup_type) } : {} " -->
                 <l-icon :icon-anchor="[iconsUrl[marker.pickup_type]]" :icon-size="[52, 52]" class-name="someExtraClass">
                   <img :src="pinsUrl[marker.pickup_type]" width="52" height="52"/>
                 </l-icon>
@@ -146,7 +148,7 @@ export default {
       selectedPoint: Number,
       toogleMap: false,
       toogleModal: false,
-      url: 'https://atileosmorg-luldmjs.stackpathdns.com/{z}/{x}/{y}.png',
+      url: 'https://scorch.openstreetmap.org/{z}/{x}/{y}.png',
       attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
       iconsUrl: {
         'Żabka': require('../../assets/logos/żabka.png'),
@@ -199,15 +201,12 @@ export default {
     center () {
       return latLng(this.$store.state.lat, this.$store.state.lng)
     },
-    markers () {
-      if (this.$store.state.filteredMarkers.length > 0) {
-        return this.$store.state.filteredMarkers
-      } else {
-        return this.$store.state.markers
-      }
-    },
     pointMarkers () {
-      return this.$store.state.pointMarkers
+      if (this.$store.state.zoom < 13 || this.$store.state.pointMarkers.length > 100) {
+        return []
+      } else {
+        return this.$store.state.pointMarkers
+      }
     },
     listMarkers () {
       return this.$store.state.listMarkers
@@ -301,10 +300,6 @@ export default {
       var rad = Math.round(dist / 2)
       this.$store.commit('changeRadiusOfVisibility', rad)
     },
-    // selectedPopup (id, index) {
-    //   this.toogleModal = false
-    //   setTimeout(() => this.toogleMethod(id, index), 500)
-    // },
     toogleMethod (bool) {
       if (bool === 'true') {
         this.toogleModal = true
@@ -469,6 +464,28 @@ export default {
   @media (max-width: 767px) {
     height: 100vh;
     max-height: 100vh;
+  }
+}
+.first-enter-info {
+  position: absolute;
+  z-index: 1000;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  margin: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #00000054;
+  p {
+    margin: 0;
+    padding: 15px;
+    border-radius: 5px;
+    color: #e4405f;
+    font-weight: 700;
+    text-transform: uppercase;
+    background-color: #ffffff;
   }
 }
 .error-info {
