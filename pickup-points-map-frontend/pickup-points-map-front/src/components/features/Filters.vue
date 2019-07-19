@@ -23,7 +23,7 @@
       </div>
       <!-- Filters Menu -->
       <div class="header">
-        <h2 class="title" :class="{'titleV2' : !isWidgetVersion}">Filtry</h2><p :class="isWidgetVersion ? 'subtitle' : 'subtitleV2'" @click="clearFilter()">
+        <h2 class="title" :class="{'titleV2' : !isWidgetVersion}">Filtry</h2><p :class="isWidgetVersion ? 'subtitle' : 'subtitleV2'" @click="clearAPIFilter()">
             Wyczyść filtry<span :class="isWidgetVersion ? 'clear' : 'clearV2'">X</span></p>
       </div>
       <div class="filters-menu">
@@ -33,11 +33,10 @@
         </div>
       </div>
     </div>
-    <h1 @click="filteredPoints()">Test</h1>
     <!-- Mobile version -->
     <div class="mobile-filters-footer">
       <div class="wyczysc">
-        <p class="m0" @click="clearFilter()" v-show="filters.length || checkedSuppliers.length" >Wyczyść filtry</p>
+        <p class="m0" @click="clearAPIFilter()" v-show="filters.length || checkedSuppliers.length" >Wyczyść filtry</p>
       </div>
       <div class="zastosuj">
         <p class="m0" @click="closeFilterMobile">Zastosuj filtry</p>
@@ -137,6 +136,30 @@ export default {
     isFilterMobilOpen () {
       return this.$store.state.isFilterMobilOpen
     },
+    filteredPointsForMap () {
+      if (this.filters.length > 0 || this.checkedSuppliers.length > 0) {
+        return this.$store.dispatch('get_filtered_points', {
+          lat: this.$store.state.lat,
+          lng: this.$store.state.lng,
+          dist: this.$store.state.radiusOfVisibily,
+          filtered: this.filteredPoints()
+        })
+      } else {
+        return this.$store.getters.clearAPIFilters
+      }
+    },
+    filteredPointsForList () {
+      if (this.filters.length > 0 || this.checkedSuppliers.length > 0) {
+        return this.$store.dispatch('get_filtered_list_points', {
+          lat: this.$store.state.lat,
+          lng: this.$store.state.lng,
+          page: this.$store.state.pageNumber,
+          filtered: this.filteredPoints()
+        })
+      } else {
+        return this.$store.getters.clearAPIFilters
+      }
+    },
     activeFilter () {
       // if (this.filters.length > 0 || this.checkedSuppliers.length > 0) {
       //    return this.$store.getters.filterMarkers(this.filters, this.checkedSuppliers)
@@ -149,15 +172,7 @@ export default {
       // } else if (this.filters.length === 0) {
       //   return this.$store.getters.clearFilters
       // }
-
-      if (this.filters.length > 0 || this.checkedSuppliers.length > 0) {
-        return this.$store.dispatch('get_filtered_points', {
-          lat: this.$store.state.lat,
-          lng: this.$store.state.lng,
-          dist: this.$store.state.radiusOfVisibily,
-          filtered: this.filteredPoints()
-        })
-      }
+      return (this.filteredPointsForMap, this.filteredPointsForList)
     }
   },
 
@@ -169,8 +184,9 @@ export default {
   created () {
     this.markers = this.$store.state.markers
   },
-
   methods: {
+    // changeFilterStore () {
+    // },
     filteredPoints () {
       var features = []
       var pickupTypes = []
@@ -185,24 +201,18 @@ export default {
         })
       }
       var temp = features.concat(pickupTypes)
-      console.log(temp)
       return temp.join('')
-      // var temp = []
-      // for (let i = 0; i < Math.max(features.length, pickupTypes.length); i++) {
-      //   if (features[i] != null) {
-      //     temp.push(features[i])
-      //   }
-      //   if (pickupTypes[i] != null) {
-      //     temp.push(pickupTypes[i])
-      //   }
-      // }
-      // console.log(temp)
     },
-    clearFilter () {
+    clearAPIFilter () {
       this.checkedSuppliers = []
       this.filters = []
-      return this.$store.getters.clearFilters
+      return this.$store.getters.clearAPIFilter
     },
+    // clearFilter () {
+    //   this.checkedSuppliers = []
+    //   this.filters = []
+    //   return this.$store.getters.clearFilters
+    // },
     getImgUrl (pic) {
       return require('../../assets/logos/' + pic)
     },

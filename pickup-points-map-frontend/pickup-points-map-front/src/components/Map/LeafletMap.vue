@@ -11,48 +11,50 @@
     <transition name="fade">
       <div  v-if="toogleMap" class="list-box" :class="{'listbox-margin-top' : isWidgetVersion}">
           <div class="list-title hidden-xs"><h1>Punkty odbioru w pobliżu Twojej lokalizacji</h1></div>
-          <div v-show="listMarkers.length !== 0" class="scroll-box" :class="{'change-vh' : !isWidgetVersion}">
-              <div class="list-row" :class="{'list-row-modal' : isOpenListModal(index)}"
-                v-for="(listMarker, index) in listMarkers"
-                :key="index"
-                @click="openListModal(index)">
-                  <div class="list-elem list-elem-img">
-                    <img :class="{'img-modal' : isOpenListModal(index)}" :src="logosUrl[listMarker.pickup_point_type]" width="auto" height="70px" />
-                  </div>
-                  <div class="list-elem list-elem-address">
-                    <b>{{ listMarker.address.street }}</b>
-                    <p class="address-parag">{{ listMarker.zip }}
-                    {{ listMarker.address.zip }} {{ listMarker.address.city }}</p>
-                  </div>
-                  <div class="list-elem hours-elem">
-                    <b>Godziny otwarcia:</b>
-                    {{ listMarker.working_hours }}
-                  </div>
-                  <div class="list-elem btn-elem">
-                    <!-- @click="selectedPopup(marker.id, index)" -->
-                    <p class="list-button">Wybierz</p>
-                  </div>
-                    <!-- <transition name="fade">
-                      <div class="list-modal" v-if="isOpenListModal(index) && isMobile">
-                        <div class="list-modal-hours">
-                          <b>Godziny otwarcia:</b>
-                          {{ marker.openTime }}<br>
-                          {{ marker.openTime2 }}
+          <div v-if="listMarkers[0] !== 'empty'" class="scroll-box" :class="{'change-vh' : !isWidgetVersion}">
+              <template>
+                <div class="list-row" :class="{'list-row-modal' : isOpenListModal(index)}"
+                  v-for="(listMarker, index) in listMarkers"
+                  :key="index"
+                  @click="openListModal(index)">
+                    <div class="list-elem list-elem-img">
+                      <img :class="{'img-modal' : isOpenListModal(index)}" :src="logosUrl[listMarker.pickup_point_type]" width="auto" height="70px" />
+                    </div>
+                    <div class="list-elem list-elem-address">
+                      <b>{{ listMarker.address.street }}</b>
+                      <p class="address-parag">{{ listMarker.zip }}
+                      {{ listMarker.address.zip }} {{ listMarker.address.city }}</p>
+                    </div>
+                    <div class="list-elem hours-elem">
+                      <b>Godziny otwarcia:</b>
+                      {{ listMarker.working_hours }}
+                    </div>
+                    <div class="list-elem btn-elem">
+                      <!-- @click="selectedPopup(marker.id, index)" -->
+                      <p class="list-button">Wybierz</p>
+                    </div>
+                      <!-- <transition name="fade">
+                        <div class="list-modal" v-if="isOpenListModal(index) && isMobile">
+                          <div class="list-modal-hours">
+                            <b>Godziny otwarcia:</b>
+                            {{ marker.openTime }}<br>
+                            {{ marker.openTime2 }}
+                          </div>
+                          <div class="list-modal-additional">
+                            <i v-if="marker.openNight" class="icon hours"/>
+                            <i v-if="marker.openSat" class="icon sobota"/>
+                            <i v-if="marker.openSun" class="icon niedziela"/>
+                            <i v-if="marker.parking" class="icon parking"/>
+                            <i v-if="marker.cashOnDelivery" class="icon pobraniem"/>
+                            <i v-if="marker.niepelnosprawni" class="icon niepelnosprawni"/>
+                          </div>
                         </div>
-                        <div class="list-modal-additional">
-                          <i v-if="marker.openNight" class="icon hours"/>
-                          <i v-if="marker.openSat" class="icon sobota"/>
-                          <i v-if="marker.openSun" class="icon niedziela"/>
-                          <i v-if="marker.parking" class="icon parking"/>
-                          <i v-if="marker.cashOnDelivery" class="icon pobraniem"/>
-                          <i v-if="marker.niepelnosprawni" class="icon niepelnosprawni"/>
-                        </div>
-                      </div>
-                    </transition> -->
-              </div>
+                      </transition> -->
+                </div>
+              </template>
               <div v-if="$store.state.listMarkers.length !== 0" class="load-box" @click="loadMorePoints()"><p class="load-button">Załaduj więcej</p></div>
           </div>
-          <div v-show="listMarkers.length === 0">
+          <div v-if="listMarkers.length === 0 || listMarkers[0] === 'empty'">
             <p class="empty-text">Wybierz adres/lokalizację aby zobaczyć najbliższe punkty odbioru</p>
           </div>
       </div>
@@ -69,7 +71,7 @@
           @popupclose="popupClose"
         >
             <l-tile-layer :url="url" :attribution="attribution" />
-            <template v-if="markers[0] !== 'empty'">
+            <template v-if="pointMarkers[0] !== 'empty'">
               <l-marker
                 v-for="marker in pointMarkers"
                 :key="marker.id"
@@ -197,18 +199,26 @@ export default {
     center () {
       return latLng(this.$store.state.lat, this.$store.state.lng)
     },
-    markers () {
-      if (this.$store.state.filteredMarkers.length > 0) {
-        return this.$store.state.filteredMarkers
+    // markers () {
+    //   if (this.$store.state.filteredMarkers.length > 0) {
+    //     return this.$store.state.filteredMarkers
+    //   } else {
+    //     return this.$store.state.markers
+    //   }
+    // },
+    pointMarkers () {
+      if (typeof this.$store.state.filteredMapPoints !== 'undefined' && this.$store.state.filteredMapPoints !== null && this.$store.state.filteredMapPoints.length !== null && this.$store.state.filteredMapPoints.length > 0) {
+        return this.$store.state.filteredMapPoints
       } else {
-        return this.$store.state.markers
+        return this.$store.state.pointMarkers
       }
     },
-    pointMarkers () {
-      return this.$store.state.pointMarkers
-    },
     listMarkers () {
-      return this.$store.state.listMarkers
+      if (this.$store.state.filteredListPoints.length > 0) {
+        return this.$store.state.filteredListPoints
+      } else {
+        return this.$store.state.listMarkers
+      }
     },
     isWidgetVersion () {
       return this.$store.state.WidgetVersion
@@ -221,17 +231,19 @@ export default {
     zoomOrCenterUpdate: {
       handler () {
         this.$store.commit('changePageNumber', 1)
-        if (this.$store.state.zoom >= 13 && !this.isPopupOpen) {
-          this.$store.dispatch('get_points', {
-            lat: this.$store.state.lat,
-            lng: this.$store.state.lng,
-            dist: this.$store.state.radiusOfVisibily
-          })
-          this.$store.dispatch('get_list_points', {
-            lat: this.$store.state.lat,
-            lng: this.$store.state.lng,
-            page: this.$store.state.pageNumber
-          })
+        if (this.$store.state.filteredMapPoints.length === 0 || this.$store.state.filteredListPoints.length === 0) {
+          if (this.$store.state.zoom >= 13 && !this.isPopupOpen) {
+            this.$store.dispatch('get_points', {
+              lat: this.$store.state.lat,
+              lng: this.$store.state.lng,
+              dist: this.$store.state.radiusOfVisibily
+            })
+            this.$store.dispatch('get_list_points', {
+              lat: this.$store.state.lat,
+              lng: this.$store.state.lng,
+              page: this.$store.state.pageNumber
+            })
+          }
         }
       },
       deep: true

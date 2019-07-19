@@ -24,6 +24,9 @@ export default new Vuex.Store({
     markerDetails: [],
     filteredMapPoints: [],
     filteredListPoints: [],
+    // Test
+    filtersStore: [],
+    checkedSuppliersStore: [],
     // testMarkers: [
     //   {lat: 53.06616, pickup_type: 'Poczta Polska', lon: 19.287343},
     //   {lat: 53.08668, pickup_type: 'Poczta Polska', lon: 19.195922},
@@ -321,10 +324,10 @@ export default new Vuex.Store({
     },
     get_filtered_points_succ (state, filteredPoints) {
       if (state.zoom < 13) {
-        state.pointMarkers = []
+        state.filteredMapPoints = []
         state.status = 'success, but distance too long'
       } else {
-        state.pointMarkers = filteredPoints
+        state.filteredMapPoints = filteredPoints
         state.status = 'success, filtered points loaded'
       }
     },
@@ -335,16 +338,16 @@ export default new Vuex.Store({
     get_filtered_list_points (state) {
       state.status = 'loading filtered list points'
     },
-    get_filtered_list_points_succ (state, filteredListPoints) {
+    get_filtered_list_points_succ (state, filteredPointsList) {
       if (state.zoom < 13) {
         state.filteredListPoints = []
         state.status = 'success, but distance too long for list'
       } else {
         if (state.pageNumber === 1) {
-          state.filteredListPoints = filteredListPoints
+          state.filteredListPoints = filteredPointsList
           state.status = 'success, filtered list points loaded'
         } else {
-          state.filteredListPoints = state.filteredListPoints.concat(filteredListPoints)
+          state.filteredListPoints = state.filteredListPoints.concat(filteredPointsList)
           state.status = 'success, more filtered list points loaded'
         }
       }
@@ -390,12 +393,16 @@ export default new Vuex.Store({
     },
     get_filtered_points ({commit}, query) {
       return new Promise((resolve, reject) => {
-        console.log(query)
         commit('get_filtered_points')
         APIService.get_filtered_points(query)
           .then(res => {
-            console.log(res)
-            const filteredPoints = res.data.response.pickupPoints
+            console.log('Get map')
+            let filteredPoints = []
+            if (res.data.response.pickupPoints.length) {
+              filteredPoints = res.data.response.pickupPoints
+            } else {
+              filteredPoints = ['empty']
+            }
             commit('get_filtered_points_succ', filteredPoints)
             resolve(res)
           }).catch(err => {
@@ -409,9 +416,14 @@ export default new Vuex.Store({
         commit('get_filtered_list_points')
         APIService.get_filtered_list_points(query)
           .then(res => {
-            console.log(res)
-            const filteredListPoints = res.data.response.pickupPoints
-            commit('get_filtered_list_points_succ', filteredListPoints)
+            console.log('Get list')
+            let filteredPointsList = []
+            if (res.data.response.pickupPoints.length) {
+              filteredPointsList = res.data.response.pickupPoints
+            } else {
+              filteredPointsList = ['empty']
+            }
+            commit('get_filtered_list_points_succ', filteredPointsList)
             resolve(res)
           }).catch(err => {
             commit('get_filtered_list_points_err')
@@ -435,24 +447,29 @@ export default new Vuex.Store({
     }
   },
   getters: {
-    filterMarkers: (state) => (filters, suppliers) => {
-      state.filteredMarkers = state.markers
-      if (suppliers.length > 0) {
-        state.filteredMarkers = state.filteredMarkers.filter(marker => suppliers.includes(marker.type))
-      }
-      for (var filter of filters) {
-        state.filteredMarkers = state.filteredMarkers.filter(marker => marker[filter])
-      }
-      if (state.filteredMarkers.length > 0) {
-        return state.filteredMarkers
-      } else {
-        state.filteredMarkers = ['empty']
-        return state.filteredMarkers
-      }
-    },
-    clearFilters: state => {
-      state.filteredMarkers = []
-      return state.filteredMarkers
+    clearAPIFilters: state => {
+      state.filteredListPoints = []
+      state.filteredMapPoints = []
+      return (state.filteredListPoints, state.filteredMapPoints)
     }
+    // filterMarkers: (state) => (filters, suppliers) => {
+    //   state.filteredMarkers = state.markers
+    //   if (suppliers.length > 0) {
+    //     state.filteredMarkers = state.filteredMarkers.filter(marker => suppliers.includes(marker.type))
+    //   }
+    //   for (var filter of filters) {
+    //     state.filteredMarkers = state.filteredMarkers.filter(marker => marker[filter])
+    //   }
+    //   if (state.filteredMarkers.length > 0) {
+    //     return state.filteredMarkers
+    //   } else {
+    //     state.filteredMarkers = ['empty']
+    //     return state.filteredMarkers
+    //   }
+    // },
+    // clearFilters: state => {
+    //   state.filteredMarkers = []
+    //   return state.filteredMarkers
+    // }
   }
 })
