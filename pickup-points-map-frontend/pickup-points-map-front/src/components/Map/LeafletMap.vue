@@ -44,17 +44,19 @@
                   </div>
                   <transition name="fade">
                     <div class="list-modal" v-if="isOpenListModal(index) && isMobile && $store.state.markerDetails">
-                      <div class="list-modal-hours" v-if="$store.state.markerDetails.points[0].features.working_hours">
+                      <div class="list-modal-hours" v-if="$store.state.markerDetails.points[0].working_hours.length">
                         <b>Godziny otwarcia:</b>
-                        {{ $store.state.markerDetails.points[0].features.working_hours }}
+                        <template v-for="day in $store.state.markerDetails.points[0].working_hours">
+                          {{ day }}
+                        </template>
                       </div>
                       <div class="list-modal-additional">
                         <p v-if="$store.state.markerDetails.points[0].features.open_late" class="icon hours"/>
                         <p v-if="$store.state.markerDetails.points[0].features.open_saturday" class="icon sobota"/>
                         <p v-if="$store.state.markerDetails.points[0].features.open_sunday" class="icon niedziela"/>
                         <p v-if="$store.state.markerDetails.points[0].features.parking" class="icon parking"/>
-                        <p v-if="$store.state.markerDetails.points[0].features.disabled_friendly" class="icon pobraniem"/>
-                        <p v-if="$store.state.markerDetails.points[0].features.cash_on_delivery" class="icon niepelnosprawni"/>
+                        <p v-if="$store.state.markerDetails.points[0].features.disabled_friendly" class="icon niepelnosprawni"/>
+                        <p v-if="$store.state.markerDetails.points[0].features.cash_on_delivery" class="icon pobraniem"/>
                       </div>
                     </div>
                   </transition>
@@ -95,6 +97,7 @@
                       <div class="popup-info">
                         <div class="popup-text-box">
                           <p class="popup-text" v-if="$store.state.markerDetails.length !== 0">
+                            <b>{{ $store.state.markerDetails.points[0].name }}</b><br>
                             <b>{{ $store.state.markerDetails.street }}</b><br> {{ $store.state.markerDetails.zip }} {{ $store.state.markerDetails.city }}, <br> {{ $store.state.markerDetails.points[0].id }}
                           </p>
                         </div>
@@ -346,6 +349,7 @@ export default {
 <style lang="scss">
 .leaflet-popup {
   .leaflet-popup-content-wrapper {
+    // height: 145px;
     border: 3px solid #3F87F5;
   }
   .leaflet-popup-tip-container {
@@ -357,7 +361,7 @@ export default {
     color: #333333;
   }
   padding-right: 210px !important;
-  bottom: -210px !important;
+  bottom: -230px !important;
   margin-left: 210px !important;
   margin-bottom: 0 !important;
  }
@@ -560,7 +564,7 @@ display: flex;
 }
 .popup-marker {
   position: absolute;
-  left: -20px;
+  left: -15px;
   top: -92px;
 }
 .type-actions {

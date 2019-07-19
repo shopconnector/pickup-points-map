@@ -8,11 +8,11 @@
               <div class="address">
                 <h4>{{ parentData.street }}</h4>
                 <p>{{ parentData.zip }} {{ parentData.city }}</p>
-                <p v-if="parentData.points[0].id.length > 0 && parentData.length" >{{ parentData.points[0].id }}</p>
+                <p v-if="parentData.points[0].id.length > 0" >{{ parentData.points[0].id }}</p>
               </div>
               <div class="shop paddbott">
                 <p>{{ parentData.pickup_type }}</p>
-                <p v-if="parentData.points[0].phones.length && parentData.length" >
+                <p v-if="parentData.points[0].phones.length" >
                   <template v-for="phone in parentData.points[0].phones">
                     {{ phone }}
                   </template>
@@ -36,13 +36,17 @@
                   <a :href="linkToRoad" target="_blank">Wyznacz trasę dojazdu <i class="play_arrow"/></a>
                 </div>
               </div>
-              <div class="open-hours" v-if="parentData.points[0].features.working_hours && parentData.length">
+              <div class="open-hours" v-if="parentData.points[0].working_hours">
                 <div class="hours-title">
                   <p>Godziny otwarcia</p>
                 </div>
                 <div class="week">
                   <div class="first-half">
-                    <p>{{ parentData.points[0].features.working_hours }}</p>
+                    <p>
+                      <template v-for="day in parentData.points[0].working_hours">
+                        {{ day }}
+                      </template>
+                    </p>
                   </div>
                 </div>
               </div>
@@ -67,24 +71,28 @@
         <div class="mobile-map-address">
           <h4 class="mobile-map-title">{{ parentData.street }}</h4>
           <p class="mobile-map-street">{{ parentData.zip }} {{ parentData.city }}</p>
-          <p v-if="parentData.points[0].id.length && parentData.length" class="mobile-map-street">{{ parentData.points[0].id }}</p>
+          <p v-if="parentData.points[0].id.length" class="mobile-map-street">{{ parentData.points[0].id }}</p>
         </div>
       </div>
-      <div class="mobile-map-hours" v-if="parentData.points[0].features.working_hours && parentData.length">
+      <div class="mobile-map-hours" v-if="parentData.points[0].working_hours">
         <div class="mobile-map-hours-title">
           <b>Godziny otwarcia:</b>
         </div>
         <div class="mobile-map-hours-info">
-          <p>{{ parentData.points[0].features.working_hours }}</p>
+          <p>
+            <template v-for="day in parentData.points[0].working_hours">
+              {{ day }}
+            </template>
+          </p>
         </div>
       </div>
       <div class="mobile-map-additional">
-        <p v-if="parentData.points[0].features.open_late && parentData.length" class="additional-info"><span class="mobile-map-icon-padding"><i class="icon hours"/></span> - otwarte do pózna</p>
-        <p v-if="parentData.points[0].features.open_saturday && parentData.length" class="additional-info"><span class="mobile-map-icon-padding"><i class="icon sobota"/></span> - otwarte w soboty</p>
-        <p v-if="parentData.points[0].features.open_sunday && parentData.length" class="additional-info"><span class="mobile-map-icon-padding"><i class="icon niedziela"/></span> - otwarte w niedziele</p>
-        <p v-if="parentData.points[0].features.parking && parentData.length" class="additional-info"><span class="mobile-map-icon-padding"><i class="icon parking"/></span> - parking</p>
-        <p v-if="parentData.points[0].features.disabled_friendly && parentData.length" class="additional-info"><span class="mobile-map-icon-padding"><i class="icon niepelnosprawni"/></span> - ułatwienie dla osób niepełnosprawnych</p>
-        <p v-if="parentData.points[0].features.cash_on_delivery && parentData.length" class="additional-info"><span class="mobile-map-icon-padding"><i class="icon pobraniem"/></span> - odbiór za pobraniem</p>
+        <p v-if="parentData.points[0].features.open_late" class="additional-info"><span class="mobile-map-icon-padding"><i class="icon hours"/></span> - otwarte do pózna</p>
+        <p v-if="parentData.points[0].features.open_saturday" class="additional-info"><span class="mobile-map-icon-padding"><i class="icon sobota"/></span> - otwarte w soboty</p>
+        <p v-if="parentData.points[0].features.open_sunday" class="additional-info"><span class="mobile-map-icon-padding"><i class="icon niedziela"/></span> - otwarte w niedziele</p>
+        <p v-if="parentData.points[0].features.parking" class="additional-info"><span class="mobile-map-icon-padding"><i class="icon parking"/></span> - parking</p>
+        <p v-if="parentData.points[0].features.disabled_friendly" class="additional-info"><span class="mobile-map-icon-padding"><i class="icon niepelnosprawni"/></span> - ułatwienie dla osób niepełnosprawnych</p>
+        <p v-if="parentData.points[0].features.cash_on_delivery" class="additional-info"><span class="mobile-map-icon-padding"><i class="icon pobraniem"/></span> - odbiór za pobraniem</p>
       </div>
       <div class="mobile-map-footer">
         <p class="mobile-map-btn-close" @click="closeModal">WYBIERZ I ZAMKNIJ</p>
