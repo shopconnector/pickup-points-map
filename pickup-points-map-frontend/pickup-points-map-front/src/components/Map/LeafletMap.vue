@@ -474,15 +474,14 @@ export default {
 .error-info {
   position: absolute;
   z-index: 1000;
-  top: 0;
-  bottom: 0;
+  top: 47%;
   left: 0;
   margin: 0;
   right: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #00000054;
+  // background-color: #00000054;
   p {
     margin: 0;
     padding: 15px;
