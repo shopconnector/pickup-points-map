@@ -33,7 +33,6 @@
         </div>
       </div>
     </div>
-    <h1 @click="filteredPoints()">Test</h1>
     <!-- Mobile version -->
     <div class="mobile-filters-footer">
       <div class="wyczysc">

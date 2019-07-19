@@ -12,7 +12,7 @@ export default new Vuex.Store({
     filtersCount: 0,
     showListFooter: false,
     isFilterMobileOpen: 0,
-    isFooterModalOpen: 0,
+    isFooterModalOpen: 1,
     isLocitModalOpen: 0,
     WidgetVersion: false,
     isFilterMobilOpen: 1,
@@ -233,18 +233,6 @@ export default new Vuex.Store({
       state.filtersCount = n
     },
     updatePosition (state, newPosition) {
-      var point = newPosition[0]
-      if (point.zoom) {
-        state.zoom = point.zoom
-      }
-      if (point.lat) {
-        state.lat = point.lat
-      }
-      if (point.lng) {
-        state.lng = point.lng
-      }
-    },
-    updatePosition2 (state, newPosition) {
       var point = newPosition[0]
       if (point.zoom) {
         state.zoom = point.zoom

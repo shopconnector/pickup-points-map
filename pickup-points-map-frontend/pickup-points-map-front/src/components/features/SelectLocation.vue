@@ -26,7 +26,7 @@
         <span class="span-location" :class="{'span-locationV2' : isWidgetVersion}" @click="locitAddress = ''"><i class="clear-input"/></span>
         </div>
     </div>
-    <vue-over-body :dim="false" :open="IsFooterModalOpen" before="beforeFooterModal" after="afterFooterModal" :transition="0.3">
+    <vue-over-body v-if="isMobile" :dim="false" :open="IsFooterModalOpen" before="beforeFooterModal" after="afterFooterModal" :transition="0.3">
       <div class="footer-box">
         <h3 class="my-location" @click="currentPos()">Użyj mojej lokalizacji</h3>
         <div class='input-modal-button' :class="{ 'active' : suggestionText }" @click="openLocitModal()">
@@ -112,11 +112,6 @@ export default {
       setTimeout(
         () =>
           this.$store.commit('updatePosition', [{ lat: this.$store.state.geolocation.lat, lng: this.$store.state.geolocation.lng, zoom: 16 }])
-        , 100
-      )
-      setTimeout(
-        () =>
-          this.$store.commit('updatePosition2', [{ lat: this.$store.state.geolocation.lat, lng: this.$store.state.geolocation.lng, zoom: 16 }])
         , 100
       )
       if (this.IsFooterModalOpen) {

@@ -15,7 +15,9 @@
               <div class="list-row" :class="{'list-row-modal' : isOpenListModal(index)}"
                 v-for="(listMarker, index) in listMarkers"
                 :key="index"
-                @click="openListModal(index)">
+                @click="openListModal(index)"
+                v-on="isMobile ? { click: () => getPointDetails(listMarker.lat, listMarker.lon, listMarker.pickup_point_type) } : {} "
+                >
                   <div class="list-elem list-elem-img">
                     <img :class="{'img-modal' : isOpenListModal(index)}" :src="logosUrl[listMarker.pickup_point_type]" width="auto" height="70px" />
                   </div>
@@ -30,25 +32,24 @@
                   </div>
                   <div class="list-elem btn-elem">
                     <!-- @click="selectedPopup(marker.id, index)" -->
-                    <p class="list-button">Wybierz</p>
+                    <p class="list-button" @click="getPointDetails(listMarker.lat, listMarker.lon, listMarker.pickup_point_type),toogleMethod('true')">Wybierz</p>
                   </div>
-                    <!-- <transition name="fade">
-                      <div class="list-modal" v-if="isOpenListModal(index) && isMobile">
-                        <div class="list-modal-hours">
-                          <b>Godziny otwarcia:</b>
-                          {{ marker.openTime }}<br>
-                          {{ marker.openTime2 }}
-                        </div>
-                        <div class="list-modal-additional">
-                          <i v-if="marker.openNight" class="icon hours"/>
-                          <i v-if="marker.openSat" class="icon sobota"/>
-                          <i v-if="marker.openSun" class="icon niedziela"/>
-                          <i v-if="marker.parking" class="icon parking"/>
-                          <i v-if="marker.cashOnDelivery" class="icon pobraniem"/>
-                          <i v-if="marker.niepelnosprawni" class="icon niepelnosprawni"/>
-                        </div>
+                  <transition name="fade">
+                    <div class="list-modal" v-if="isOpenListModal(index) && isMobile && $store.state.markerDetails">
+                      <div class="list-modal-hours" v-if="$store.state.markerDetails.points[0].features.working_hours">
+                        <b>Godziny otwarcia:</b>
+                        {{ $store.state.markerDetails.points[0].features.working_hours }}
                       </div>
-                    </transition> -->
+                      <div class="list-modal-additional">
+                        <p v-if="$store.state.markerDetails.points[0].features.open_late" class="icon hours"/>
+                        <p v-if="$store.state.markerDetails.points[0].features.open_saturday" class="icon sobota"/>
+                        <p v-if="$store.state.markerDetails.points[0].features.open_sunday" class="icon niedziela"/>
+                        <p v-if="$store.state.markerDetails.points[0].features.parking" class="icon parking"/>
+                        <p v-if="$store.state.markerDetails.points[0].features.disabled_friendly" class="icon pobraniem"/>
+                        <p v-if="$store.state.markerDetails.points[0].features.cash_on_delivery" class="icon niepelnosprawni"/>
+                      </div>
+                    </div>
+                  </transition>
               </div>
               <div v-if="$store.state.listMarkers.length !== 0" class="load-box" @click="loadMorePoints()"><p class="load-button">Załaduj więcej</p></div>
           </div>
@@ -77,6 +78,7 @@
                 :lat-lng="{ lat: marker.lat, lng: marker.lon }"
                 class-name="markertype"
                 @click="getPointDetails(marker.lat, marker.lon, marker.pickup_type)"
+                v-on="isMobile ? { click: () => toogleMethod('true') } : {} "
               >
               <!-- v-on="isMobile ? { click: () => testTest(marker.lat, marker.lon, marker.pickup_type) } : {} " -->
                 <l-icon :icon-anchor="[iconsUrl[marker.pickup_type]]" :icon-size="[52, 52]" class-name="someExtraClass">
@@ -97,7 +99,7 @@
                         </div>
                       </div>
                       <div class="popup-action">
-                        <p class="popup-button" @click="toogleMethod()" @close="onCloseChild">Wybierz</p>
+                        <p class="popup-button" @click="toogleMethod('true')">Wybierz</p>
                       </div>
                     </div>
                   </l-popup>
@@ -110,7 +112,7 @@
     <div>
       <transition :name="isMobile ? 'fade-in-up' : 'bounce'">
         <div class="modal-position" :class="{'modal-positionV2' : !isWidgetVersion}" v-if="toogleModal">
-          <ModalDiv/>
+          <ModalDiv @closed="onCloseChild"/>
         </div>
       </transition>
     </div>
@@ -281,13 +283,14 @@ export default {
       } else if (text === 'hide') {
         this.toogleMap = true
       }
+      this.toogleMethod('false')
       this.$store.commit('closeListFooter')
     },
     centerUpdated (center) {
-      this.$store.commit('updatePosition2', [{ lat: center.lat, lng: center.lng, zoom: null }])
+      this.$store.commit('updatePosition', [{ lat: center.lat, lng: center.lng, zoom: null }])
     },
     zoomUpdated (zoom) {
-      this.$store.commit('updatePosition2', [{ lat: null, lng: null, zoom: zoom }])
+      this.$store.commit('updatePosition', [{ lat: null, lng: null, zoom: zoom }])
     },
     boundsUpdated (bounds) {
       var fromLng = bounds._northEast.lng / 180.0 * Math.PI
@@ -302,8 +305,14 @@ export default {
     //   this.toogleModal = false
     //   setTimeout(() => this.toogleMethod(id, index), 500)
     // },
-    toogleMethod () {
-      this.toogleModal = !this.toogleModal
+    toogleMethod (bool) {
+      if (bool === 'true') {
+        this.toogleModal = true
+      } else if (bool === 'false') {
+        this.toogleModal = false
+      } else {
+        this.toogleModal = !this.toogleModal
+      }
     },
     onCloseChild () {
       this.toogleModal = false
