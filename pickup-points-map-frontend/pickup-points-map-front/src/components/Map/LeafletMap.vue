@@ -8,13 +8,16 @@
     <div v-if="!$store.state.pointMarkers.length" class="first-enter-info">
       <p>Wybierz adres/lokalizację aby<br>zobaczyć najbliższe punkty odbioru</p>
     </div>
-    <div v-else-if="($store.state.zoom < 13 || $store.state.pointMarkers.length > 100) && !toogleMap" class="error-info">
+    <div v-else-if="($store.state.zoom < 13 || $store.state.pointMarkers.length > 100 || $store.state.filteredMapPoints.length > 100) && !toogleMap" class="error-info">
       <p>Powiększ zoom żeby zobaczyć punkty</p>
     </div>
     <transition name="fade">
       <div  v-if="toogleMap" class="list-box" :class="{'listbox-margin-top' : isWidgetVersion}">
           <div class="list-title hidden-xs"><h1>Punkty odbioru w pobliżu Twojej lokalizacji</h1></div>
-          <div v-if="listMarkers[0] !== 'empty' || listMarkers.length !== 0" class="scroll-box" :class="{'change-vh' : !isWidgetVersion}">
+          <div v-if="listMarkers.length === 0 || listMarkers[0] === 'empty'">
+            <p class="empty-text">Wybierz adres/lokalizację aby zobaczyć najbliższe punkty odbioru</p>
+          </div>
+          <div v-else class="scroll-box" :class="{'change-vh' : !isWidgetVersion}">
               <div class="list-row" :class="{'list-row-modal' : isOpenListModal(index)}"
                 v-for="(listMarker, index) in listMarkers"
                 :key="index"
@@ -34,7 +37,6 @@
                     {{ listMarker.working_hours }}
                   </div>
                   <div class="list-elem btn-elem">
-                    <!-- @click="selectedPopup(marker.id, index)" -->
                     <p class="list-button" @click="getPointDetails(listMarker.lat, listMarker.lon, listMarker.pickup_point_type),toogleMethod('true')">Wybierz</p>
                   </div>
                   <transition name="fade">
@@ -55,9 +57,6 @@
                   </transition>
               </div>
               <div v-if="$store.state.listMarkers.length !== 0" class="load-box" @click="loadMorePoints()"><p class="load-button">Załaduj więcej</p></div>
-          </div>
-          <div v-if="listMarkers.length === 0 || listMarkers[0] === 'empty'">
-            <p class="empty-text">Wybierz adres/lokalizację aby zobaczyć najbliższe punkty odbioru</p>
           </div>
       </div>
     </transition>
@@ -202,10 +201,18 @@ export default {
       return latLng(this.$store.state.lat, this.$store.state.lng)
     },
     pointMarkers () {
-      if (this.$store.state.zoom < 13 || this.$store.state.pointMarkers.length > 100) {
-        return []
+      if (this.$store.state.filteredMapPoints.length > 0) {
+        if (this.$store.state.zoom < 13 || this.$store.state.filteredMapPoints.length > 100) {
+          return []
+        } else {
+          return this.$store.state.filteredMapPoints
+        }
       } else {
-        return this.$store.state.pointMarkers
+        if (this.$store.state.zoom < 13 || this.$store.state.pointMarkers.length > 100) {
+          return []
+        } else {
+          return this.$store.state.pointMarkers
+        }
       }
     },
     listMarkers () {
