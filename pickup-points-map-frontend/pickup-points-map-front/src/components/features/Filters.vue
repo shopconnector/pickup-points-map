@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="test-vh">
     <div class='filters add-scroll-filters' :class="{ 'filtersV2' : !isWidgetVersion }">
       <!-- Select suppliers first version -->
       <div class="suppliers" v-if="isWidgetVersion && !isMobile">
@@ -32,14 +32,13 @@
           <label class="custom-icon" :class="box.icon" :for="box.id">{{box.info}}</label>
         </div>
       </div>
-    </div>
-    <!-- Mobile version -->
-    <div class="mobile-filters-footer">
-      <div class="wyczysc">
-        <p class="m0" @click="clearAPIFilter()" v-show="filters.length || checkedSuppliers.length" >Wyczyść filtry</p>
-      </div>
-      <div class="zastosuj">
-        <p class="m0" @click="closeFilterMobile">Zastosuj filtry</p>
+      <div class="mobile-filters-footer">
+        <div class="wyczysc">
+          <p class="m0" @click="clearAPIFilter()" v-show="filters.length || checkedSuppliers.length" >Wyczyść filtry</p>
+        </div>
+        <div class="zastosuj">
+          <p class="m0" @click="closeFilterMobile">Zastosuj filtry</p>
+        </div>
       </div>
     </div>
   </div>
@@ -229,6 +228,9 @@ export default {
 </script>
 
 <style lang='scss' scoped>
+.test-vh {
+  height: 100vh;
+}
 .m0 {
   margin: 0;
 }
@@ -571,6 +573,7 @@ export default {
 .add-scroll-filters{
   height: calc(100vh - 80px);
   overflow: scroll;
+  scroll-behavior: smooth;
 }
 .filters{
    padding: 30px 35px 0 35px;

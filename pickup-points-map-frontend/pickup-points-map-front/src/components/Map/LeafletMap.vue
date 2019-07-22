@@ -347,6 +347,11 @@ export default {
 </script>
 
 <style lang="scss">
+.leaflet-marker-icon {
+  position: absolute;
+  top: -50px;
+  left: -35px;
+}
 .leaflet-popup {
   .leaflet-popup-content-wrapper {
     // height: 145px;
