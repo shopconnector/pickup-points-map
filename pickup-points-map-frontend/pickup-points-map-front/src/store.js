@@ -12,7 +12,7 @@ export default new Vuex.Store({
     isFilterMobileOpen: 0,
     isFooterModalOpen: 1,
     isLocitModalOpen: 0,
-    WidgetVersion: false,
+    WidgetVersion: true,
     isFilterMobilOpen: 1,
     zoom: 7,
     lat: 53.0409,
@@ -137,7 +137,6 @@ export default new Vuex.Store({
     clear_point_details (state) {
       state.markerDetails = []
     },
-    // FILTERED POINTS COMMIT
     get_filtered_points (state) {
       state.state = 'loading filtered points'
     },
@@ -153,7 +152,6 @@ export default new Vuex.Store({
     get_filtered_points_err (state) {
       state.status = 'error, filtered points couldnt be loaded'
     },
-    // FILTERED LIST POINTS COMMIT
     get_filtered_list_points (state) {
       state.status = 'loading filtered list points'
     },
@@ -176,19 +174,13 @@ export default new Vuex.Store({
     }
   },
   actions: {
-    // GET POINTS FOR MAP
     get_points ({commit}, query) {
       return new Promise((resolve, reject) => {
         commit('get_points')
         APIService.get_points(query)
           .then(res => {
-            // if (res.data.response_type === 'distance') {
             const points = res.data.response.pickupPoints
             commit('get_points_succ', points)
-            // } else {
-            //   const pointsClosest = res.data.response.pickupPoints
-            //   commit('get_closest_points_succ', pointsClosest)
-            // }
             resolve(res)
           }).catch(err => {
             commit('get_points_err')
@@ -215,7 +207,6 @@ export default new Vuex.Store({
         commit('get_filtered_points')
         APIService.get_filtered_points(query)
           .then(res => {
-            console.log('Get map')
             let filteredPoints = []
             if (res.data.response.pickupPoints.length) {
               filteredPoints = res.data.response.pickupPoints
@@ -235,7 +226,6 @@ export default new Vuex.Store({
         commit('get_filtered_list_points')
         APIService.get_filtered_list_points(query)
           .then(res => {
-            console.log('Get list')
             let filteredPointsList = []
             if (res.data.response.pickupPoints.length) {
               filteredPointsList = res.data.response.pickupPoints
@@ -271,24 +261,5 @@ export default new Vuex.Store({
       state.filteredMapPoints = []
       return (state.filteredListPoints, state.filteredMapPoints)
     }
-    // filterMarkers: (state) => (filters, suppliers) => {
-    //   state.filteredMarkers = state.markers
-    //   if (suppliers.length > 0) {
-    //     state.filteredMarkers = state.filteredMarkers.filter(marker => suppliers.includes(marker.type))
-    //   }
-    //   for (var filter of filters) {
-    //     state.filteredMarkers = state.filteredMarkers.filter(marker => marker[filter])
-    //   }
-    //   if (state.filteredMarkers.length > 0) {
-    //     return state.filteredMarkers
-    //   } else {
-    //     state.filteredMarkers = ['empty']
-    //     return state.filteredMarkers
-    //   }
-    // },
-    // clearFilters: state => {
-    //   state.filteredMarkers = []
-    //   return state.filteredMarkers
-    // }
   }
 })

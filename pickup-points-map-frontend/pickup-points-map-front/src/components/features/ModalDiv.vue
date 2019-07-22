@@ -1,10 +1,10 @@
 <template>
   <div>
     <div :class="!isWidgetVersion ? 'modal' : 'modalV2'" v-if="!isMobile">
-       <div :class="!isWidgetVersion ? 'content' : 'contentV2'">
-          <div :class="!isWidgetVersion ? 'title' : 'titleV2'"><h3>Wybrany sposób dostawy</h3></div>
-          <div class="selected-supplier" :class="{'selected-supplierV2' : isWidgetVersion}">
-            <div class="col-1" :class="{'col1-v2' : isWidgetVersion}">
+       <div class="content">
+          <div class="title"><h3>Wybrany sposób dostawy</h3></div>
+          <div class="selected-supplier">
+            <div class="col-1">
               <div class="address">
                 <h4>{{ parentData.street }}</h4>
                 <p>{{ parentData.zip }} {{ parentData.city }}</p>
@@ -27,7 +27,7 @@
                 <p v-if="parentData.points[0].features.cash_on_delivery" > Odbiór za pobraniem</p>
               </div>
             </div>
-            <div class="col-2" :class="{'col2-v2' : isWidgetVersion}">
+            <div class="col-2">
               <div class="info-box">
                 <div class="logo">
                   <img :src="logosUrl[parentData.pickup_type]" class="img">
@@ -54,8 +54,8 @@
           </div>
        </div>
        <div class="footer">
-         <p class="powrot" @click="closeModal()" :class="{'powrot-v2' : isWidgetVersion}"><i class="arrow_left"/>POWRÓT</p>
-         <p class="zamknij" :class="{'zamknij-v2' : isWidgetVersion}">Wybierz {{ parentData.pickup_type }} i zamknij</p>
+         <p class="powrot" @click="closeModal()"><i class="arrow_left"/>POWRÓT</p>
+         <p class="zamknij">Wybierz {{ parentData.pickup_type }} i zamknij</p>
        </div>
     </div>
     <!-- Modal DIV for mobile map -->
@@ -286,7 +286,6 @@ p {
 .modal{
   width: 100%;
   margin-top: 25px;
-  // margin-bottom: 65px;
   display: flex;
   flex-direction: column;
   border-radius: 9px;
@@ -297,6 +296,37 @@ p {
   margin: 20px;
   border: 1px solid #E54C69;
   background-color: white;
+  .content{
+    background: none;
+    padding: 0;
+  }
+  .title{
+    padding-left: 30px;
+    h3{
+        text-align: left;
+        font-size: 22px;
+        margin: 10px 0;
+        padding: 0;
+        @media (max-width: 1000px) {
+          font-size: 18px;
+        }
+    }
+  }
+  .selected-supplier {
+    justify-content: space-between;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #E5E5E5;
+    margin: 0 30px;
+  }
+  .col2 {
+    flex: 0 0 50%;
+  }
+  .powrot {
+    padding-left: 10px;
+  }
+  .zamknij {
+    margin-right: 25px;
+  }
 }
 .footer{
   display: flex;
@@ -304,11 +334,6 @@ p {
   padding: 6px 0;
   align-items: center;
   background: white;
-  // position: fixed;
-  // bottom: 0;
-  // right: 0;
-  // left: 0;
-  // background: white;
 }
 .title{
   padding-left: 20px;
@@ -320,24 +345,10 @@ p {
     color: #000000;
   }
 }
-.titleV2{
-    padding-left: 30px;
-    h3{
-        text-align: left;
-        font-size: 22px;
-        margin: 10px 0;
-    }
-}
 .selected-supplier{
   display: flex;
   justify-content: space-around;
   align-items: center;
-}
-.selected-supplierV2{
-   justify-content: space-between;
-   padding-bottom: 10px;
-   border-bottom: 1px solid #E5E5E5;
-   margin: 0 30px;
 }
 .col-1{
   display: flex;
@@ -351,9 +362,6 @@ p {
   flex-direction: column;
   justify-content: space-between;
   flex: 0 0 45%;
-}
-.col2-v2{
-  flex: 0 0 50%;
 }
 .info-box {
   display: flex;
@@ -436,9 +444,6 @@ p {
   align-items: center;
   cursor: pointer;
 }
-.powrot-v2{
-  padding-left: 10px;
-}
 .zamknij{
   background: #E4405F;
   height: 45px;
@@ -453,14 +458,7 @@ p {
   cursor: pointer;
   margin-right: 10px;
 }
-.zamknij-v2{
-  margin-right: 25px;
-  padding: 0 15px;
-}
 @media only screen and (max-width: 1000px) {
- .titleV2 h3 {
-   font-size: 18px;
- }
  .title h3{
    font-size: 18px;
  }

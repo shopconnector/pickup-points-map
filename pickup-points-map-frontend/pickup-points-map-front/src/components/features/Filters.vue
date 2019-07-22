@@ -124,8 +124,7 @@ export default {
         info: 'Odbiór za pobraniem',
         icon: 'pobraniem'
       }],
-      filters: [],
-      markers: null
+      filters: []
     }
   },
   computed: {
@@ -160,17 +159,6 @@ export default {
       }
     },
     activeFilter () {
-      // if (this.filters.length > 0 || this.checkedSuppliers.length > 0) {
-      //    return this.$store.getters.filterMarkers(this.filters, this.checkedSuppliers)
-      //   this.$store.dispatch('get_pickup_points_map', {
-      //     lat: this.$store.state.lat,
-      //     lng: this.$store.state.lng,
-      //     dist: this.$store.state.radiusOfVisibily
-      //     filter: metoh
-      //   })
-      // } else if (this.filters.length === 0) {
-      //   return this.$store.getters.clearFilters
-      // }
       return (this.filteredPointsForMap, this.filteredPointsForList)
     }
   },
@@ -179,13 +167,7 @@ export default {
     activeFilter (val) {
     }
   },
-
-  created () {
-    this.markers = this.$store.state.markers
-  },
   methods: {
-    // changeFilterStore () {
-    // },
     filteredPoints () {
       var features = []
       var pickupTypes = []
@@ -207,11 +189,6 @@ export default {
       this.filters = []
       return this.$store.getters.clearAPIFilter
     },
-    // clearFilter () {
-    //   this.checkedSuppliers = []
-    //   this.filters = []
-    //   return this.$store.getters.clearFilters
-    // },
     getImgUrl (pic) {
       return require('../../assets/logos/' + pic)
     },
@@ -571,7 +548,7 @@ export default {
  // Styles for mobile
 @media (max-width: 767px) {
 .add-scroll-filters{
-  height: calc(100vh - 80px);
+  height: calc( 100vh - 80px );
   overflow: scroll;
   scroll-behavior: smooth;
 }

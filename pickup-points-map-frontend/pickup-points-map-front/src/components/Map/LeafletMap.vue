@@ -137,7 +137,6 @@ export default {
   name: 'Home',
   components: {
     ModalDiv,
-    // maps components
     LMap,
     LTileLayer,
     LMarker,
@@ -182,24 +181,6 @@ export default {
     }
   },
   computed: {
-    // zoomClosest () {
-    //   let pins = this.$store.state.pointMarkers
-    //   var dist = Math.max.apply(Math, pins.map((pin) => {
-    //     var fromLng = this.$store.state.lng / 180.0 * Math.PI
-    //     var fromLat = this.$store.state.lat / 180.0 * Math.PI
-    //     var pointLng = pin.lon / 180.0 * Math.PI
-    //     var pointLat = pin.lat / 180.0 * Math.PI
-    //     return Math.acos(Math.sin(fromLat) * Math.sin(pointLat) + (Math.cos(fromLat) * Math.cos(pointLat) * Math.cos(pointLng - fromLng))) * 6371000
-    //   }))
-    //   var x = Math.pow(dist, 2)
-    //   var C = 2 * Math.PI * 6378137.000
-    //   var temp = Math.abs((C * Math.cos(53.06616)) / x)
-    //   var zoom = Math.round(Math.log2(temp) + 14)
-    //   return zoom
-    // },
-    // calc () {
-    //   console.log(Math.sqrt((52.2353 - 52.2241)*(52.2353 - 52.2241)+(21.0150 - 21.0032) * (21.0150 - 21.0032)))
-    // },
     zoom () {
       return this.$store.state.zoom
     },
@@ -256,19 +237,6 @@ export default {
       },
       deep: true
     }
-  },
-  mounted () {
-    // this.$store.subscribe((mutation, state) => {
-    //   if (mutation.type === 'geolocation/LOCATION_CHANGED') {
-    //     console.log('geolocation/LOCATION_CHANGED')
-    //   }
-    //   if (mutation.type === 'get_points_succ') {
-    //     console.log('get_points_succ')
-    //   }
-    //   if (mutation.type === 'get_list_points_succ') {
-    //     console.log('get_list_points_succ')
-    //   }
-    // })
   },
   methods: {
     popupOpen () {
@@ -354,7 +322,6 @@ export default {
 }
 .leaflet-popup {
   .leaflet-popup-content-wrapper {
-    // height: 145px;
     border: 3px solid #3F87F5;
   }
   .leaflet-popup-tip-container {
@@ -523,7 +490,6 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  // background-color: #00000054;
   p {
     margin: 0;
     padding: 15px;
