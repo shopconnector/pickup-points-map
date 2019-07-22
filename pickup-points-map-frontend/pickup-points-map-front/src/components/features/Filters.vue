@@ -229,7 +229,7 @@ export default {
 
 <style lang='scss' scoped>
 .test-vh {
-  height: 100vh;
+  height: 100%;
 }
 .m0 {
   margin: 0;
