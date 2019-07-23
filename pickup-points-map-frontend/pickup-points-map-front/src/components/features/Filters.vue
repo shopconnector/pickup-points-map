@@ -1,5 +1,4 @@
 <template>
-  <div class="test-vh">
     <div class='filters add-scroll-filters' :class="{ 'filtersV2' : !isWidgetVersion }">
       <!-- Select suppliers first version -->
       <div class="suppliers" v-if="isWidgetVersion && !isMobile">
@@ -7,7 +6,7 @@
         <div class="suppliers-menu">
           <div class="selectSuppliers" v-for="supp in suppliers" :key="supp.id">
             <input class="styled-checkbox" type="checkbox" :id="supp.id" :value="supp.value" v-model="checkedSuppliers">
-            <label :for="supp.id">{{supp.name}}</label>
+            <label :for="supp.id">{{supp.id}}</label>
           </div>
         </div>
       </div>
@@ -41,7 +40,6 @@
         </div>
       </div>
     </div>
-  </div>
 </template>
 
 <script>
@@ -58,40 +56,39 @@ export default {
       suppliers: [{
         id: 'Poczta Polska',
         value: 'Poczta Polska',
-        name: 'Poczta Polska',
         src: 'pocztapolska.png',
-        alt: 'Poczta Polska img'
+        alt: 'Poczta Polska logo'
       },
       {
         id: 'DPD Pickup',
-        value: 'dpdPickup',
-        name: 'DPD Pickup',
+        value: 'DPD Pickup',
         src: 'dpd-pickup.png',
-        alt: 'DPD pickup img'
+        alt: 'DPD pickup logo'
       }, {
-        id: 'Zabka',
+        id: 'Żabka',
         value: 'Żabka',
-        name: 'Żabka',
         src: 'żabka.png',
-        alt: 'Żabka png'
+        alt: 'Żabka logo'
       }, {
-        id: 'Fresh',
+        id: 'Fresh Market',
         value: 'Fresh Market',
-        name: 'Fresh',
         src: 'freshmarket.png',
-        alt: 'Fresh png'
+        alt: 'Fresh Market logo'
       }, {
         id: 'Paczkomaty In-post',
         value: 'In Post',
-        name: 'Paczkomaty In-Post',
         src: 'inpost.png',
-        alt: 'Paczkomaty In-Post img'
+        alt: 'Paczkomaty In-Post logo'
       }, {
         id: 'Paczka w ruchu',
         value: 'Paczka w Ruchu',
-        name: 'Paczka w ruchu',
         src: 'paczka_w_ruchu.jpg',
-        alt: 'Paczka w ruchu image'
+        alt: 'Paczka w ruchu logo'
+      }, {
+        id: 'Orlen',
+        value: 'Orlen',
+        src: 'orlen.png',
+        alt: 'Orlen logo'
       }],
       checkboxes: [{
         id: 'otwarteDoPozna',
@@ -548,7 +545,7 @@ export default {
  // Styles for mobile
 @media (max-width: 767px) {
 .add-scroll-filters{
-  height: calc( 100vh - 80px );
+  height: calc( 100% - 80px );
   overflow: scroll;
   scroll-behavior: smooth;
 }

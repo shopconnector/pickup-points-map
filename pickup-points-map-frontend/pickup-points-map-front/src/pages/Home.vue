@@ -10,7 +10,7 @@
         </div>
       </div>
       <vue-over-body :dim="false" :open="this.$store.state.isFilterMobileOpen" before="beforeFilters" after="afterFilters" :transition="0.3">
-        <div v-if="isMobile">
+        <div v-if="isMobile" class="scroll-box-filters">
           <Filters/>
         </div>
       </vue-over-body>
@@ -108,7 +108,7 @@ export default {
 <style lang="scss" scoped>
 .scroll-box-filters{
   height: 100%;
-  overflow-y: scroll;
+  width: 100%;
 }
 .home-page{
   display: flex;

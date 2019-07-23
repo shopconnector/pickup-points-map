@@ -156,27 +156,30 @@ export default {
       attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
       iconsUrl: {
         'Żabka': require('../../assets/logos/żabka.png'),
-        'Orlen': require('../../assets/logos/dpd-pickup.png'),
+        'DPD Pickup': require('../../assets/logos/dpd-pickup.png'),
         'Fresh Market': require('../../assets/logos/freshmarket.png'),
         'In Post': require('../../assets/logos/inpost.png'),
         'Poczta Polska': require('../../assets/logos/pocztapolska.png'),
-        'Ruch': require('../../assets/logos/paczka_w_ruchu.jpg')
+        'Paczka w Ruchu': require('../../assets/logos/paczka_w_ruchu.jpg'),
+        'Orlen': require('../../assets/logos/orlen.png')
       },
       logosUrl: {
         'Żabka': require('../../assets/logos/żabka.png'),
-        'Orlen': require('../../assets/logos/dpd-pickup.png'),
+        'DPD Pickup': require('../../assets/logos/dpd-pickup.png'),
         'Fresh Market': require('../../assets/logos/freshmarket.png'),
         'In Post': require('../../assets/logos/inpost.png'),
         'Poczta Polska': require('../../assets/logos/pocztapolska.png'),
-        'Ruch': require('../../assets/logos/paczka_w_ruchu.jpg')
+        'Paczka w Ruchu': require('../../assets/logos/paczka_w_ruchu.jpg'),
+        'Orlen': require('../../assets/logos/orlen.png')
       },
       pinsUrl: {
         'Żabka': require('../../assets/zabka.png'),
-        'Orlen': require('../../assets/dpdpickup.png'),
+        'DPD Pickup': require('../../assets/dpdpickup.png'),
         'Fresh Market': require('../../assets/fresh.png'),
         'In Post': require('../../assets/inpost.png'),
         'Poczta Polska': require('../../assets/poczta-polska.png'),
-        'Ruch': require('../../assets/paczka-w-ruchu.png')
+        'Paczka w Ruchu': require('../../assets/paczka-w-ruchu.png'),
+        'Orlen': require('../../assets/orlen.png')
       }
     }
   },

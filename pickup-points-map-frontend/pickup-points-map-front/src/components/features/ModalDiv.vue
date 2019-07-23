@@ -112,11 +112,12 @@ export default {
     return {
       logosUrl: {
         'Żabka': require('../../assets/logos/żabka.png'),
-        'Orlen': require('../../assets/logos/dpd-pickup.png'),
+        'DPD Pickup': require('../../assets/logos/dpd-pickup.png'),
         'Fresh Market': require('../../assets/logos/freshmarket.png'),
         'In Post': require('../../assets/logos/inpost.png'),
         'Poczta Polska': require('../../assets/logos/pocztapolska.png'),
-        'Ruch': require('../../assets/logos/paczka_w_ruchu.jpg')
+        'Paczka w Ruchu': require('../../assets/logos/paczka_w_ruchu.jpg'),
+        'Orlen': require('../../assets/logos/orlen.png')
       }
     }
   },
