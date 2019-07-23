@@ -18,15 +18,16 @@ export default new Vuex.Store({
     lat: 53.0409,
     lng: 19.2850,
     radiusOfVisibily: 0,
-    filteredMarkers: [],
     markerDetails: [],
-    filteredMapPoints: [],
-    filteredListPoints: [],
     pointMarkers: [],
     pageNumber: 1,
-    listMarkers: []
+    listMarkers: [],
+    storeFilters: []
   },
   mutations: {
+    newStoreFilters (state, payload) {
+      if (payload) state.storeFilters = payload
+    },
     openListFooter (state) {
       state.showListFooter = true
     },
@@ -136,41 +137,6 @@ export default new Vuex.Store({
     },
     clear_point_details (state) {
       state.markerDetails = []
-    },
-    get_filtered_points (state) {
-      state.state = 'loading filtered points'
-    },
-    get_filtered_points_succ (state, filteredPoints) {
-      if (state.zoom < 13) {
-        state.filteredMapPoints = []
-        state.status = 'success, but distance too long'
-      } else {
-        state.filteredMapPoints = filteredPoints
-        state.status = 'success, filtered points loaded'
-      }
-    },
-    get_filtered_points_err (state) {
-      state.status = 'error, filtered points couldnt be loaded'
-    },
-    get_filtered_list_points (state) {
-      state.status = 'loading filtered list points'
-    },
-    get_filtered_list_points_succ (state, filteredPointsList) {
-      if (state.zoom < 13) {
-        state.filteredListPoints = []
-        state.status = 'success, but distance too long for list'
-      } else {
-        if (state.pageNumber === 1) {
-          state.filteredListPoints = filteredPointsList
-          state.status = 'success, filtered list points loaded'
-        } else {
-          state.filteredListPoints = state.filteredListPoints.concat(filteredPointsList)
-          state.status = 'success, more filtered list points loaded'
-        }
-      }
-    },
-    get_filtered_list_points_err (state) {
-      state.status = 'loading filtered list points'
     }
   },
   actions: {
@@ -202,44 +168,6 @@ export default new Vuex.Store({
           })
       })
     },
-    get_filtered_points ({commit}, query) {
-      return new Promise((resolve, reject) => {
-        commit('get_filtered_points')
-        APIService.get_filtered_points(query)
-          .then(res => {
-            let filteredPoints = []
-            if (res.data.response.pickupPoints.length) {
-              filteredPoints = res.data.response.pickupPoints
-            } else {
-              filteredPoints = ['empty']
-            }
-            commit('get_filtered_points_succ', filteredPoints)
-            resolve(res)
-          }).catch(err => {
-            commit('get_filtered_points_err')
-            reject(err)
-          })
-      })
-    },
-    get_filtered_list_points ({commit}, query) {
-      return new Promise((resolve, reject) => {
-        commit('get_filtered_list_points')
-        APIService.get_filtered_list_points(query)
-          .then(res => {
-            let filteredPointsList = []
-            if (res.data.response.pickupPoints.length) {
-              filteredPointsList = res.data.response.pickupPoints
-            } else {
-              filteredPointsList = ['empty']
-            }
-            commit('get_filtered_list_points_succ', filteredPointsList)
-            resolve(res)
-          }).catch(err => {
-            commit('get_filtered_list_points_err')
-            reject(err)
-          })
-      })
-    },
     get_point_details ({commit}, query) {
       return new Promise((resolve, reject) => {
         commit('get_point_details')
@@ -257,9 +185,9 @@ export default new Vuex.Store({
   },
   getters: {
     clearAPIFilters: state => {
-      state.filteredListPoints = []
-      state.filteredMapPoints = []
-      return (state.filteredListPoints, state.filteredMapPoints)
+      state.pointMarkers = []
+      state.listMarkers = []
+      return (state.pointMarkers, state.listMarkers)
     }
   }
 })

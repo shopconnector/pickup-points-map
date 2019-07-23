@@ -5,22 +5,22 @@
       <p class="button-action" :class="{ 'active' : !toogleMap }" @click="toogleMapMethod('show')">Mapa</p>
       <p class="button-action" :class="{ 'active' : toogleMap }" @click="toogleMapMethod('hide')">Lista</p>
     </div>
-    <div v-if="!$store.state.pointMarkers.length" class="first-enter-info">
+    <div v-if="( pointMarkers && !pointMarkers.length)" class="first-enter-info">
       <p>Wybierz adres/lokalizację aby<br>zobaczyć najbliższe punkty odbioru</p>
     </div>
-    <div v-else-if="listMarkers.length === 0 || listMarkers[0] === 'empty'" class="first-enter-info">
+    <div v-else-if="listMarkers.length === 0" class="first-enter-info">
       <p>Nie znaleźiono żadnego punktu. Zmień kryteria wyboru.</p>
     </div>
-    <div v-else-if="($store.state.zoom < 13 || $store.state.pointMarkers.length > 100 || $store.state.filteredMapPoints.length > 100) && !toogleMap" class="error-info">
+    <div v-else-if="($store.state.zoom < 13 || (pointMarkers && pointMarkers.length > 100) && !toogleMap)" class="error-info">
       <p>Powiększ zoom żeby zobaczyć punkty</p>
     </div>
     <transition name="fade">
       <div  v-if="toogleMap" class="list-box" :class="{'listbox-margin-top' : isWidgetVersion}">
           <div class="list-title hidden-xs"><h1>Punkty odbioru w pobliżu Twojej lokalizacji</h1></div>
-          <div v-if="listMarkers.length === 0 || listMarkers[0] === 'empty'">
+          <div v-if="listMarkers.length === 0">
             <p class="empty-text">Wybierz adres/lokalizację aby zobaczyć najbliższe punkty odbioru</p>
           </div>
-          <div v-else class="scroll-box" :class="{'change-vh' : !isWidgetVersion}">
+          <div class="scroll-box" :class="{'change-vh' : !isWidgetVersion}">
               <div class="list-row" :class="{'list-row-modal' : isOpenListModal(index)}"
                 v-for="(listMarker, index) in listMarkers"
                 :key="index"
@@ -44,21 +44,23 @@
                   </div>
                   <transition name="fade">
                     <div class="list-modal" v-if="isOpenListModal(index) && isMobile && $store.state.markerDetails">
-                      <div class="list-modal-hours" v-if="$store.state.markerDetails.points[0].working_hours.length">
-                        <b>Godziny otwarcia:</b>
-                        <template v-for="day in $store.state.markerDetails.points[0].working_hours">
-                          {{ day }}
-                        </template>
+                      <template v-if="typeof $store.state.markerDetails.points !== 'undefined'">
+                        <div class="list-modal-hours" v-if="$store.state.markerDetails.points[0].working_hours.length">
+                          <b>Godziny otwarcia:</b>
+                          <template v-for="day in $store.state.markerDetails.points[0].working_hours">
+                            {{ day }}
+                          </template>
+                        </div>
+                        <div class="list-modal-additional">
+                          <p v-if="$store.state.markerDetails.points[0].features.open_late" class="icon hours"/>
+                          <p v-if="$store.state.markerDetails.points[0].features.open_saturday" class="icon sobota"/>
+                          <p v-if="$store.state.markerDetails.points[0].features.open_sunday" class="icon niedziela"/>
+                          <p v-if="$store.state.markerDetails.points[0].features.parking" class="icon parking"/>
+                          <p v-if="$store.state.markerDetails.points[0].features.disabled_friendly" class="icon niepelnosprawni"/>
+                          <p v-if="$store.state.markerDetails.points[0].features.cash_on_delivery" class="icon pobraniem"/>
+                        </div>
+                    </template>
                       </div>
-                      <div class="list-modal-additional">
-                        <p v-if="$store.state.markerDetails.points[0].features.open_late" class="icon hours"/>
-                        <p v-if="$store.state.markerDetails.points[0].features.open_saturday" class="icon sobota"/>
-                        <p v-if="$store.state.markerDetails.points[0].features.open_sunday" class="icon niedziela"/>
-                        <p v-if="$store.state.markerDetails.points[0].features.parking" class="icon parking"/>
-                        <p v-if="$store.state.markerDetails.points[0].features.disabled_friendly" class="icon niepelnosprawni"/>
-                        <p v-if="$store.state.markerDetails.points[0].features.cash_on_delivery" class="icon pobraniem"/>
-                      </div>
-                    </div>
                   </transition>
               </div>
               <div v-if="$store.state.listMarkers.length !== 0" class="load-box" @click="loadMorePoints()"><p class="load-button">Załaduj więcej</p></div>
@@ -77,7 +79,7 @@
           @popupclose="popupClose"
         >
             <l-tile-layer :url="url" :attribution="attribution" />
-            <template v-if="pointMarkers[0] !== 'empty'">
+            <template>
               <l-marker
                 v-for="marker in pointMarkers"
                 :key="marker.id"
@@ -96,10 +98,12 @@
                       <img class="popup-marker" :src="pinsUrl[marker.pickup_type]" width="102" height="102"/>
                       <div class="popup-info">
                         <div class="popup-text-box">
-                          <p class="popup-text" v-if="$store.state.markerDetails.length !== 0">
-                            <b>{{ $store.state.markerDetails.points[0].name }}</b><br>
-                            <b>{{ $store.state.markerDetails.street }}</b><br> {{ $store.state.markerDetails.zip }} {{ $store.state.markerDetails.city }}, <br> {{ $store.state.markerDetails.points[0].id }}
-                          </p>
+                          <template v-if="typeof $store.state.markerDetails.points !== 'undefined'">
+                            <p class="popup-text" v-if="$store.state.markerDetails.length !== 0">
+                              <b>{{ $store.state.markerDetails.points[0].name }}</b><br>
+                              <b>{{ $store.state.markerDetails.street }}</b><br> {{ $store.state.markerDetails.zip }} {{ $store.state.markerDetails.city }}, <br> {{ $store.state.markerDetails.points[0].id }}
+                            </p>
+                           </template>
                         </div>
                         <div class="popup-img" >
                           <img :src="logosUrl[marker.pickup_type]" width="100%" height="auto"/>
@@ -184,6 +188,12 @@ export default {
     }
   },
   computed: {
+    storeFilters () {
+      return this.$store.state.storeFilters
+    },
+    checkedLength () {
+      return !this.$store.state.pointMarkers.length
+    },
     zoom () {
       return this.$store.state.zoom
     },
@@ -191,57 +201,61 @@ export default {
       return latLng(this.$store.state.lat, this.$store.state.lng)
     },
     pointMarkers () {
-      if (this.$store.state.filteredMapPoints.length > 0) {
-        if (this.$store.state.zoom < 13 || this.$store.state.filteredMapPoints.length > 100) {
-          return []
-        } else {
-          return this.$store.state.filteredMapPoints
-        }
-      } else {
-        if (this.$store.state.zoom < 13 || this.$store.state.pointMarkers.length > 100) {
-          return []
-        } else {
-          return this.$store.state.pointMarkers
-        }
-      }
+      return this.$store.state.pointMarkers
     },
     listMarkers () {
-      if (this.$store.state.filteredListPoints.length > 0) {
-        return this.$store.state.filteredListPoints
-      } else {
-        return this.$store.state.listMarkers
-      }
+      return this.$store.state.listMarkers
     },
     isWidgetVersion () {
       return this.$store.state.WidgetVersion
     },
-    zoomOrCenterUpdate () {
-      return [this.$store.state.zoom, this.$store.state.lat, this.$store.state.lng].join()
+    zoomOrCenterUpdateOrFiltersUpdate () {
+      return [this.$store.state.zoom, this.$store.state.lat, this.$store.state.lng, this.$store.state.storeFilters.features, this.$store.state.storeFilters.checkedSuppliers].join()
     }
   },
   watch: {
-    zoomOrCenterUpdate: {
+    zoomOrCenterUpdateOrFiltersUpdate: {
       handler () {
         this.$store.commit('changePageNumber', 1)
-        if (this.$store.state.filteredMapPoints.length === 0 || this.$store.state.filteredListPoints.length === 0) {
-          if (this.$store.state.zoom >= 13 && !this.isPopupOpen) {
-            this.$store.dispatch('get_points', {
-              lat: this.$store.state.lat,
-              lng: this.$store.state.lng,
-              dist: this.$store.state.radiusOfVisibily
-            })
-            this.$store.dispatch('get_list_points', {
-              lat: this.$store.state.lat,
-              lng: this.$store.state.lng,
-              page: this.$store.state.pageNumber
-            })
-          }
+        if (this.$store.state.zoom >= 13 && !this.isPopupOpen) {
+          this.$store.dispatch('get_points', {
+            lat: this.$store.state.lat,
+            lng: this.$store.state.lng,
+            dist: this.$store.state.radiusOfVisibily,
+            filtered: this.filteredPoints()
+          })
+          this.$store.dispatch('get_list_points', {
+            lat: this.$store.state.lat,
+            lng: this.$store.state.lng,
+            page: this.$store.state.pageNumber,
+            filtered: this.filteredPoints()
+          })
         }
       },
       deep: true
     }
   },
   methods: {
+    filteredPoints () {
+      var features = []
+      var pickupTypes = []
+      if (typeof this.$store.state.storeFilters.features !== 'undefined') {
+        if (this.$store.state.storeFilters.features.length > 0) {
+          features = this.$store.state.storeFilters.features.map(x => {
+            return `&features[]=${x}`
+          })
+        }
+      }
+      if (typeof this.$store.state.storeFilters.checkedSuppliers !== 'undefined') {
+        if (this.$store.state.storeFilters.checkedSuppliers.length > 0) {
+          pickupTypes = this.$store.state.storeFilters.checkedSuppliers.map(x => {
+            return `&pickup_types[]=${x}`
+          })
+        }
+      }
+      var temp = features.concat(pickupTypes)
+      return temp.join('')
+    },
     popupOpen () {
       this.isPopupOpen = true
     },
@@ -263,7 +277,8 @@ export default {
       this.$store.dispatch('get_list_points', {
         lat: this.$store.state.lat,
         lng: this.$store.state.lng,
-        page: this.$store.state.pageNumber
+        page: this.$store.state.pageNumber,
+        filtered: this.filteredPoints()
       })
     },
     toogleMapMethod (text) {

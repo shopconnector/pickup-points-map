@@ -5,17 +5,17 @@
         <h2 class="title-supp">Wybierz dostawców</h2>
         <div class="suppliers-menu">
           <div class="selectSuppliers" v-for="supp in suppliers" :key="supp.id">
-            <input class="styled-checkbox" type="checkbox" :id="supp.id" :value="supp.value" v-model="checkedSuppliers">
+            <input class="styled-checkbox" type="checkbox" :id="supp.id" :value="supp.value" @click="selectedFilter()" v-model="filters.checkedSuppliers">
             <label :for="supp.id">{{supp.id}}</label>
           </div>
         </div>
       </div>
       <!-- Select suppliers second version -->
       <div v-if="!isWidgetVersion || isMobile">
-        <h2 class="title-dostawcow">Wybierz dostawców</h2>
+        <h2 class="title-dostawcow">Wybierz dostawców {{ $store.state.storeFilters }}</h2>
         <div class="suppliers-menu-dostawcow">
           <div class="select-suppliers-dostawcow" v-for="supp in suppliers" :key="supp.id">
-            <input class="styled-checkbox-dostawcow" type="checkbox" :id="supp.id" :value="supp.value" v-model="checkedSuppliers">
+            <input class="styled-checkbox-dostawcow" type="checkbox" :id="supp.id" :value="supp.value" @click="selectedFilter()" v-model="filters.checkedSuppliers">
             <label :for="supp.id"><img :src="getImgUrl(supp.src)" :alt="supp.alt" class="img-dostawcow"></label>
           </div>
         </div>
@@ -27,13 +27,13 @@
       </div>
       <div class="filters-menu">
         <div class="checkbox-container" v-for="box in checkboxes" :key="box.id">
-          <input class="custom-checkbox" :class="{'custom-checkboxV2' : !isWidgetVersion}" type="checkbox" :id="box.id" :value="box.value" v-model="filters">
+          <input class="custom-checkbox" :class="{'custom-checkboxV2' : !isWidgetVersion}" type="checkbox" :id="box.id" :value="box.value" @click="selectedFilter()" v-model="filters.features">
           <label class="custom-icon" :class="box.icon" :for="box.id">{{box.info}}</label>
         </div>
       </div>
       <div class="mobile-filters-footer">
         <div class="wyczysc">
-          <p class="m0" @click="clearAPIFilter()" v-show="filters.length || checkedSuppliers.length" >Wyczyść filtry</p>
+          <p class="m0" @click="clearAPIFilter()" v-show="filters.features.length || filters.checkedSuppliers.length" >Wyczyść filtry</p>
         </div>
         <div class="zastosuj">
           <p class="m0" @click="closeFilterMobile">Zastosuj filtry</p>
@@ -52,7 +52,6 @@ export default {
   mixins: [MobileDetected],
   data () {
     return {
-      checkedSuppliers: [],
       suppliers: [{
         id: 'Poczta Polska',
         value: 'Poczta Polska',
@@ -121,7 +120,10 @@ export default {
         info: 'Odbiór za pobraniem',
         icon: 'pobraniem'
       }],
-      filters: []
+      filters: {
+        checkedSuppliers: [],
+        features: []
+      }
     }
   },
   computed: {
@@ -130,60 +132,15 @@ export default {
     },
     isFilterMobilOpen () {
       return this.$store.state.isFilterMobilOpen
-    },
-    filteredPointsForMap () {
-      if (this.filters.length > 0 || this.checkedSuppliers.length > 0) {
-        return this.$store.dispatch('get_filtered_points', {
-          lat: this.$store.state.lat,
-          lng: this.$store.state.lng,
-          dist: this.$store.state.radiusOfVisibily,
-          filtered: this.filteredPoints()
-        })
-      } else {
-        return this.$store.getters.clearAPIFilters
-      }
-    },
-    filteredPointsForList () {
-      if (this.filters.length > 0 || this.checkedSuppliers.length > 0) {
-        return this.$store.dispatch('get_filtered_list_points', {
-          lat: this.$store.state.lat,
-          lng: this.$store.state.lng,
-          page: this.$store.state.pageNumber,
-          filtered: this.filteredPoints()
-        })
-      } else {
-        return this.$store.getters.clearAPIFilters
-      }
-    },
-    activeFilter () {
-      return (this.filteredPointsForMap, this.filteredPointsForList)
-    }
-  },
-
-  watch: {
-    activeFilter (val) {
     }
   },
   methods: {
-    filteredPoints () {
-      var features = []
-      var pickupTypes = []
-      if (this.filters.length > 0) {
-        features = this.filters.map(x => {
-          return `&features[]=${x}`
-        })
-      }
-      if (this.checkedSuppliers.length > 0) {
-        pickupTypes = this.checkedSuppliers.map(x => {
-          return `&pickup_types[]=${x}`
-        })
-      }
-      var temp = features.concat(pickupTypes)
-      return temp.join('')
+    selectedFilter () {
+      this.$store.commit('newStoreFilters', this.filters)
     },
     clearAPIFilter () {
-      this.checkedSuppliers = []
-      this.filters = []
+      this.filters.checkedSuppliers = []
+      this.filters.features = []
       return this.$store.getters.clearAPIFilter
     },
     getImgUrl (pic) {
@@ -194,7 +151,7 @@ export default {
       this.howManyFiltersApplies()
     },
     howManyFiltersApplies () {
-      let countFilters = this.filters.length + this.checkedSuppliers.length
+      let countFilters = this.filters.features.length + this.filters.checkedSuppliers.length
       return this.$store.commit('howManyFiltersApplies', countFilters)
     }
   }
