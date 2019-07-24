@@ -12,7 +12,7 @@
       </div>
       <!-- Select suppliers second version -->
       <div v-if="!isWidgetVersion || isMobile">
-        <h2 class="title-dostawcow">Wybierz dostawców {{ $store.state.storeFilters }}</h2>
+        <h2 class="title-dostawcow">Wybierz dostawców</h2>
         <div class="suppliers-menu-dostawcow">
           <div class="select-suppliers-dostawcow" v-for="supp in suppliers" :key="supp.id">
             <input class="styled-checkbox-dostawcow" type="checkbox" :id="supp.id" :value="supp.value" @click="selectedFilter()" v-model="filters.checkedSuppliers">

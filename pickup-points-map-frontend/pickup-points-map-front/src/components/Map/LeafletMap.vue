@@ -5,11 +5,11 @@
       <p class="button-action" :class="{ 'active' : !toogleMap }" @click="toogleMapMethod('show')">Mapa</p>
       <p class="button-action" :class="{ 'active' : toogleMap }" @click="toogleMapMethod('hide')">Lista</p>
     </div>
-    <div v-if="( pointMarkers && !pointMarkers.length)" class="first-enter-info">
-      <p>Wybierz adres/lokalizację aby<br>zobaczyć najbliższe punkty odbioru</p>
-    </div>
-    <div v-else-if="listMarkers.length === 0" class="first-enter-info">
+    <div v-if="listMarkers.length === 0 && $store.state.radiusOfVisibily" class="first-enter-info">
       <p>Nie znaleźiono żadnego punktu. Zmień kryteria wyboru.</p>
+    </div>
+    <div v-else-if="( pointMarkers && !pointMarkers.length)" class="first-enter-info">
+      <p>Wybierz adres/lokalizację aby<br>zobaczyć najbliższe punkty odbioru</p>
     </div>
     <div v-else-if="($store.state.zoom < 13 || (pointMarkers && pointMarkers.length > 100) && !toogleMap)" class="error-info">
       <p>Powiększ zoom żeby zobaczyć punkty</p>
@@ -17,7 +17,7 @@
     <transition name="fade">
       <div  v-if="toogleMap" class="list-box" :class="{'listbox-margin-top' : isWidgetVersion}">
           <div class="list-title hidden-xs"><h1>Punkty odbioru w pobliżu Twojej lokalizacji</h1></div>
-          <div v-if="listMarkers.length === 0">
+          <div v-if="listMarkers.length === 0 && !$store.state.storeFilters.checkedSuppliers.length">
             <p class="empty-text">Wybierz adres/lokalizację aby zobaczyć najbliższe punkty odbioru</p>
           </div>
           <div class="scroll-box" :class="{'change-vh' : !isWidgetVersion}">
@@ -231,22 +231,21 @@ export default {
             filtered: this.filteredPoints()
           })
         }
-      },
-      deep: true
+      }
     }
   },
   methods: {
     filteredPoints () {
       var features = []
       var pickupTypes = []
-      if (typeof this.$store.state.storeFilters.features !== 'undefined') {
+      if (this.$store.state.storeFilters.features) {
         if (this.$store.state.storeFilters.features.length > 0) {
           features = this.$store.state.storeFilters.features.map(x => {
             return `&features[]=${x}`
           })
         }
       }
-      if (typeof this.$store.state.storeFilters.checkedSuppliers !== 'undefined') {
+      if (this.$store.state.storeFilters.checkedSuppliers) {
         if (this.$store.state.storeFilters.checkedSuppliers.length > 0) {
           pickupTypes = this.$store.state.storeFilters.checkedSuppliers.map(x => {
             return `&pickup_types[]=${x}`
@@ -488,6 +487,9 @@ export default {
   align-items: center;
   justify-content: center;
   background-color: #00000054;
+  @media (max-width: 767px) {
+    top: 70px;
+  }
   p {
     margin: 0;
     padding: 15px;
