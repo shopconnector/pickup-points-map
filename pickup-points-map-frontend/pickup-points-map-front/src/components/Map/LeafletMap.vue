@@ -223,7 +223,6 @@ export default {
       return this.$store.state.WidgetVersion
     },
     zoomOrCenterUpdateOrFiltersUpdate () {
-      console.log(this.$store.state.zoom)
       return [this.$store.state.zoom, this.$store.state.lat, this.$store.state.lng, this.$store.state.storeFilters.features, this.$store.state.storeFilters.checkedSuppliers].join()
     }
   },

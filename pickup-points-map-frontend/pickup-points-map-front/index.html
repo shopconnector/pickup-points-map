@@ -8,9 +8,18 @@
     <link href="https://cdn.jsdelivr.net/npm/animate.css@3.5.1" rel="stylesheet" type="text/css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.1.0/dist/leaflet.css" />
     <title>pickup-points-map-front</title>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
   </head>
   <body>
     <div id="app"></div>
     <!-- built files will be auto injected -->
+    <script>
+      // response to events 
+      window.addEventListener('msg', function(event){
+        if(event.origin !== 'https://dev.bardotti.pl/pickup-points-map/') return;
+        console.log('message recieved: ' + event.data, event)
+        event.source.postMessage('Hello callback from iframe', event.origin)
+      }, false)
+    </script>
   </body>
 </html>
