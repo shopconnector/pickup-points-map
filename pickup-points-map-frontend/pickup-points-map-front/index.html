@@ -20,9 +20,18 @@
       //   console.log('message recieved: ' + event.data, event)
       //   event.source.postMessage('Hello callback from iframe', event.origin)
       // }, false)
-      var data = { foo: 'bar' }
-      var event = new CustomEvent('myCustomEvent', { detail: data })
-      window.parent.document.dispatchEvent(event)
+      // var data = { foo: 'bar' }
+      // var event = new CustomEvent('myCustomEvent', { detail: data })
+      // window.parent.document.dispatchEvent(event)
+      window.addEventListener('message', function(event) { 
+      if (~event.origin.indexOf('https://dev.bardotti.pl')) { 
+        // The data has been sent from your site 
+        console.log(event.data);
+        console.log(event.data.msg); 
+      } else {  
+        return; 
+      } 
+      }); 
     </script>
   </body>
 </html>
