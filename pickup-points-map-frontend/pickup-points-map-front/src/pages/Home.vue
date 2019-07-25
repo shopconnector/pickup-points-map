@@ -10,7 +10,7 @@
         </div>
       </div>
       <vue-over-body :dim="false" :open="this.$store.state.isFilterMobileOpen" before="beforeFilters" after="afterFilters" :transition="0.3">
-        <div v-if="isMobile">
+        <div v-if="isMobile" class="scroll-box-filters">
           <Filters/>
         </div>
       </vue-over-body>
@@ -108,7 +108,7 @@ export default {
 <style lang="scss" scoped>
 .scroll-box-filters{
   height: 100%;
-  overflow-y: scroll;
+  width: 100%;
 }
 .home-page{
   display: flex;
@@ -201,6 +201,15 @@ export default {
     position: absolute;
     background: url('../assets/icons/Group-12.png') 0 0 no-repeat;
     background-size: cover;
+    @media (max-width: 414px ) {
+      bottom: 26px;
+    }
+    @media (max-width: 375px) {
+      bottom: 20px;
+    }
+    @media (max-width: 320px) {
+      bottom: 12px;
+    }
   }
   position: fixed;
   background-color: white;
@@ -238,9 +247,24 @@ export default {
     background-color: #E4405F;
     border-radius: 9px;
     margin: 0;
-    bottom: calc(50% - 25px);
+    bottom: 20px;
     right: calc(50% - 85px);
     padding: 10px 12px;
+    @media (max-width: 414px ) {
+      bottom: 25px;
+      right: calc(50% - 92px);
+      padding: 12px 20px;
+    }
+    @media (max-width: 375px ) {
+      bottom: 20px;
+      right: calc(50% - 85px);
+      padding: 10px 12px;
+    }
+    @media (max-width: 320px) {
+      bottom: 18px;
+      right: calc(50% - 80px);
+      padding: 8px;
+    }
   }
 }
 </style>

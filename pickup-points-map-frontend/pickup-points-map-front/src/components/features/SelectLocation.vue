@@ -78,12 +78,7 @@ export default {
       locitSuggestions: [],
       customSuggestion: [],
       placeHolder: 'Wpisz adres',
-      address: '',
-      pointCode: '',
-      myInputs: {
-        0: true,
-        1: true
-      }
+      address: ''
     }
   },
   computed: {
@@ -120,13 +115,6 @@ export default {
     },
     currentPos () {
       this.$vuexGeolocation.getCurrentPosition()
-      // if (this.$store.state.geolocation.lat) {
-      //   setTimeout(
-      //     () =>
-      //       this.$store.commit('updatePosition', [{ lat: this.$store.state.geolocation.lat, lng: this.$store.state.geolocation.lng, zoom: 16 }])
-      //     , 100
-      //   )
-      // }
       if (this.IsFooterModalOpen) {
         this.closeFooterModal()
       }
@@ -156,12 +144,6 @@ export default {
           console.log(error)
         })
       }
-    },
-    myInputsControl (index) {
-      for (var i = 0; i < Object.keys(this.myInputs).length; i++) {
-        this.myInputs[i] = true
-      }
-      this.myInputs[index] = !this.myInputs[index]
     }
   }
 }
