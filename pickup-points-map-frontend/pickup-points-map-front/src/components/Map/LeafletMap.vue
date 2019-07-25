@@ -5,13 +5,13 @@
       <p class="button-action" :class="{ 'active' : !toogleMap }" @click="toogleMapMethod('show')">Mapa</p>
       <p class="button-action" :class="{ 'active' : toogleMap }" @click="toogleMapMethod('hide')">Lista</p>
     </div>
-    <div v-if="listMarkers.length === 0 && $store.state.radiusOfVisibily" class="first-enter-info">
+    <div v-if="changeFiltersError" class="first-enter-info">
       <p>Nie znaleźiono żadnego punktu. Zmień kryteria wyboru.</p>
     </div>
-    <div v-else-if="( pointMarkers && !pointMarkers.length)" class="first-enter-info">
+    <div v-else-if="(($store.state.pointMarkers && !$store.state.pointMarkers.length))" class="first-enter-info">
       <p>Wybierz adres/lokalizację aby<br>zobaczyć najbliższe punkty odbioru</p>
     </div>
-    <div v-else-if="($store.state.zoom < 13 || (pointMarkers && pointMarkers.length > 100) && !toogleMap)" class="error-info">
+     <div v-else-if="($store.state.zoom < 13 || ($store.state.pointMarkers && $store.state.pointMarkers.length > 100)) && !toogleMap" class="error-info">
       <p>Powiększ zoom żeby zobaczyć punkty</p>
     </div>
     <transition name="fade">
@@ -188,6 +188,15 @@ export default {
     }
   },
   computed: {
+    changeFiltersError () {
+      if ((this.$store.state.pointMarkers && this.$store.state.pointMarkers.length === 0) &&
+      ((this.$store.state.storeFilters.checkedSuppliers && this.$store.state.storeFilters.checkedSuppliers.length !== 0) ||
+      (this.$store.state.storeFilters.features && this.$store.state.storeFilters.features.length !== 0))) {
+        return true
+      } else {
+        return false
+      }
+    },
     storeFilters () {
       return this.$store.state.storeFilters
     },
@@ -201,7 +210,11 @@ export default {
       return latLng(this.$store.state.lat, this.$store.state.lng)
     },
     pointMarkers () {
-      return this.$store.state.pointMarkers
+      if (this.$store.state.pointMarkers && this.$store.state.pointMarkers.length > 100) {
+        return []
+      } else {
+        return this.$store.state.pointMarkers
+      }
     },
     listMarkers () {
       return this.$store.state.listMarkers
@@ -210,6 +223,7 @@ export default {
       return this.$store.state.WidgetVersion
     },
     zoomOrCenterUpdateOrFiltersUpdate () {
+      console.log(this.$store.state.zoom)
       return [this.$store.state.zoom, this.$store.state.lat, this.$store.state.lng, this.$store.state.storeFilters.features, this.$store.state.storeFilters.checkedSuppliers].join()
     }
   },
@@ -334,8 +348,8 @@ export default {
 <style lang="scss">
 .leaflet-marker-icon {
   position: absolute;
-  top: -50px;
-  left: -35px;
+  top: -52px;
+  left: -20px;
 }
 .leaflet-popup {
   .leaflet-popup-content-wrapper {
