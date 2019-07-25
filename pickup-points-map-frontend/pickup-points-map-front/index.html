@@ -15,11 +15,14 @@
     <!-- built files will be auto injected -->
     <script>
       // response to events 
-      window.addEventListener('msg', function(event){
-        if(event.origin !== 'https://dev.bardotti.pl/pickup-points-map/') return;
-        console.log('message recieved: ' + event.data, event)
-        event.source.postMessage('Hello callback from iframe', event.origin)
-      }, false)
+      // window.addEventListener('msg', function(event){
+      //   if(event.origin !== 'https://dev.bardotti.pl/pickup-points-map/') return;
+      //   console.log('message recieved: ' + event.data, event)
+      //   event.source.postMessage('Hello callback from iframe', event.origin)
+      // }, false)
+      var data = { foo: 'bar' }
+      var event = new CustomEvent('myCustomEvent', { detail: data })
+      window.parent.document.dispatchEvent(event)
     </script>
   </body>
 </html>
