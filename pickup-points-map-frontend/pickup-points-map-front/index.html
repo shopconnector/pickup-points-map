@@ -24,19 +24,18 @@
       // var event = new CustomEvent('myCustomEvent', { detail: data })
       // window.parent.document.dispatchEvent(event)
       
-      // From parent - it works
+      // Get from parent - it works
       window.addEventListener('message', function(event) { 
         if (~event.origin.indexOf('https://dev.bardotti.pl')) { 
           console.log(event.data);
-          console.log(event.data.msg); 
         } else {  
           return; 
         } 
       }); 
-      // From iframe
+      // Send to parent
       var msgIframe = 'Hello from iframe!'
       var sendMessage = function(value) {
-        window.parent.postMessage(value, 'https://dev.bardotti.pl/pickup-points-map')
+        window.parent.postMessage(value, 'https://dev.bardotti.pl')
       }
       sendMessage(msgIframe)
     </script>
