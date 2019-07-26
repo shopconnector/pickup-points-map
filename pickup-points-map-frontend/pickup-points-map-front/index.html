@@ -34,11 +34,11 @@
         } 
       }); 
       // From iframe
-      // var msgIframe = 'Hello from iframe!'
-      // var sendMessage = function(value) {
-      //   window.parent.postMessage(value, 'https://dev.bardotti.pl/pickup-points-map/')
-      // }
-      // sendMessage(msgIframe)
+      var msgIframe = 'Hello from iframe!'
+      var sendMessage = function(value) {
+        window.parent.postMessage(value, 'https://dev.bardotti.pl/pickup-points-map')
+      }
+      sendMessage(msgIframe)
     </script>
   </body>
 </html>
