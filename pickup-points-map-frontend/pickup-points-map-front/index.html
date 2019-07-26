@@ -37,30 +37,13 @@
       var sendMessage = function(value) {
         window.parent.postMessage(value, 'https://dev.bardotti.pl')
       }
-      var sendMessage1 = function(value) {
-        window.parent.postMessage(value, 'https://dev.bardotti.pl/pickup-points-map')
-      }
-      var sendMessage2 = function(value) {
-        window.parent.postMessage(value, 'https://dev.bardotti.pl/')
-      }
-      var sendMessage3 = function(value) {
-        console.log('ffffffff')
-        window.top.postMessage(value, 'https://dev.bardotti.pl')
-      }
-      var sendMessage4 = function(value) {
-        console.log('**********')
-        window.top.postMessage(value, '*')
-      }
-      var sendMessage5 = function(value) {
-        console.log('windov perent')
-        window.parent.postMessage(value, '*')
-      }
       sendMessage(msgIframe)
-      sendMessage1(msgIframe)
-      sendMessage2(msgIframe)
-      sendMessage3(msgIframe)
-      sendMessage4(msgIframe)
-      sendMessage5(msgIframe)
+
+      document.getElementById('btn-wybierz').addEventListener('click', handleButtonClick, false);
+      var myEvent = new CustomEvent('my_event', { detail: {msg: 'Hello from iframe'} })
+      function handleButtonClick(e) {
+      window.parent.dispatchEvent(myEvent)
+      }
     </script>
   </body>
 </html>

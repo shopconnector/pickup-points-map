@@ -110,7 +110,7 @@
                         </div>
                       </div>
                       <div class="popup-action">
-                        <p class="popup-button" @click="toogleMethod('true')">Wybierz</p>
+                        <p id="btn-wybierz" class="popup-button" @click="toogleMethod('true')">Wybierz</p>
                       </div>
                     </div>
                   </l-popup>
