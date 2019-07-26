@@ -23,15 +23,22 @@
       // var data = { foo: 'bar' }
       // var event = new CustomEvent('myCustomEvent', { detail: data })
       // window.parent.document.dispatchEvent(event)
+      
+      // From parent - it works
       window.addEventListener('message', function(event) { 
-      if (~event.origin.indexOf('https://dev.bardotti.pl')) { 
-        // The data has been sent from your site 
-        console.log(event.data);
-        console.log(event.data.msg); 
-      } else {  
-        return; 
-      } 
+        if (~event.origin.indexOf('https://dev.bardotti.pl')) { 
+          console.log(event.data);
+          console.log(event.data.msg); 
+        } else {  
+          return; 
+        } 
       }); 
+      // From iframe
+      var msg = 'Hello from iframe!'
+      var sendMessage = function(value) {
+        window.parent.postMessage(value, 'https://dev.bardotti.pl')
+      }
+      sendMessage(msg)
     </script>
   </body>
 </html>
