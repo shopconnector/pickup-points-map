@@ -3,7 +3,6 @@
       <!-- Select suppliers first version -->
       <div class="suppliers" v-if="isWidgetVersion && !isMobile">
         <h2 class="title-supp">Wybierz dostawców</h2>
-        <button id="message_button">Hi parent</button>
         <div class="suppliers-menu">
           <div class="selectSuppliers" v-for="supp in suppliers" :key="supp.id">
             <input class="styled-checkbox" type="checkbox" :id="supp.id" :value="supp.value" @click="selectedFilter()" v-model="filters.checkedSuppliers">
@@ -13,8 +12,9 @@
       </div>
       <!-- Select suppliers second version -->
       <div v-if="!isWidgetVersion || isMobile">
-        <h2 class="title-dostawcow" id="results">Wybierz dostawców</h2>
-        <button id="message_button" @click="test2()">Hi parent</button>
+        <h2 class="title-dostawcow">Wybierz dostawców</h2>
+        <!-- <button id="message_button" @click="test2()">Hi parent</button> -->
+        <p id="results"></p>
         <div class="suppliers-menu-dostawcow">
           <div class="select-suppliers-dostawcow" v-for="supp in suppliers" :key="supp.id">
             <input class="styled-checkbox-dostawcow" type="checkbox" :id="supp.id" :value="supp.value" @click="selectedFilter()" v-model="filters.checkedSuppliers">
@@ -138,14 +138,14 @@ export default {
   },
   methods: {
     // ----------------------
-    sendMessage (msg) {
-      window.parent.postMessage(msg, '*')
-    },
-    test2 () {
-      var random = Math.random()
-      console.log('test2 called', random)
-      this.sendMessage('' + random)
-    },
+    // sendMessage (msg) {
+    //   window.parent.postMessage(msg, '*')
+    // },
+    // test2 () {
+    //   var random = Math.random()
+    //   console.log('test2 called', random)
+    //   this.sendMessage('' + random)
+    // },
     // ----------------------
     selectedFilter () {
       this.$store.commit('newStoreFilters', this.filters)

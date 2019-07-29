@@ -55,7 +55,7 @@
        </div>
        <div class="footer">
          <p class="powrot" @click="closeModal()"><i class="arrow_left"/>POWRÓT</p>
-         <p class="zamknij">Wybierz {{ parentData.pickup_type }} i zamknij</p>
+         <p class="zamknij" id="set-point" @click="setPoint(parentData)">Wybierz {{ parentData.pickup_type }} i zamknij</p>
        </div>
     </div>
     <!-- Modal DIV for mobile map -->
@@ -134,6 +134,12 @@ export default {
     }
   },
   methods: {
+    setPoint (point) {
+      this.sendMessage(point)
+    },
+    sendMessage (point) {
+      window.parent.postMessage(point, '*')
+    },
     closeModal () {
       this.$emit('closed')
     }
