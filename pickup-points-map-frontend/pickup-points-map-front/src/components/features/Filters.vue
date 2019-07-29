@@ -13,7 +13,6 @@
       <!-- Select suppliers second version -->
       <div v-if="!isWidgetVersion || isMobile">
         <h2 class="title-dostawcow">Wybierz dostawców</h2>
-        <!-- <button id="message_button" @click="test2()">Hi parent</button> -->
         <p id="results"></p>
         <div class="suppliers-menu-dostawcow">
           <div class="select-suppliers-dostawcow" v-for="supp in suppliers" :key="supp.id">
@@ -122,11 +121,18 @@ export default {
         info: 'Odbiór za pobraniem',
         icon: 'pobraniem'
       }],
+      SuppliersIds: ['In Post', 'Poczta Polska', 'Żabka', 'DPD Pickup', 'Paczka w Ruchu', 'Orlen', 'Fresh Market'],
       filters: {
         checkedSuppliers: [],
         features: []
       }
     }
+  },
+  created () {
+    window.addEventListener('message', this.filterApply)
+  },
+  destroyed () {
+    window.removeEventListener('message', this.filterApply)
   },
   computed: {
     isWidgetVersion () {
@@ -137,16 +143,14 @@ export default {
     }
   },
   methods: {
-    // ----------------------
-    // sendMessage (msg) {
-    //   window.parent.postMessage(msg, '*')
-    // },
-    // test2 () {
-    //   var random = Math.random()
-    //   console.log('test2 called', random)
-    //   this.sendMessage('' + random)
-    // },
-    // ----------------------
+    filterApply: function (event) {
+      if (this.SuppliersIds.indexOf(event.data.content) === 0) {
+        if (this.filters.checkedSuppliers.indexOf(event.data.content) === -1) {
+          this.filters.checkedSuppliers.push(event.data.content)
+          this.selectedFilter()
+        }
+      }
+    },
     selectedFilter () {
       this.$store.commit('newStoreFilters', this.filters)
     },
