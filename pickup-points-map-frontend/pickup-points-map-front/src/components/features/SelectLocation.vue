@@ -107,7 +107,9 @@ export default {
   watch: {
     geoSet: {
       handler () {
-        this.$store.commit('updatePosition', [{ lat: this.$store.state.geolocation.lat, lng: this.$store.state.geolocation.lng, zoom: 16 }])
+        if (this.$store.state.geolocation.error.code !== 1) {
+          this.$store.commit('updatePosition', [{ lat: this.$store.state.geolocation.lat, lng: this.$store.state.geolocation.lng, zoom: 16 }])
+        }
       },
       deep: true
     }
