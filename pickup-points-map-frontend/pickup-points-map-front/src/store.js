@@ -22,7 +22,32 @@ export default new Vuex.Store({
     pointMarkers: [],
     pageNumber: 1,
     listMarkers: [],
-    storeFilters: []
+    storeFilters: [],
+    providerToPickupTypeMapping: {
+      'In Post': ['In Post'],
+      'Poczta Polska': ['Fresh Market', 'Paczka w Ruchu', 'Poczta Polska', 'Żabka', 'Orlen'],
+      'DPD Pickup': ['DPD Pickup'],
+      'Paczka w Ruchu': ['Paczka w Ruchu']
+    },
+    customer: {
+      id: '123123',
+      name: 'bardotti',
+      theme: 0,
+      suppliers: ['Poczta Polska', 'In Post'],
+      url: 'https://dev.bardotti.pl'
+    }
+    // customersList: {
+    //   bardotti: {
+    //     theme: 0,
+    //     providers: ['Poczta polska', 'In Post'],
+    //     url: 'bardotti.pl'
+    //   },
+    //   robimylogo: {
+    //     theme: 0,
+    //     providers: ['Poczta polska', 'In Post', 'DPD Pickup'],
+    //     url: 'robimylogo.pl'
+    //   }
+    // }
   },
   mutations: {
     newStoreFilters (state, payload) {

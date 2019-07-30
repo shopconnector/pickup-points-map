@@ -4,20 +4,21 @@
       <div class="suppliers" v-if="isWidgetVersion && !isMobile">
         <h2 class="title-supp">Wybierz dostawców</h2>
         <div class="suppliers-menu">
-          <div class="selectSuppliers" v-for="supp in suppliers" :key="supp.id">
-            <input class="styled-checkbox" type="checkbox" :id="supp.id" :value="supp.value" @click="selectedFilter()" v-model="filters.checkedSuppliers">
-            <label :for="supp.id">{{supp.id}}</label>
+          <div class="selectSuppliers" v-for="(supp, index) in customerSuppliers" :key="index">
+            <input class="styled-checkbox" type="checkbox" :id="supp" :value="supp" @click="selectedFilter()" v-model="filters.checkedSuppliers">
+            <label :for="supp">{{supp}}</label>
           </div>
         </div>
       </div>
       <!-- Select suppliers second version -->
       <div v-if="!isWidgetVersion || isMobile">
         <h2 class="title-dostawcow">Wybierz dostawców</h2>
-        <p id="results"></p>
         <div class="suppliers-menu-dostawcow">
-          <div class="select-suppliers-dostawcow" v-for="supp in suppliers" :key="supp.id">
-            <input class="styled-checkbox-dostawcow" type="checkbox" :id="supp.id" :value="supp.value" @click="selectedFilter()" v-model="filters.checkedSuppliers">
-            <label :for="supp.id"><img :src="getImgUrl(supp.src)" :alt="supp.alt" class="img-dostawcow"></label>
+          <div class="select-suppliers-dostawcow" v-for="(supp, index) in customerSuppliers" :key="index">
+            <input class="styled-checkbox-dostawcow" type="checkbox" :id="supp" :value="supp" @click="selectedFilter()" v-model="filters.checkedSuppliers">
+            <label :for="supp">
+              <img :src="getImgUrl(suppliersLogosUrl[supp])" :alt="supp" class="img-dostawcow">
+            </label>
           </div>
         </div>
       </div>
@@ -53,43 +54,15 @@ export default {
   mixins: [MobileDetected],
   data () {
     return {
-      suppliers: [{
-        id: 'Poczta Polska',
-        value: 'Poczta Polska',
-        src: 'pocztapolska.png',
-        alt: 'Poczta Polska logo'
+      suppliersLogosUrl: {
+        'Poczta Polska': 'pocztapolska.png',
+        'DPD Pickup': 'dpd-pickup.png',
+        'Żabka': 'żabka.png',
+        'Fresh Market': 'freshmarket.png',
+        'In Post': 'inpost.png',
+        'Paczka w Ruchu': 'paczka_w_ruchu.jpg',
+        'Orlen': 'orlen.png'
       },
-      {
-        id: 'DPD Pickup',
-        value: 'DPD Pickup',
-        src: 'dpd-pickup.png',
-        alt: 'DPD pickup logo'
-      }, {
-        id: 'Żabka',
-        value: 'Żabka',
-        src: 'żabka.png',
-        alt: 'Żabka logo'
-      }, {
-        id: 'Fresh Market',
-        value: 'Fresh Market',
-        src: 'freshmarket.png',
-        alt: 'Fresh Market logo'
-      }, {
-        id: 'Paczkomaty In-post',
-        value: 'In Post',
-        src: 'inpost.png',
-        alt: 'Paczkomaty In-Post logo'
-      }, {
-        id: 'Paczka w ruchu',
-        value: 'Paczka w Ruchu',
-        src: 'paczka_w_ruchu.jpg',
-        alt: 'Paczka w ruchu logo'
-      }, {
-        id: 'Orlen',
-        value: 'Orlen',
-        src: 'orlen.png',
-        alt: 'Orlen logo'
-      }],
       checkboxes: [{
         id: 'otwarteDoPozna',
         value: 'open_late',
@@ -121,7 +94,7 @@ export default {
         info: 'Odbiór za pobraniem',
         icon: 'pobraniem'
       }],
-      SuppliersIds: ['In Post', 'Poczta Polska', 'Żabka', 'DPD Pickup', 'Paczka w Ruchu', 'Orlen', 'Fresh Market'],
+      allSuppliers: ['In Post', 'Poczta Polska', 'Żabka', 'DPD Pickup', 'Paczka w Ruchu', 'Orlen', 'Fresh Market'],
       filters: {
         checkedSuppliers: [],
         features: []
@@ -135,6 +108,27 @@ export default {
     window.removeEventListener('message', this.filterApply)
   },
   computed: {
+    customerSuppliers () {
+      let finalList = []
+      if (this.$store.state.customer.suppliers.length !== 0) {
+        for (let supplier of this.$store.state.customer.suppliers) {
+          for (let type of this.providerToPickupTypeMapping[supplier]) {
+            if (finalList.indexOf(type) === -1) {
+              finalList.push(type)
+            }
+          }
+        }
+        return finalList
+      } else {
+        return this.allSuppliers
+      }
+    },
+    providerToPickupTypeMapping () {
+      return this.$store.state.providerToPickupTypeMapping
+    },
+    customerUrl () {
+      return this.$store.state.customer.url
+    },
     isWidgetVersion () {
       return this.$store.state.WidgetVersion
     },
@@ -144,10 +138,12 @@ export default {
   },
   methods: {
     filterApply: function (event) {
-      if (this.SuppliersIds.indexOf(event.data.content) === 0) {
-        if (this.filters.checkedSuppliers.indexOf(event.data.content) === -1) {
-          this.filters.checkedSuppliers.push(event.data.content)
-          this.selectedFilter()
+      if (event.origin === this.customerUrl) {
+        if (this.allSuppliers.indexOf(event.data.content) === 0) {
+          if (this.filters.checkedSuppliers.indexOf(event.data.content) === -1) {
+            this.filters.checkedSuppliers.push(event.data.content)
+            this.selectedFilter()
+          }
         }
       }
     },
