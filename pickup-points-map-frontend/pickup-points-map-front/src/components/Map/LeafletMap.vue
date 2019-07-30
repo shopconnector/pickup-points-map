@@ -369,8 +369,9 @@ export default {
     top: 5px;
     color: #333333;
   }
+  // padding-top: calc( 50vh - 122px );
   padding-right: 210px !important;
-  bottom: -230px !important;
+  // bottom: -20px !important;
   margin-left: 210px !important;
   margin-bottom: 0 !important;
  }
