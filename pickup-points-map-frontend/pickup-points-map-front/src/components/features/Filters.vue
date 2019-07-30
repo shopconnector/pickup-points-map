@@ -94,7 +94,7 @@ export default {
         info: 'Odbiór za pobraniem',
         icon: 'pobraniem'
       }],
-      allSuppliers: ['In Post', 'Poczta Polska', 'Żabka', 'DPD Pickup', 'Paczka w Ruchu', 'Orlen', 'Fresh Market'],
+      // allSuppliers: ['In Post', 'Poczta Polska', 'Żabka', 'DPD Pickup', 'Paczka w Ruchu', 'Orlen', 'Fresh Market'],
       filters: {
         checkedSuppliers: [],
         features: []
@@ -109,8 +109,8 @@ export default {
   },
   computed: {
     customerSuppliers () {
-      let finalList = []
       if (this.$store.state.customer.providers.length !== 0) {
+        let finalList = []
         for (let supplier of this.$store.state.customer.providers) {
           for (let type of this.providerToPickupTypeMapping[supplier]) {
             if (finalList.indexOf(type) === -1) {
@@ -120,9 +120,11 @@ export default {
         }
         return finalList
       } else {
-        finalList = Array.from(new Set(Object.values(this.providerToPickupTypeMapping).flat(1)))
-        return finalList
+        return this.allSuppliers
       }
+    },
+    allSuppliers () {
+      return Array.from(new Set(Object.values(this.providerToPickupTypeMapping).flat(1)))
     },
     providerToPickupTypeMapping () {
       return this.$store.state.providerToPickupTypeMapping

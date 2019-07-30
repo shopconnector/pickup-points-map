@@ -81,6 +81,12 @@ export default {
       address: ''
     }
   },
+  created () {
+    window.addEventListener('message', this.filterApply)
+  },
+  destroyed () {
+    window.removeEventListener('message', this.filterApply)
+  },
   computed: {
     isWidgetVersion () {
       return this.$store.state.customer.theme
@@ -93,6 +99,9 @@ export default {
     },
     geoSet () {
       return this.$store.state.geolocation
+    },
+    customerUrl () {
+      return this.$store.state.customer.url
     }
   },
   watch: {
@@ -104,6 +113,13 @@ export default {
     }
   },
   methods: {
+    filterApply: function (event) {
+      if (event.origin === this.customerUrl || event.origin === 'http://localhost:8081') {
+        if (event.data.content.address !== 0) {
+          this.locitAddress = event.data.content.address
+        }
+      }
+    },
     openLocitModal () {
       this.$store.commit('openLocitModal')
     },
