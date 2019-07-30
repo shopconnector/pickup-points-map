@@ -5,14 +5,14 @@
       <p class="button-action" :class="{ 'active' : !toogleMap }" @click="toogleMapMethod('show')">Mapa</p>
       <p class="button-action" :class="{ 'active' : toogleMap }" @click="toogleMapMethod('hide')">Lista</p>
     </div>
-    <div v-if="this.$store.state.geolocation.error.code === 1" class="first-enter-info">
+    <div v-if="this.$store.state.geolocation.error.code === 1 && ($store.state.pointMarkers && !$store.state.pointMarkers.length)" class="first-enter-info">
       <p>
         Wybierz adres/lokalizację aby
         <br>zobaczyć najbliższe punkty odbioru
         <br>Uwaga: Zablokowaleś geolokalizacje dla tej domeny
       </p>
     </div>
-    <div v-else-if="(($store.state.pointMarkers && !$store.state.pointMarkers.length))" class="first-enter-info">
+    <div v-else-if="$store.state.pointMarkers && !$store.state.pointMarkers.length" class="first-enter-info">
       <p>Wybierz adres/lokalizację aby<br>zobaczyć najbliższe punkty odbioru</p>
     </div>
     <div v-else-if="$store.state.status === 'error, points couldnt be loaded'" class="first-enter-info">

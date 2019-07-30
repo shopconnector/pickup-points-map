@@ -94,7 +94,6 @@ export default {
         info: 'Odbiór za pobraniem',
         icon: 'pobraniem'
       }],
-      // allSuppliers: ['In Post', 'Poczta Polska', 'Żabka', 'DPD Pickup', 'Paczka w Ruchu', 'Orlen', 'Fresh Market'],
       filters: {
         checkedSuppliers: [],
         features: []
