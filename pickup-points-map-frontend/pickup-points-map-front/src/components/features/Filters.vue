@@ -110,8 +110,8 @@ export default {
   computed: {
     customerSuppliers () {
       let finalList = []
-      if (this.$store.state.customer.suppliers.length !== 0) {
-        for (let supplier of this.$store.state.customer.suppliers) {
+      if (this.$store.state.customer.providers.length !== 0) {
+        for (let supplier of this.$store.state.customer.providers) {
           for (let type of this.providerToPickupTypeMapping[supplier]) {
             if (finalList.indexOf(type) === -1) {
               finalList.push(type)
@@ -139,10 +139,10 @@ export default {
   },
   methods: {
     filterApply: function (event) {
-      if (event.origin === this.customerUrl) {
-        if (this.allSuppliers.indexOf(event.data.content) === 0) {
-          if (this.filters.checkedSuppliers.indexOf(event.data.content) === -1) {
-            this.filters.checkedSuppliers.push(event.data.content)
+      if (event.origin === this.customerUrl || event.origin === 'http://localhost:8081') {
+        if (this.allSuppliers.indexOf(event.data.content.filter) === 0) {
+          if (this.filters.checkedSuppliers.indexOf(event.data.content.filter) === -1) {
+            this.filters.checkedSuppliers.push(event.data.content.filter)
             this.selectedFilter()
           }
         }

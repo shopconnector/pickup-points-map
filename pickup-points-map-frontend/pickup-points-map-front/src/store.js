@@ -31,22 +31,10 @@ export default new Vuex.Store({
     customer: {
       id: '123123',
       name: 'bardotti',
-      theme: 1,
-      suppliers: ['Poczta Polska', 'In Post'],
+      theme: 0,
+      providers: ['Poczta Polska', 'In Post'],
       url: 'https://dev.bardotti.pl'
     }
-    // customersList: {
-    //   bardotti: {
-    //     theme: 0,
-    //     providers: ['Poczta polska', 'In Post'],
-    //     url: 'bardotti.pl'
-    //   },
-    //   robimylogo: {
-    //     theme: 0,
-    //     providers: ['Poczta polska', 'In Post', 'DPD Pickup'],
-    //     url: 'robimylogo.pl'
-    //   }
-    // }
   },
   mutations: {
     newStoreFilters (state, payload) {
