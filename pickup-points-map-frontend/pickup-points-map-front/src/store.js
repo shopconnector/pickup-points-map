@@ -12,7 +12,6 @@ export default new Vuex.Store({
     isFilterMobileOpen: 0,
     isFooterModalOpen: 1,
     isLocitModalOpen: 0,
-    WidgetVersion: false,
     isFilterMobilOpen: 1,
     zoom: 7,
     lat: 53.0409,
@@ -32,7 +31,7 @@ export default new Vuex.Store({
     customer: {
       id: '123123',
       name: 'bardotti',
-      theme: 0,
+      theme: 1,
       suppliers: ['Poczta Polska', 'In Post'],
       url: 'https://dev.bardotti.pl'
     }

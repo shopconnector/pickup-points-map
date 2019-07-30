@@ -1,6 +1,6 @@
 <template>
   <div class="widget-view">
-    <div class="header-view" v-if="$store.state.WidgetVersion">
+    <div class="header-view" v-if="isWidgetVersion">
       <select-location/>
     </div>
     <div class="container-map">
@@ -22,9 +22,9 @@
         <p class="footer-btn">WYBIERZ TEN PUNKT</p>
       </div>
     </div>
-    <div class="features-div" :class="{ 'first' : !$store.state.WidgetVersion }">
-      <div :class="{ 'features-box-ver2' : !$store.state.WidgetVersion }">
-        <select-location v-if="!$store.state.WidgetVersion"/>
+    <div class="features-div" :class="{ 'first' : !isWidgetVersion }">
+      <div :class="{ 'features-box-ver2' : !isWidgetVersion }">
+        <select-location v-if="!isWidgetVersion"/>
         <Filters v-if="!isMobile"/>
       </div>
     </div>
@@ -69,7 +69,7 @@ export default {
       return this.$store.state.filtersCount
     },
     isWidgetVersion () {
-      return this.$store.state.WidgetVersion
+      return this.$store.state.customer.theme
     },
     showListFooter () {
       return this.$store.state.showListFooter

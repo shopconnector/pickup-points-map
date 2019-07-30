@@ -120,7 +120,8 @@ export default {
         }
         return finalList
       } else {
-        return this.allSuppliers
+        finalList = Array.from(new Set(Object.values(this.providerToPickupTypeMapping).flat(1)))
+        return finalList
       }
     },
     providerToPickupTypeMapping () {
@@ -130,7 +131,7 @@ export default {
       return this.$store.state.customer.url
     },
     isWidgetVersion () {
-      return this.$store.state.WidgetVersion
+      return this.$store.state.customer.theme
     },
     isFilterMobilOpen () {
       return this.$store.state.isFilterMobilOpen

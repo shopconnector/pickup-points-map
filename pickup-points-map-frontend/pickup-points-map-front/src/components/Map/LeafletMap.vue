@@ -220,7 +220,7 @@ export default {
       return this.$store.state.listMarkers
     },
     isWidgetVersion () {
-      return this.$store.state.WidgetVersion
+      return this.$store.state.customer.theme
     },
     zoomOrCenterUpdateOrFiltersUpdate () {
       return [this.$store.state.zoom, this.$store.state.lat, this.$store.state.lng, this.$store.state.storeFilters.features, this.$store.state.storeFilters.checkedSuppliers].join()
