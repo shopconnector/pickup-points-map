@@ -195,15 +195,15 @@ export default {
     }
   },
   computed: {
-    changeFiltersError () {
-      if ((this.$store.state.pointMarkers && this.$store.state.pointMarkers.length === 0) &&
-      ((this.$store.state.storeFilters.checkedSuppliers && this.$store.state.storeFilters.checkedSuppliers.length !== 0) ||
-      (this.$store.state.storeFilters.features && this.$store.state.storeFilters.features.length !== 0))) {
-        return true
-      } else {
-        return false
-      }
-    },
+    // changeFiltersError () {
+    //   if ((this.$store.state.pointMarkers && this.$store.state.pointMarkers.length === 0) &&
+    //   ((this.$store.state.storeFilters.checkedSuppliers && this.$store.state.storeFilters.checkedSuppliers.length !== 0) ||
+    //   (this.$store.state.storeFilters.features && this.$store.state.storeFilters.features.length !== 0))) {
+    //     return true
+    //   } else {
+    //     return false
+    //   }
+    // },
     storeFilters () {
       return this.$store.state.storeFilters
     },
