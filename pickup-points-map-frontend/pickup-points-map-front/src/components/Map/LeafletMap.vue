@@ -12,11 +12,11 @@
         <br>Uwaga: Zablokowaleś geolokalizacje dla tej domeny
       </p>
     </div>
-    <div v-else-if="changeFiltersError" class="first-enter-info">
-      <p>Nie znaleźiono żadnego punktu. Zmień kryteria wyboru.</p>
-    </div>
     <div v-else-if="(($store.state.pointMarkers && !$store.state.pointMarkers.length))" class="first-enter-info">
       <p>Wybierz adres/lokalizację aby<br>zobaczyć najbliższe punkty odbioru</p>
+    </div>
+    <div v-else-if="$store.state.status === 'error, points couldnt be loaded'" class="first-enter-info">
+      <p>Nie znaleźiono żadnego punktu. Zmień kryteria wyboru.</p>
     </div>
      <div v-else-if="($store.state.zoom < 13 || ($store.state.pointMarkers && $store.state.pointMarkers.length > 100)) && !toogleMap" class="error-info">
       <p>Powiększ zoom żeby zobaczyć punkty</p>
