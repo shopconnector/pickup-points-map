@@ -8,9 +8,31 @@
     <link href="https://cdn.jsdelivr.net/npm/animate.css@3.5.1" rel="stylesheet" type="text/css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.1.0/dist/leaflet.css" />
     <title>pickup-points-map-front</title>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
   </head>
   <body>
     <div id="app"></div>
     <!-- built files will be auto injected -->
+    <script>
+      // Get from parent - it works
+      // window.addEventListener('message', function(event) { 
+      //   if (~event.origin.indexOf('https://dev.bardotti.pl')) { 
+      //     console.log(event.data);
+      //   } else {  
+      //     return; 
+      //   } 
+      // }); 
+      // --------------------------------
+      // function bindEvent(element, eventName, eventHandler) {
+      //   if (element.addEventListener) {
+      //     element.addEventListener(eventName, eventHandler, false);
+      //   } else if (element.attachEvent) {
+      //     element.attachEvent('on' + eventName, eventHandler);
+      //   }
+      // }
+      // bindEvent(window, 'message', function (e) {
+      //   console.log(e.data)
+      // });
+    </script>
   </body>
 </html>

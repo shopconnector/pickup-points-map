@@ -5,11 +5,18 @@
       <p class="button-action" :class="{ 'active' : !toogleMap }" @click="toogleMapMethod('show')">Mapa</p>
       <p class="button-action" :class="{ 'active' : toogleMap }" @click="toogleMapMethod('hide')">Lista</p>
     </div>
-    <div v-if="changeFiltersError" class="first-enter-info">
-      <p>Nie znaleźiono żadnego punktu. Zmień kryteria wyboru.</p>
+    <div v-if="this.$store.state.geolocation.error.code === 1 && ($store.state.pointMarkers && !$store.state.pointMarkers.length)" class="first-enter-info">
+      <p class="error-text">
+        Wybierz adres/lokalizację aby
+        <br>zobaczyć najbliższe punkty odbioru
+        <span class="mt10">Uwaga: Lokalizacja dla tej domeny jest zablokowana. <br>Możesz ponownie włączyć w ustawieniach przeglądarki.</span>
+      </p>
     </div>
-    <div v-else-if="(($store.state.pointMarkers && !$store.state.pointMarkers.length))" class="first-enter-info">
+    <div v-else-if="$store.state.pointMarkers && !$store.state.pointMarkers.length" class="first-enter-info">
       <p>Wybierz adres/lokalizację aby<br>zobaczyć najbliższe punkty odbioru</p>
+    </div>
+    <div v-else-if="$store.state.status === 'error, points couldnt be loaded'" class="first-enter-info">
+      <p>Nie znaleźiono żadnego punktu. Zmień kryteria wyboru.</p>
     </div>
      <div v-else-if="($store.state.zoom < 13 || ($store.state.pointMarkers && $store.state.pointMarkers.length > 100)) && !toogleMap" class="error-info">
       <p>Powiększ zoom żeby zobaczyć punkty</p>
@@ -110,7 +117,7 @@
                         </div>
                       </div>
                       <div class="popup-action">
-                        <p class="popup-button" @click="toogleMethod('true')">Wybierz</p>
+                        <p id="btn-wybierz" class="popup-button" @click="toogleMethod('true')">Wybierz</p>
                       </div>
                     </div>
                   </l-popup>
@@ -188,15 +195,15 @@ export default {
     }
   },
   computed: {
-    changeFiltersError () {
-      if ((this.$store.state.pointMarkers && this.$store.state.pointMarkers.length === 0) &&
-      ((this.$store.state.storeFilters.checkedSuppliers && this.$store.state.storeFilters.checkedSuppliers.length !== 0) ||
-      (this.$store.state.storeFilters.features && this.$store.state.storeFilters.features.length !== 0))) {
-        return true
-      } else {
-        return false
-      }
-    },
+    // changeFiltersError () {
+    //   if ((this.$store.state.pointMarkers && this.$store.state.pointMarkers.length === 0) &&
+    //   ((this.$store.state.storeFilters.checkedSuppliers && this.$store.state.storeFilters.checkedSuppliers.length !== 0) ||
+    //   (this.$store.state.storeFilters.features && this.$store.state.storeFilters.features.length !== 0))) {
+    //     return true
+    //   } else {
+    //     return false
+    //   }
+    // },
     storeFilters () {
       return this.$store.state.storeFilters
     },
@@ -220,10 +227,9 @@ export default {
       return this.$store.state.listMarkers
     },
     isWidgetVersion () {
-      return this.$store.state.WidgetVersion
+      return this.$store.state.customer.theme
     },
     zoomOrCenterUpdateOrFiltersUpdate () {
-      console.log(this.$store.state.zoom)
       return [this.$store.state.zoom, this.$store.state.lat, this.$store.state.lng, this.$store.state.storeFilters.features, this.$store.state.storeFilters.checkedSuppliers].join()
     }
   },
@@ -346,6 +352,9 @@ export default {
 </script>
 
 <style lang="scss">
+.mt10 {
+  margin-top: 10px;
+}
 .leaflet-marker-icon {
   position: absolute;
   top: -52px;
@@ -363,8 +372,9 @@ export default {
     top: 5px;
     color: #333333;
   }
+  // padding-top: calc( 50vh - 122px );
   padding-right: 210px !important;
-  bottom: -230px !important;
+  // bottom: -20px !important;
   margin-left: 210px !important;
   margin-bottom: 0 !important;
  }
@@ -512,6 +522,12 @@ export default {
     font-weight: 700;
     text-transform: uppercase;
     background-color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    span {
+      margin-top: 5px;
+      font-size: 12px;
+    }
   }
 }
 .error-info {

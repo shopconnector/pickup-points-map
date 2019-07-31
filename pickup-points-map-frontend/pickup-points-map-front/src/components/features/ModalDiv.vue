@@ -55,7 +55,7 @@
        </div>
        <div class="footer">
          <p class="powrot" @click="closeModal()"><i class="arrow_left"/>POWRÓT</p>
-         <p class="zamknij">Wybierz {{ parentData.pickup_type }} i zamknij</p>
+         <p class="zamknij" id="set-point" @click="setPoint(parentData)">Wybierz {{ parentData.pickup_type }} i zamknij</p>
        </div>
     </div>
     <!-- Modal DIV for mobile map -->
@@ -126,7 +126,7 @@ export default {
       return this.$store.state.markerDetails
     },
     isWidgetVersion () {
-      return this.$store.state.WidgetVersion
+      return this.$store.state.customer.theme
     },
     linkToRoad () {
       let url = 'https://www.google.pl/maps/dir/' + this.$store.state.lat + ',' + this.$store.state.lng + '/' + this.parentData.lat + ',' + this.parentData.lon + '/@52.2502198,21.0280249 + ,16z/data=!4m2!4m1!3e3?hl=pl'
@@ -134,6 +134,12 @@ export default {
     }
   },
   methods: {
+    setPoint (point) {
+      this.sendMessage(point)
+    },
+    sendMessage (point) {
+      window.parent.postMessage(point, '*')
+    },
     closeModal () {
       this.$emit('closed')
     }

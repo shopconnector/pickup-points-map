@@ -12,17 +12,29 @@ export default new Vuex.Store({
     isFilterMobileOpen: 0,
     isFooterModalOpen: 1,
     isLocitModalOpen: 0,
-    WidgetVersion: false,
     isFilterMobilOpen: 1,
     zoom: 7,
     lat: 53.0409,
     lng: 19.2850,
-    radiusOfVisibily: 0,
+    radiusOfVisibily: 1,
     markerDetails: [],
     pointMarkers: [],
     pageNumber: 1,
     listMarkers: [],
-    storeFilters: []
+    storeFilters: [],
+    providerToPickupTypeMapping: {
+      'In Post': ['In Post'],
+      'Poczta Polska': ['Fresh Market', 'Paczka w Ruchu', 'Poczta Polska', 'Żabka', 'Orlen'],
+      'DPD Pickup': ['DPD Pickup'],
+      'Paczka w Ruchu': ['Paczka w Ruchu']
+    },
+    customer: {
+      id: '123123',
+      name: 'bardotti',
+      theme: 0,
+      providers: ['Poczta Polska', 'In Post'],
+      url: 'https://dev.bardotti.pl'
+    }
   },
   mutations: {
     newStoreFilters (state, payload) {
