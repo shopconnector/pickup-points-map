@@ -158,6 +158,7 @@ export default {
       toogleModal: false,
       url: 'https://scorch.openstreetmap.org/{z}/{x}/{y}.png',
       attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
+      closeButton: false,
       iconsUrl: {
         'Żabka': require('../../assets/logos/żabka.png'),
         'DPD Pickup': require('../../assets/logos/dpd-pickup.png'),
@@ -230,7 +231,7 @@ export default {
     zoomOrCenterUpdateOrFiltersUpdate: {
       handler () {
         this.$store.commit('changePageNumber', 1)
-        if (this.$store.state.zoom >= 13 && !this.isPopupOpen) {
+        if (this.$store.state.zoom >= 13 && !this.isPopupOpen && this.$store.state.radiusOfVisibily !== 0) {
           this.$store.dispatch('get_points', {
             lat: this.$store.state.lat,
             lng: this.$store.state.lng,
@@ -345,11 +346,11 @@ export default {
 </script>
 
 <style lang="scss">
-.leaflet-marker-icon {
-  position: absolute;
-  top: -52px;
-  left: -20px;
-}
+// .leaflet-marker-icon {
+//   position: absolute;
+//   top: -52px;
+//   left: -20px;
+// }
 .leaflet-popup {
   .leaflet-popup-content-wrapper {
     border: 3px solid #3F87F5;

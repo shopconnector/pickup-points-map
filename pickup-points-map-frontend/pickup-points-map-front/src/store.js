@@ -22,7 +22,8 @@ export default new Vuex.Store({
     pointMarkers: [],
     pageNumber: 1,
     listMarkers: [],
-    storeFilters: []
+    storeFilters: [],
+    autocompleteList: []
   },
   mutations: {
     newStoreFilters (state, payload) {

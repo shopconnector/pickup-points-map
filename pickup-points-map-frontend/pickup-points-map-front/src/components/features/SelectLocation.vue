@@ -6,7 +6,7 @@
     <div class="choose-location" v-if="!isMobile">
         <h3 :class="[ isWidgetVersion ? 'my-location' : 'my-locationV2', $store.state.geolocation.lat ? 'active' : '']" @click="currentPos()">Moja lokalizacja</h3>
         <p class="lub">lub</p>
-        <div class="suggest-box">
+        <div class="suggest-box" :class="{ 'active-input' : isInputAddress}">
         <vue-autosuggest
             class='input-tag'
             :class="{'input-tagV2' : !isWidgetVersion}"
@@ -14,6 +14,8 @@
             v-model="locitAddress"
             @input="locitAdres()"
             @selected="logResult"
+            @focus="isInputAddress = true"
+            @blur="isInputAddress = false"
             :get-suggestion-value="getSuggestionValue"
             :suggestions="[{data:locitSuggestions}]"
             :input-props="{id:'autosuggest__input', placeholder:'Zacznij wpisywać adres'}"
@@ -24,6 +26,26 @@
           </template>
         </vue-autosuggest>
         <span class="span-location" :class="{'span-locationV2' : isWidgetVersion}" @click="locitAddress = ''"><i class="clear-input"/></span>
+        </div>
+        <!--Wpisz kod odbioru -->
+        <p class="lub">lub</p>
+        <div class="suggest-box-punkt">
+        <vue-autosuggest
+            class='input-tag'
+            :class="{'input-tagV2' : !isWidgetVersion}"
+            :limit="10"
+            v-model="kodOdbioru"
+            @input="kodOdbioruMethod()"
+            @selected="logKodResult"
+            :get-suggestion-value="getSuggestionCode"
+            :suggestions="[{data:kodSuggestion}]"
+            :input-props="{id:'autosuggest__input', placeholder:'Podaj kod odbioru'}"
+        >
+          <template slot-scope="{suggestion}">
+            {{ suggestion.item }}
+          </template>
+        </vue-autosuggest>
+        <span class="span-location" :class="{'span-locationV2' : isWidgetVersion}" @click="kodOdbioru = ''"><i class="clear-input"/></span>
         </div>
     </div>
     <vue-over-body v-if="isMobile" :dim="false" :open="IsFooterModalOpen" before="beforeFooterModal" after="afterFooterModal" :transition="0.3">
@@ -72,12 +94,17 @@ export default {
   },
   data () {
     return {
+      isInputAddress: false,
+      kodOdbioru: '',
+      kodSuggestion: [],
       locitAddress: '',
       suggestionText: '',
+      suggestionCode: '',
       limit: 10,
       locitSuggestions: [],
       customSuggestion: [],
       placeHolder: 'Wpisz adres',
+      placeHolderCode: 'Podaj kod odboiru',
       address: ''
     }
   },
@@ -143,6 +170,43 @@ export default {
         }).catch(error => {
           console.log(error)
         })
+      }
+    },
+    kodOdbioruMethod () {
+      if (this.kodOdbioru.length >= 3) {
+        return this.$http.get(`https://api.pickuppointsmap.dev.beecommerce.pl/pickup-autocomplete?id=` + this.kodOdbioru).then(res => {
+          this.kodSuggestion = res.data.response
+        }).catch(error => {
+          console.log(error)
+        })
+      }
+    },
+    logKodResult (item) {
+      this.closeLocitModal()
+      if (item) {
+        this.placeHolder = item.item
+        this.kodOdbioru = item.item
+        this.$http.get(`https://api.pickuppointsmap.dev.beecommerce.pl/pickup-points-map?id=` + this.kodOdbioru).then(res => {
+          var mapPoint = res.data.response
+          this.$store.commit('updatePosition', [{ lat: Number(mapPoint.pickupPoints[0].lat), lng: Number(mapPoint.pickupPoints[0].lon), zoom: 16 }])
+          console.log('Map point: ', mapPoint)
+        }).catch(error => {
+          console.log(error)
+        })
+        this.$http.get(`https://api.pickuppointsmap.dev.beecommerce.pl/pickup-points-list?id=` + this.kodOdbioru).then(res => {
+          var listPoint = res.data.response
+          console.log('List point: ', listPoint)
+        }).catch(error => {
+          console.log(error)
+        })
+      }
+    },
+    getSuggestionCode (suggestion) {
+      if (suggestion) {
+        this.suggestionCode = suggestion.item
+        return this.suggestionCode
+      } else {
+        return 'Wybierz punkt z listy'
       }
     }
   }
@@ -237,10 +301,18 @@ export default {
 </style>
 
 <style lang="scss" scoped>
+.active-input {
+  flex-basis: 60% !important;
+}
 .suggest-box {
   position: relative;
   display: block;
-  width: 75%;
+  flex-basis: 40%;
+}
+.suggest-box-punkt{
+  position: relative;
+  display: block;
+  flex-basis: 25%;
 }
 .span-location{
   position: absolute;
@@ -306,7 +378,6 @@ export default {
   background-size: cover;
 }
 .title{
-  // padding-left: 20px;
   font-family: 'Lato', sans-serif;
   font-size: 22px;
   font-weight: 900;
@@ -353,8 +424,8 @@ export default {
 }
 .my-locationV2{
   cursor: pointer;
-  flex-basis: 30%;
-  padding-left: 25px;
+  padding-left: 5px;
+  flex-basis: 25%;
   color: #989898;
   font-size: 14px;
   font-family: 'Lato', sans-serif;
@@ -373,7 +444,6 @@ export default {
     content: url(../../assets/icons/gps24px.svg);
     position: absolute;
     left: 5px;
-    padding-right: 10px;
     width: 17px;
     height: 25px;
     filter: opacity(0.4)
@@ -385,11 +455,12 @@ export default {
   }
 }
 .lub{
-  font-size: 16px;
+  flex-basis: 5%;
+  font-size: 14px;
   font-family: 'Lato', sans-serif;
   color: #AAAAAA;
   margin: 0;
-  padding: 0 15px;
+  padding: 0 5px;
 }
 .input-tag{
   position: relative;
@@ -453,7 +524,7 @@ input::placeholder{
    font-size: 16px;
  }
  .lub{
-   font-size: 14px;
+   font-size: 12px;
  }
 }
 </style>
