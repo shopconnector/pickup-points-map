@@ -108,9 +108,15 @@ export default {
       address: ''
     }
   },
+  created () {
+    window.addEventListener('message', this.filterApply)
+  },
+  destroyed () {
+    window.removeEventListener('message', this.filterApply)
+  },
   computed: {
     isWidgetVersion () {
-      return this.$store.state.WidgetVersion
+      return this.$store.state.customer.theme
     },
     IsFooterModalOpen () {
       return this.$store.state.isFooterModalOpen
@@ -120,17 +126,29 @@ export default {
     },
     geoSet () {
       return this.$store.state.geolocation
+    },
+    customerUrl () {
+      return this.$store.state.customer.url
     }
   },
   watch: {
     geoSet: {
       handler () {
-        this.$store.commit('updatePosition', [{ lat: this.$store.state.geolocation.lat, lng: this.$store.state.geolocation.lng, zoom: 16 }])
+        if (this.$store.state.geolocation.error.code !== 1) {
+          this.$store.commit('updatePosition', [{ lat: this.$store.state.geolocation.lat, lng: this.$store.state.geolocation.lng, zoom: 16 }])
+        }
       },
       deep: true
     }
   },
   methods: {
+    filterApply: function (event) {
+      if (event.origin === this.customerUrl || event.origin === 'http://localhost:8081') {
+        if (event.data.content.address !== 0) {
+          this.locitAddress = event.data.content.address
+        }
+      }
+    },
     openLocitModal () {
       this.$store.commit('openLocitModal')
     },

@@ -37,7 +37,7 @@ export const MobileDetected = {
   },
   computed: {
     isWidgetVersion () {
-      return this.$store.state.WidgetVersion
+      return this.$store.state.customer.theme
     },
     IsFooterModalOpen () {
       return this.$store.state.isFooterModalOpen
