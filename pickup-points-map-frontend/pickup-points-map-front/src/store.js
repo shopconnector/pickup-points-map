@@ -22,6 +22,8 @@ export default new Vuex.Store({
     pageNumber: 1,
     listMarkers: [],
     storeFilters: [],
+    autocompleteList: [],
+    pointId: '',
     providerToPickupTypeMapping: {
       'In Post': ['In Post'],
       'Poczta Polska': ['Fresh Market', 'Paczka w Ruchu', 'Poczta Polska', 'Żabka', 'Orlen'],
@@ -37,6 +39,12 @@ export default new Vuex.Store({
     }
   },
   mutations: {
+    clearPointId (state) {
+      state.pointId = ''
+    },
+    changePointId (state, payload) {
+      state.pointId = payload
+    },
     newStoreFilters (state, payload) {
       if (payload) state.storeFilters = payload
     },
@@ -95,6 +103,10 @@ export default new Vuex.Store({
     get_points (state) {
       state.status = 'loading points'
     },
+    get_pointsById_succ (state, points) {
+      state.pointMarkers = points
+      state.status = 'success, pointsById loaded'
+    },
     get_points_succ (state, points) {
       if (state.zoom < 13) {
         state.pointMarkers = []
@@ -104,16 +116,16 @@ export default new Vuex.Store({
         state.status = 'success, points loaded'
       }
     },
-    get_closest_points_succ (state, points) {
-      if (state.zoom < 13) {
-        state.pointMarkers = []
-        state.status = 'success, but distance too long'
-      } else {
-        state.pointMarkers = points
-        state.zoom = 13
-        state.status = 'success, points loaded'
-      }
-    },
+    // get_closest_points_succ (state, points) {
+    //   if (state.zoom < 13) {
+    //     state.pointMarkers = []
+    //     state.status = 'success, but distance too long'
+    //   } else {
+    //     state.pointMarkers = points
+    //     state.zoom = 13
+    //     state.status = 'success, points loaded'
+    //   }
+    // },
     get_points_err (state) {
       state.status = 'error, points couldnt be loaded'
     },
@@ -149,6 +161,16 @@ export default new Vuex.Store({
     },
     clear_point_details (state) {
       state.markerDetails = []
+    },
+    get_autocomplete (state) {
+      state.status = 'loading autocomplete points'
+    },
+    get_autocomplete_succ (state, point) {
+      state.autocompleteList = point
+      state.status = 'success, autocomplete list loaded'
+    },
+    get_autocomplete_err (state) {
+      state.status = 'errorr, autocomplete list couldnt be loaded'
     }
   },
   actions: {
@@ -158,7 +180,11 @@ export default new Vuex.Store({
         APIService.get_points(query)
           .then(res => {
             const points = res.data.response.pickupPoints
-            commit('get_points_succ', points)
+            if (res.data.response_type === 'id') {
+              commit('get_pointsById_succ', points)
+            } else {
+              commit('get_points_succ', points)
+            }
             resolve(res)
           }).catch(err => {
             commit('get_points_err')
@@ -190,6 +216,20 @@ export default new Vuex.Store({
             resolve(res)
           }).catch(err => {
             commit('get_point_details_err')
+            reject(err)
+          })
+      })
+    },
+    get_autocomplete ({commit}, query) {
+      return new Promise((resolve, reject) => {
+        commit('get_autocomplete')
+        APIService.get_autocomplete(query)
+          .then(res => {
+            const point = res.data.response
+            commit('get_autocomplete_succ', point)
+            resolve(res)
+          }).catch(err => {
+            commit('get_autocomplete_err')
             reject(err)
           })
       })

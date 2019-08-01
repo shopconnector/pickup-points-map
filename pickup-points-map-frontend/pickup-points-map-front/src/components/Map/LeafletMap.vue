@@ -143,6 +143,7 @@ import { latLng } from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import ModalDiv from '../features/ModalDiv.vue'
 import { MobileDetected } from '../mobileDetected.ts'
+import EventBus from '../../event-bus'
 
 export default {
   name: 'Home',
@@ -231,29 +232,68 @@ export default {
       return this.$store.state.customer.theme
     },
     zoomOrCenterUpdateOrFiltersUpdate () {
-      return [this.$store.state.zoom, this.$store.state.lat, this.$store.state.lng, this.$store.state.storeFilters.features, this.$store.state.storeFilters.checkedSuppliers].join()
+      return [this.$store.state.zoom, this.$store.state.lat, this.$store.state.lng, this.$store.state.storeFilters.features, this.$store.state.storeFilters.checkedSuppliers, this.$store.state.pointId].join()
+    },
+    pointIdUpdate () {
+      return [this.$store.state.pointId].join()
     }
   },
   watch: {
     zoomOrCenterUpdateOrFiltersUpdate: {
       handler () {
         this.$store.commit('changePageNumber', 1)
-        if (this.$store.state.zoom >= 13 && !this.isPopupOpen && this.$store.state.radiusOfVisibily !== 0) {
+        if (this.$store.state.pointId) {
           this.$store.dispatch('get_points', {
-            lat: this.$store.state.lat,
-            lng: this.$store.state.lng,
-            dist: this.$store.state.radiusOfVisibily,
-            filtered: this.filteredPoints()
+            lat: '',
+            lng: '',
+            dist: '',
+            filtered: '',
+            id: `id=${this.$store.state.pointId}`
+          })
+          // if (this.$store.state.pointMarkers) {
+          //   this.$store.commit('updatePosition', [{ lat: this.$store.state.pointMarkers[0].lat, lng: this.$store.state.pointMarkers[0].lon, zoom: 16 }])
+          // }
+          this.$store.dispatch('get_list_points', {
+            lat: '',
+            lng: '',
+            page: '',
+            filtered: '',
+            id: `id=${this.$store.state.pointId}`
+          })
+        } else if (this.$store.state.zoom >= 13 && !this.isPopupOpen && this.$store.state.radiusOfVisibily !== 0) {
+          this.$store.dispatch('get_points', {
+            lat: `lat=${this.$store.state.lat}`,
+            lng: `&lon=${this.$store.state.lng}`,
+            dist: `&dist=${this.$store.state.radiusOfVisibily}`,
+            filtered: this.filteredPoints(),
+            id: ''
           })
           this.$store.dispatch('get_list_points', {
-            lat: this.$store.state.lat,
-            lng: this.$store.state.lng,
-            page: this.$store.state.pageNumber,
-            filtered: this.filteredPoints()
+            lat: `lat=${this.$store.state.lat}`,
+            lng: `&lon=${this.$store.state.lng}`,
+            page: `&page=${this.$store.state.pageNumber}`,
+            filtered: this.filteredPoints(),
+            id: ''
           })
         }
       }
+    },
+    pointIdUpdate: {
+      handler () {
+        setTimeout(() => {
+          this.$store.commit('updatePosition', [{ lat: this.$store.state.pointMarkers[0].lat, lng: this.$store.state.pointMarkers[0].lon, zoom: 16 }])
+        }, 100)
+      }
     }
+  },
+  mounted () {
+    EventBus.$on('popupClose', () => {
+      this.popupClose()
+      var closePopup = document.getElementsByClassName('leaflet-popup-close-button')[0]
+      if (closePopup) {
+        closePopup.click()
+      }
+    })
   },
   methods: {
     filteredPoints () {
@@ -295,10 +335,11 @@ export default {
       var newPage = this.$store.state.pageNumber + 1
       this.$store.commit('changePageNumber', newPage)
       this.$store.dispatch('get_list_points', {
-        lat: this.$store.state.lat,
-        lng: this.$store.state.lng,
-        page: this.$store.state.pageNumber,
-        filtered: this.filteredPoints()
+        lat: `lat=${this.$store.state.lat}`,
+        lng: `&lon=${this.$store.state.lng}`,
+        page: `&page=${this.$store.state.pageNumber}`,
+        filtered: this.filteredPoints(),
+        id: ''
       })
     },
     toogleMapMethod (text) {
@@ -353,11 +394,11 @@ export default {
 </script>
 
 <style lang="scss">
-// .leaflet-marker-icon {
-//   position: absolute;
-//   top: -52px;
-//   left: -20px;
-// }
+.leaflet-marker-icon {
+  position: absolute;
+  top: -52px;
+  left: -20px;
+}
 .leaflet-popup {
   .leaflet-popup-content-wrapper {
     border: 3px solid #3F87F5;
