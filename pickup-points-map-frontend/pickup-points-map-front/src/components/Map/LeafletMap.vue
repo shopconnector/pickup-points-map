@@ -6,10 +6,10 @@
       <p class="button-action" :class="{ 'active' : toogleMap }" @click="toogleMapMethod('hide')">Lista</p>
     </div>
     <div v-if="this.$store.state.geolocation.error.code === 1 && ($store.state.pointMarkers && !$store.state.pointMarkers.length)" class="first-enter-info">
-      <p>
+      <p class="error-text">
         Wybierz adres/lokalizację aby
         <br>zobaczyć najbliższe punkty odbioru
-        <br>Uwaga: Zablokowaleś geolokalizacje dla tej domeny
+        <span class="mt10">Uwaga: Lokalizacja dla tej domeny jest zablokowana. <br>Możesz ponownie włączyć w ustawieniach przeglądarki.</span>
       </p>
     </div>
     <div v-else-if="$store.state.pointMarkers && !$store.state.pointMarkers.length" class="first-enter-info">
@@ -394,6 +394,9 @@ export default {
 </script>
 
 <style lang="scss">
+.mt10 {
+  margin-top: 10px;
+}
 .leaflet-marker-icon {
   position: absolute;
   top: -52px;
@@ -561,6 +564,12 @@ export default {
     font-weight: 700;
     text-transform: uppercase;
     background-color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    span {
+      margin-top: 5px;
+      font-size: 12px;
+    }
   }
 }
 .error-info {

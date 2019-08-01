@@ -16,7 +16,7 @@ export default new Vuex.Store({
     zoom: 7,
     lat: 53.0409,
     lng: 19.2850,
-    radiusOfVisibily: 0,
+    radiusOfVisibily: 1,
     markerDetails: [],
     pointMarkers: [],
     pageNumber: 1,
