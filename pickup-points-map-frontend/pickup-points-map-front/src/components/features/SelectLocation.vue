@@ -29,7 +29,7 @@
         <span class="span-location" :class="{'span-locationV2' : isWidgetVersion}" @click="locitAddress = ''"><i class="clear-input"/></span>
         </div>
         <!--Wpisz kod odbioru -->
-        <!-- <p class="lub">lub</p>
+        <p class="lub">lub</p>
         <div class="suggest-box-punkt">
         <vue-autosuggest
             class='input-tag'
@@ -47,7 +47,7 @@
           </template>
         </vue-autosuggest>
         <span class="span-location" :class="{'span-locationV2' : isWidgetVersion}" @click="clearKodObioru()"><i class="clear-input"/></span>
-        </div> -->
+        </div>
     </div>
     <vue-over-body v-if="isMobile" :dim="false" :open="IsFooterModalOpen" before="beforeFooterModal" after="afterFooterModal" :transition="0.3">
       <div class="footer-box">
