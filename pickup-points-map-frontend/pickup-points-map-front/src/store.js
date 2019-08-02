@@ -34,7 +34,7 @@ export default new Vuex.Store({
       id: '123123',
       name: 'bardotti',
       theme: 0,
-      providers: ['Poczta Polska', 'In Post', 'DPD Pickup', 'Paczka w Ruchu'],
+      providers: ['Poczta Polska', 'In Post'],
       url: 'https://dev.bardotti.pl'
     }
   },
