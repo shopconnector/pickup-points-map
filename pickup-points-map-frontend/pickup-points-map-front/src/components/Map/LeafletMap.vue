@@ -139,7 +139,7 @@
 
 <script>
 import { LMap, LTileLayer, LMarker, LPopup, LTooltip, LControlZoom, LIcon } from 'vue2-leaflet'
-import { latLng } from 'leaflet'
+import { latLng, L } from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import ModalDiv from '../features/ModalDiv.vue'
 import { MobileDetected } from '../mobileDetected.ts'
