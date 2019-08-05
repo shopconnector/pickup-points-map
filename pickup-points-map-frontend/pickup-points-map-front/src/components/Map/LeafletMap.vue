@@ -264,6 +264,7 @@ export default {
           this.$store.dispatch('get_points', {
             lat: `lat=${this.$store.state.lat}`,
             lng: `&lon=${this.$store.state.lng}`,
+            key: `&key=${this.$store.state.customer.key}`,
             dist: `&dist=${this.$store.state.radiusOfVisibily}`,
             filtered: this.filteredPoints(),
             id: ''
@@ -271,6 +272,7 @@ export default {
           this.$store.dispatch('get_list_points', {
             lat: `lat=${this.$store.state.lat}`,
             lng: `&lon=${this.$store.state.lng}`,
+            key: `&key=${this.$store.state.customer.key}`,
             page: `&page=${this.$store.state.pageNumber}`,
             filtered: this.filteredPoints(),
             id: ''
@@ -328,6 +330,7 @@ export default {
       this.$store.dispatch('get_point_details', {
         lat: lat,
         lng: lng,
+        key: this.$store.state.customer.key,
         type: type
       })
     },
@@ -337,6 +340,7 @@ export default {
       this.$store.dispatch('get_list_points', {
         lat: `lat=${this.$store.state.lat}`,
         lng: `&lon=${this.$store.state.lng}`,
+        key: `&key=${this.$store.state.customer.key}`,
         page: `&page=${this.$store.state.pageNumber}`,
         filtered: this.filteredPoints(),
         id: ''

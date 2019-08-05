@@ -141,11 +141,9 @@ export default {
   methods: {
     filterApply: function (event) {
       if (event.origin === this.customerUrl || event.origin === 'http://localhost:8081') {
-        if (this.allSuppliers.indexOf(event.data.content.filter) === 0) {
+        if (this.allSuppliers.indexOf(event.data.content.filter) >= 0) {
           if (this.filters.checkedSuppliers.indexOf(event.data.content.filter) === -1) {
             this.filters.checkedSuppliers.push(event.data.content.filter)
-            console.log('From filters vue: ', event.data.content.filter)
-            console.log('From filters vue2: ', this.filters.checkedSuppliers)
             this.selectedFilter()
           }
         }

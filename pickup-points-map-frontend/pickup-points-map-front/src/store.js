@@ -31,10 +31,11 @@ export default new Vuex.Store({
       'Paczka w Ruchu': ['Paczka w Ruchu']
     },
     customer: {
+      key: '5DFC0961AB6BEF40736BA3099EE27491',
       id: '123123',
       name: 'bardotti',
       theme: 0,
-      providers: ['Poczta Polska', 'In Post'],
+      providers: ['Poczta Polska', 'In Post', 'DPD Pickup'],
       url: 'https://dev.bardotti.pl'
     }
   },
