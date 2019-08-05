@@ -248,7 +248,8 @@ export default {
             lng: '',
             dist: '',
             filtered: '',
-            id: `id=${this.$store.state.pointId}`
+            id: `id=${this.$store.state.pointId}`,
+            key: `&key=${this.$store.state.customer.key}`
           })
           // if (this.$store.state.pointMarkers) {
           //   this.$store.commit('updatePosition', [{ lat: this.$store.state.pointMarkers[0].lat, lng: this.$store.state.pointMarkers[0].lon, zoom: 16 }])
@@ -258,7 +259,8 @@ export default {
             lng: '',
             page: '',
             filtered: '',
-            id: `id=${this.$store.state.pointId}`
+            id: `id=${this.$store.state.pointId}`,
+            key: `&key=${this.$store.state.customer.key}`
           })
         } else if (this.$store.state.zoom >= 13 && !this.isPopupOpen && this.$store.state.radiusOfVisibily !== 0) {
           this.$store.dispatch('get_points', {
