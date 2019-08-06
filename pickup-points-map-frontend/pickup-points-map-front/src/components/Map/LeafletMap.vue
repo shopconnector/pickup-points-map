@@ -2,7 +2,7 @@
 <div :class="{'list-background-mobile-fix' : isMobile}">
   <div :class="isWidgetVersion ? 'map-v2' : 'map'">
     <div class="type-actions" :class="{'type-actions-v2' : !isWidgetVersion}">
-      <p class="button-action" :class="{ 'active' : !toogleMap }" @click="toogleMapMethod('show')">Mapa</p>
+      <p class="button-action" :class="{ 'active' : !toogleMap }" @click="toogleMapMethod('show')">Mapa </p>
       <p class="button-action" :class="{ 'active' : toogleMap }" @click="toogleMapMethod('hide')">Lista</p>
     </div>
     <div v-if="this.$store.state.geolocation.error.code === 1 && ($store.state.pointMarkers && !$store.state.pointMarkers.length)" class="first-enter-info">
@@ -47,7 +47,7 @@
                     {{ listMarker.working_hours }}
                   </div>
                   <div class="list-elem btn-elem">
-                    <p class="list-button" @click="getPointDetails(listMarker.lat, listMarker.lon, listMarker.pickup_point_type),toogleMethod('true')">Wybierz</p>
+                    <p class="list-button" @click="getPointDetails(listMarker.lat, listMarker.lon, listMarker.pickup_point_type),toogleMethod('true', 0)">Wybierz</p>
                   </div>
                   <transition name="fade">
                     <div class="list-modal" v-if="isOpenListModal(index) && isMobile && $store.state.markerDetails">
@@ -100,25 +100,27 @@
                   <img :src="pinsUrl[marker.pickup_type]" width="52" height="52"/>
                 </l-icon>
                 <transition name="bounce">
-                  <l-popup v-if="!isMobile">
+                    <l-popup v-if="!isMobile && $store.state.markerDetails">
                     <div class="popup-box">
-                      <img class="popup-marker" :src="pinsUrl[marker.pickup_type]" width="102" height="102"/>
-                      <div class="popup-info">
-                        <div class="popup-text-box">
-                          <template v-if="typeof $store.state.markerDetails.points !== 'undefined'">
-                            <p class="popup-text" v-if="$store.state.markerDetails.length !== 0">
-                              <b>{{ $store.state.markerDetails.points[0].name }}</b><br>
-                              <b>{{ $store.state.markerDetails.street }}</b><br> {{ $store.state.markerDetails.zip }} {{ $store.state.markerDetails.city }}, <br> {{ $store.state.markerDetails.points[0].id }}
-                            </p>
-                           </template>
+                      <template v-for="(point, index) in points">
+                        <img class="popup-marker" :src="pinsUrl[marker.pickup_type]" width="102" height="102" :key="'img-' + index"/>
+                        <div class="popup-info" :key="'info-' + index">
+                          <div class="popup-text-box">
+                            <template v-if="typeof point !== 'undefined'">
+                              <p class="popup-text" v-if="$store.state.markerDetails.length !== 0">
+                                <b>{{ point.name }}</b><br>
+                                <b>{{ $store.state.markerDetails.street }}</b><br> {{ $store.state.markerDetails.zip }} {{ $store.state.markerDetails.city }}, <br> {{ point.id }}
+                              </p>
+                            </template>
+                          </div>
+                          <div class="popup-img" >
+                            <img :src="logosUrl[marker.pickup_type]" width="100%" height="auto"/>
+                          </div>
                         </div>
-                        <div class="popup-img" >
-                          <img :src="logosUrl[marker.pickup_type]" width="100%" height="auto"/>
+                        <div class="popup-action" :key="'btn-' + index">
+                          <p id="btn-wybierz" class="popup-button" @click="toogleMethod('true', index)">Wybierz</p>
                         </div>
-                      </div>
-                      <div class="popup-action">
-                        <p id="btn-wybierz" class="popup-button" @click="toogleMethod('true')">Wybierz</p>
-                      </div>
+                      </template>
                     </div>
                   </l-popup>
                 </transition>
@@ -139,12 +141,26 @@
 
 <script>
 import { LMap, LTileLayer, LMarker, LPopup, LTooltip, LControlZoom, LIcon } from 'vue2-leaflet'
-import { latLng, L } from 'leaflet'
+import { latLng } from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import ModalDiv from '../features/ModalDiv.vue'
 import { MobileDetected } from '../mobileDetected.ts'
 import EventBus from '../../event-bus'
-
+// Test
+// import iconRetinaUrl from 'leaflet/dist/images/marker-icon-2x.png'
+// import iconUrl from 'leaflet/dist/images/marker-icon.png'
+// import shadowUrl from 'leaflet/dist/images/marker-shadow.png'
+// L.Marker.prototype.options.icon = L.icon({
+//   iconRetinaUrl,
+//   iconUrl,
+//   shadowUrl,
+//   iconSize: [25, 41],
+//   iconAnchor: [12, 41],
+//   popupAnchor: [1, -34],
+//   tooltipAnchor: [16, -28],
+//   shadowSize: [41, 41]
+// })
+// End of test
 export default {
   name: 'Home',
   components: {
@@ -197,6 +213,13 @@ export default {
     }
   },
   computed: {
+    points () {
+      if (this.$store.state.markerDetails && this.$store.state.markerDetails.points) {
+        return this.$store.state.markerDetails.points
+      } else {
+        return 1
+      }
+    },
     // changeFiltersError () {
     //   if ((this.$store.state.pointMarkers && this.$store.state.pointMarkers.length === 0) &&
     //   ((this.$store.state.storeFilters.checkedSuppliers && this.$store.state.storeFilters.checkedSuppliers.length !== 0) ||
@@ -372,7 +395,8 @@ export default {
       var rad = Math.round(dist / 2)
       this.$store.commit('changeRadiusOfVisibility', rad)
     },
-    toogleMethod (bool) {
+    toogleMethod (bool, num) {
+      this.$store.commit('changeSelectedPoint', num)
       if (bool === 'true') {
         this.toogleModal = true
       } else if (bool === 'false') {
@@ -462,6 +486,9 @@ export default {
 </style>
 
 <style lang="scss" scoped>
+.popup-box-next{
+  margin-top: 20px;
+}
 .empty-text {
   margin: 0;
   color: #E54C69;
@@ -617,7 +644,7 @@ export default {
 }
 .popup-action {
 .popup-button {
-  margin: 5px 0;
+  margin: 7px 0;
   background-color: #E4405F;
   padding: 10px 20px;
   border-radius: 9px;

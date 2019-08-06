@@ -202,16 +202,10 @@ export default {
       }
     },
     kodOdbioruMethod () {
-      // if (this.kodOdbioru.length >= 3) {
-      //   return this.$http.get(`https://api.pickuppointsmap.dev.beecommerce.pl/pickup-autocomplete?id=` + this.kodOdbioru).then(res => {
-      //     this.kodSuggestion = res.data.response
-      //   }).catch(error => {
-      //     console.log(error)
-      //   })
-      // }
       if (this.kodOdbioru.length >= 3) {
         return this.$store.dispatch('get_autocomplete', {
-          id: this.kodOdbioru
+          id: this.kodOdbioru,
+          key: this.$store.state.customer.key
         })
       }
     },
@@ -472,9 +466,9 @@ export default {
 }
 .my-locationV2{
   cursor: pointer;
-  //padding-left: 5px;
+  // padding-left: 5px;
   padding-left: 25px;
-  //flex-basis: 25%;
+  // flex-basis: 25%;
   flex-basis: 30%;
   color: #989898;
   font-size: 14px;

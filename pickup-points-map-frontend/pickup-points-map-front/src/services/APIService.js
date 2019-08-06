@@ -5,13 +5,13 @@ const API_URL = 'https://api.pickuppointsmap.dev.beecommerce.pl'
 export default {
   get_autocomplete (query) {
     return axios({
-      url: `${API_URL}/pickup-autocomplete?id=${query.id}`
+      url: `${API_URL}/pickup-autocomplete?id=${query.id}&key=${query.key}`
     })
   },
   get_list_points (query) {
     return axios({
     // url: `${API_URL}/pickup-points-list?lat=${query.lat}&lon=${query.lng}&page=${query.page}${query.filtered}`
-      url: `${API_URL}/pickup-points-list?${query.lat}${query.lng}${query.key}${query.page}${query.filtered}${query.id}`
+      url: `${API_URL}/pickup-points-list?${query.lat}${query.lng}${query.id}${query.key}${query.page}${query.filtered}`
     })
   },
   get_points (query) {
@@ -26,7 +26,7 @@ export default {
       //     '' : query.filtered
       //   }
 
-      url: `${API_URL}/pickup-points-map?${query.lat}${query.lng}${query.key}${query.dist}${query.filtered}${query.id}`
+      url: `${API_URL}/pickup-points-map?${query.lat}${query.lng}${query.id}${query.key}${query.dist}${query.filtered}`
 
     })
   },

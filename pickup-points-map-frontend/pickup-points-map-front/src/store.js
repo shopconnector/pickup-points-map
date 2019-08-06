@@ -20,6 +20,7 @@ export default new Vuex.Store({
     markerDetails: [],
     pointMarkers: [],
     pageNumber: 1,
+    selectedPoint: null,
     listMarkers: [],
     storeFilters: [],
     autocompleteList: [],
@@ -45,6 +46,9 @@ export default new Vuex.Store({
     },
     changePointId (state, payload) {
       state.pointId = payload
+    },
+    changeSelectedPoint (state, payload) {
+      state.selectedPoint = payload
     },
     newStoreFilters (state, payload) {
       if (payload) state.storeFilters = payload
