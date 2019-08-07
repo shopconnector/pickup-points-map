@@ -145,7 +145,7 @@ export default {
   watch: {
     updateCustomer: {
       handler () {
-        if (this.$store.state.keyError.length === 0) {
+        if (this.$store.state.keyError.length === 0 && this.frameData.data.content) {
           if (this.allSuppliers.indexOf(this.frameData.data.content.filter) >= 0) {
             if (this.filters.checkedSuppliers.indexOf(this.frameData.data.content.filter) === -1) {
               this.filters.checkedSuppliers.push(this.frameData.data.content.filter)
