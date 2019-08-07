@@ -27,6 +27,7 @@ export default new Vuex.Store({
     secretKey: '',
     pointId: '',
     keyError: '',
+    suggestionTextLocit: '',
     providerToPickupTypeMapping: {
       'In Post': ['In Post'],
       'Poczta Polska': ['Fresh Market', 'Paczka w Ruchu', 'Poczta Polska', 'Żabka', 'Orlen'],
@@ -43,6 +44,9 @@ export default new Vuex.Store({
     }
   },
   mutations: {
+    updateLocitAddress (state, payload) {
+      state.suggestionTextLocit = payload
+    },
     clearPointId (state) {
       state.pointId = ''
     },

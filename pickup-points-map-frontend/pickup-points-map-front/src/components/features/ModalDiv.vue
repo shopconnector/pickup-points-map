@@ -130,8 +130,13 @@ export default {
       return this.$store.state.customer.theme
     },
     linkToRoad () {
-      let url = 'https://www.google.pl/maps/dir/' + this.$store.state.lat + ',' + this.$store.state.lng + '/' + this.parentData.lat + ',' + this.parentData.lon + '/@52.2502198,21.0280249 + ,16z/data=!4m2!4m1!3e3?hl=pl'
-      return url
+      if (this.$store.state.geolocation.lat && this.$store.state.suggestionTextLocit.length === 0) {
+        let url = 'https://www.google.pl/maps/dir/' + this.$store.state.geolocation.lat + ',' + this.$store.state.geolocation.lng + '/' + this.parentData.lat + ',' + this.parentData.lon + '/@52.2502198,21.0280249 + ,16z/data=!4m2!4m1!3e3?hl=pl'
+        return url
+      } else {
+        let url = 'https://www.google.pl/maps/dir/' + this.$store.state.suggestionTextLocit.city + ',' + this.$store.state.suggestionTextLocit.street + ',' + this.$store.state.suggestionTextLocit.building + '/' + this.parentData.lat + ',' + this.parentData.lon + '/@52.2502198,21.0280249 + ,16z/data=!4m2!4m1!3e3?hl=pl'
+        return url
+      }
     }
   },
   methods: {

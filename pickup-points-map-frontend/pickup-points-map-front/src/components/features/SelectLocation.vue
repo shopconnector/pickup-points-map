@@ -147,14 +147,10 @@ export default {
   },
   methods: {
     filterApply: async function (event) {
-      // if (event.origin === this.customerUrl || event.origin === 'http://localhost:8081') {
-      //   if (event.data.content.address !== 0) {
-      //     this.locitAddress = event.data.content.address
-      //   }
-      // }
       if (event.data.content) {
         await this.$store.dispatch('get_essentials', {
           key: `${event.data.content.key}`
+          // key: `${'5DFC0961AB6BEF40736BA3099EE27491'}`
         })
         this.locitAddress = event.data.content.address
       }
@@ -186,6 +182,7 @@ export default {
         this.suggestionText = suggestion.item
         this.$store.commit('updatePosition', [{ lat: Number(suggestion.item.y), lng: Number(suggestion.item.x), zoom: 16 }])
         this.customSuggestion = suggestion.item
+        this.$store.commit('updateLocitAddress', this.suggestionText)
         return this.suggestionText.city + ', ' + this.suggestionText.prefix + ' ' + this.suggestionText.street + ' ' + this.suggestionText.building
       } else {
         return 'Wybierz punkt z listy'
