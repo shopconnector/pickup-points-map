@@ -134,6 +134,9 @@ export default {
     autocompleteList () {
       return this.$store.state.autocompleteList
     }
+    // customerUpdate () {
+    //   return this.$store.state.customer
+    // }
   },
   watch: {
     geoSet: {
@@ -144,14 +147,23 @@ export default {
       },
       deep: true
     }
+    // customerUpdate : {
+    //   handler () {
+    //     if ()
+    //   }
+    // }
   },
   methods: {
-    filterApply: function (event) {
-      if (event.origin === this.customerUrl || event.origin === 'http://localhost:8081') {
-        if (event.data.content.address !== 0) {
-          this.locitAddress = event.data.content.address
-        }
-      }
+    filterApply: async function (event) {
+      // if (event.origin === this.customerUrl || event.origin === 'http://localhost:8081') {
+      //   if (event.data.content.address !== 0) {
+      //     this.locitAddress = event.data.content.address
+      //   }
+      // }
+      await this.$store.dispatch('get_essentials', {
+        key: `${event.data.content.key}`
+      })
+      this.locitAddress = event.data.content.address
     },
     emitMethod () {
       EventBus.$emit('popupClose')

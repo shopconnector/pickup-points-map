@@ -24,7 +24,9 @@ export default new Vuex.Store({
     listMarkers: [],
     storeFilters: [],
     autocompleteList: [],
+    secretKey: '',
     pointId: '',
+    keyError: '',
     providerToPickupTypeMapping: {
       'In Post': ['In Post'],
       'Poczta Polska': ['Fresh Market', 'Paczka w Ruchu', 'Poczta Polska', 'Żabka', 'Orlen'],
@@ -32,12 +34,12 @@ export default new Vuex.Store({
       'Paczka w Ruchu': ['Paczka w Ruchu']
     },
     customer: {
-      key: '5DFC0961AB6BEF40736BA3099EE27491',
-      id: '123123',
-      name: 'bardotti',
-      theme: 0,
-      providers: ['Poczta Polska', 'In Post', 'DPD Pickup'],
-      url: 'https://dev.bardotti.pl'
+      // key: '5DFC0961AB6BEF40736BA3099EE27491',
+      // id: '123123',
+      // name: 'bardotti',
+      // theme: 0,
+      // providers: ['Poczta Polska', 'In Post', 'DPD Pickup'],
+      // url: 'https://dev.bardotti.pl'
     }
   },
   mutations: {
@@ -176,6 +178,17 @@ export default new Vuex.Store({
     },
     get_autocomplete_err (state) {
       state.status = 'errorr, autocomplete list couldnt be loaded'
+    },
+    get_essentials (state) {
+      state.status = 'loading customer data'
+    },
+    get_essentials_succ (state, customer) {
+      state.customer = customer
+      state.status = 'success, customer data loaded'
+      state.keyError = ''
+    },
+    get_essentials_err (state) {
+      state.keyError = 'error, customer data couldnt be loaded'
     }
   },
   actions: {
@@ -235,6 +248,20 @@ export default new Vuex.Store({
             resolve(res)
           }).catch(err => {
             commit('get_autocomplete_err')
+            reject(err)
+          })
+      })
+    },
+    get_essentials ({commit}, query) {
+      return new Promise((resolve, reject) => {
+        commit('get_essentials')
+        APIService.get_essentials(query)
+          .then(res => {
+            const customer = res.data.response
+            commit('get_essentials_succ', customer)
+            resolve(res)
+          }).catch(err => {
+            commit('get_essentials_err')
             reject(err)
           })
       })

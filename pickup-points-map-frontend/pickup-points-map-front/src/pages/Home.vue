@@ -1,31 +1,39 @@
 <template>
-  <div class="widget-view">
-    <div class="header-view" v-if="isWidgetVersion">
-      <select-location/>
+  <div>
+    <div v-if="$store.state.keyError.length > 0" class="main-enter-info">
+      <p class="error-text">
+        Klucz produktu jest nieprawidłowy.
+        <br>Proszę o kontakt z działem IT
+      </p>
     </div>
-    <div class="container-map">
-      <div class="mobile-header" v-if="isMobile">
-        <div class="mobile-container">
-          <i class="lejek-icon" @click="openFilterMobile"  :data-content="filtersCount"></i>
+    <div v-else-if="$store.state.keyError.length === 0" class="widget-view">
+      <div class="header-view" v-if="isWidgetVersion">
+        <select-location/>
+      </div>
+      <div class="container-map">
+        <div class="mobile-header" v-if="isMobile">
+          <div class="mobile-container">
+            <i class="lejek-icon" @click="openFilterMobile"  :data-content="filtersCount"></i>
+          </div>
+        </div>
+        <vue-over-body :dim="false" :open="this.$store.state.isFilterMobileOpen" before="beforeFilters" after="afterFilters" :transition="0.3">
+          <div v-if="isMobile" class="scroll-box-filters">
+            <Filters/>
+          </div>
+        </vue-over-body>
+        <Map/>
+        <div class="mobile-footer" v-if="!showListFooter && isMobile">
+          <i class="button-footer" @click="openFooterModal"/>
+        </div>
+        <div class="list-modal-footer" v-if="showListFooter && isMobile">
+          <p class="footer-btn">WYBIERZ TEN PUNKT</p>
         </div>
       </div>
-      <vue-over-body :dim="false" :open="this.$store.state.isFilterMobileOpen" before="beforeFilters" after="afterFilters" :transition="0.3">
-        <div v-if="isMobile" class="scroll-box-filters">
-          <Filters/>
+      <div class="features-div" :class="{ 'first' : !isWidgetVersion }">
+        <div :class="{ 'features-box-ver2' : !isWidgetVersion }">
+          <select-location v-if="!isWidgetVersion"/>
+          <Filters v-if="!isMobile"/>
         </div>
-      </vue-over-body>
-      <Map/>
-      <div class="mobile-footer" v-if="!showListFooter && isMobile">
-        <i class="button-footer" @click="openFooterModal"/>
-      </div>
-      <div class="list-modal-footer" v-if="showListFooter && isMobile">
-        <p class="footer-btn">WYBIERZ TEN PUNKT</p>
-      </div>
-    </div>
-    <div class="features-div" :class="{ 'first' : !isWidgetVersion }">
-      <div :class="{ 'features-box-ver2' : !isWidgetVersion }">
-        <select-location v-if="!isWidgetVersion"/>
-        <Filters v-if="!isMobile"/>
       </div>
     </div>
   </div>
@@ -106,6 +114,33 @@ export default {
 </style>
 
 <style lang="scss" scoped>
+.main-enter-info {
+  position: absolute;
+  z-index: 1001;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  margin: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: gray;
+  @media (max-width: 767px) {
+    top: 70px;
+  }
+  p {
+    margin: 0;
+    padding: 15px;
+    border-radius: 5px;
+    color: #e4405f;
+    font-weight: 700;
+    text-transform: uppercase;
+    background-color: #ffffff;
+    display: flex;
+    flex-direction: column;
+  }
+}
 .scroll-box-filters{
   height: 100%;
   width: 100%;

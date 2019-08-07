@@ -97,7 +97,8 @@ export default {
       filters: {
         checkedSuppliers: [],
         features: []
-      }
+      },
+      frameData: null
     }
   },
   created () {
@@ -108,7 +109,7 @@ export default {
   },
   computed: {
     customerSuppliers () {
-      if (this.$store.state.customer.providers.length !== 0) {
+      if (this.$store.state.customer.providers && this.$store.state.customer.providers.length !== 0) {
         let finalList = []
         for (let supplier of this.$store.state.customer.providers) {
           for (let type of this.providerToPickupTypeMapping[supplier]) {
@@ -136,18 +137,36 @@ export default {
     },
     isFilterMobilOpen () {
       return this.$store.state.isFilterMobilOpen
+    },
+    updateCustomer () {
+      return this.frameData
+    }
+  },
+  watch: {
+    updateCustomer: {
+      handler () {
+        if (this.$store.state.keyError.length === 0) {
+          if (this.allSuppliers.indexOf(this.frameData.data.content.filter) >= 0) {
+            if (this.filters.checkedSuppliers.indexOf(this.frameData.data.content.filter) === -1) {
+              this.filters.checkedSuppliers.push(this.frameData.data.content.filter)
+              return this.selectedFilter()
+            }
+          }
+        }
+      }
     }
   },
   methods: {
     filterApply: function (event) {
-      if (event.origin === this.customerUrl || event.origin === 'http://localhost:8081') {
-        if (this.allSuppliers.indexOf(event.data.content.filter) >= 0) {
-          if (this.filters.checkedSuppliers.indexOf(event.data.content.filter) === -1) {
-            this.filters.checkedSuppliers.push(event.data.content.filter)
-            this.selectedFilter()
-          }
-        }
-      }
+      this.frameData = event
+      // if (event.origin.includes(this.$store.state.customer.domain) || event.origin === 'http://localhost:8081') {
+      //   if (this.allSuppliers.indexOf(event.data.content.filter) >= 0) {
+      //     if (this.filters.checkedSuppliers.indexOf(event.data.content.filter) === -1) {
+      //       this.filters.checkedSuppliers.push(event.data.content.filter)
+      //       this.selectedFilter()
+      //     }
+      //   }
+      // }
     },
     selectedFilter () {
       this.$store.commit('newStoreFilters', this.filters)

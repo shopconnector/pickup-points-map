@@ -3,6 +3,11 @@ import axios from 'axios'
 const API_URL = 'https://api.pickuppointsmap.dev.beecommerce.pl'
 
 export default {
+  get_essentials (query) {
+    return axios({
+      url: `${API_URL}/widget-essentials?key=${query.key}`
+    })
+  },
   get_autocomplete (query) {
     return axios({
       url: `${API_URL}/pickup-autocomplete?id=${query.id}&key=${query.key}`

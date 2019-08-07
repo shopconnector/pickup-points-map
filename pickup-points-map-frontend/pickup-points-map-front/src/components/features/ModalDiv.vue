@@ -136,6 +136,7 @@ export default {
   },
   methods: {
     setPoint (point) {
+      console.log(point)
       this.sendMessage(point)
     },
     sendMessage (point) {

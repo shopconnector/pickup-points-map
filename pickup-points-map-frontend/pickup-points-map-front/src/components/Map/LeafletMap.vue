@@ -277,28 +277,12 @@ export default {
           // if (this.$store.state.pointMarkers) {
           //   this.$store.commit('updatePosition', [{ lat: this.$store.state.pointMarkers[0].lat, lng: this.$store.state.pointMarkers[0].lon, zoom: 16 }])
           // }
-          this.$store.dispatch('get_list_points', {
-            lat: '',
-            lng: '',
-            page: '',
-            filtered: '',
-            id: `id=${this.$store.state.pointId}`,
-            key: `&key=${this.$store.state.customer.key}`
-          })
         } else if (this.$store.state.zoom >= 13 && !this.isPopupOpen && this.$store.state.radiusOfVisibily !== 0) {
           this.$store.dispatch('get_points', {
             lat: `lat=${this.$store.state.lat}`,
             lng: `&lon=${this.$store.state.lng}`,
             key: `&key=${this.$store.state.customer.key}`,
             dist: `&dist=${this.$store.state.radiusOfVisibily}`,
-            filtered: this.filteredPoints(),
-            id: ''
-          })
-          this.$store.dispatch('get_list_points', {
-            lat: `lat=${this.$store.state.lat}`,
-            lng: `&lon=${this.$store.state.lng}`,
-            key: `&key=${this.$store.state.customer.key}`,
-            page: `&page=${this.$store.state.pageNumber}`,
             filtered: this.filteredPoints(),
             id: ''
           })
@@ -376,6 +360,25 @@ export default {
         this.toogleMap = false
       } else if (text === 'hide') {
         this.toogleMap = true
+      }
+      if (this.$store.state.pointId) {
+        this.$store.dispatch('get_list_points', {
+          lat: '',
+          lng: '',
+          page: '',
+          filtered: '',
+          id: `id=${this.$store.state.pointId}`,
+          key: `&key=${this.$store.state.customer.key}`
+        })
+      } else {
+        this.$store.dispatch('get_list_points', {
+          lat: `lat=${this.$store.state.lat}`,
+          lng: `&lon=${this.$store.state.lng}`,
+          key: `&key=${this.$store.state.customer.key}`,
+          page: `&page=${this.$store.state.pageNumber}`,
+          filtered: this.filteredPoints(),
+          id: ''
+        })
       }
       this.toogleMethod('false')
       this.$store.commit('closeListFooter')
