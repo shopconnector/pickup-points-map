@@ -155,9 +155,10 @@ export default {
         //  key: `${'5DFC0961AB6BEF40736BA3099EE27491'}`
         })
         this.locitAddress = event.data.content.address
-      } else {
-        this.$store.state.keyError = 'Not valid cutomer key'
       }
+      // else {
+      //   this.$store.state.keyError = 'Not valid cutomer key'
+      // }
     },
     emitMethod () {
       EventBus.$emit('popupClose')
