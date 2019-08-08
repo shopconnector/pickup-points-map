@@ -19,12 +19,14 @@ export default new Vuex.Store({
     radiusOfVisibily: 1,
     markerDetails: [],
     pointMarkers: [],
+    closestPunktErrors: '',
+    // closestPointMarkers: [],
     pageNumber: 1,
+    // zoomClosest: null,
     selectedPoint: null,
     listMarkers: [],
     storeFilters: [],
     autocompleteList: [],
-    secretKey: '',
     pointId: '',
     keyError: '',
     suggestionTextLocit: '',
@@ -68,6 +70,10 @@ export default new Vuex.Store({
     openFilterMobile (state) {
       state.isFilterMobileOpen = 1
     },
+    // changeZoomClosest (state, payload) {
+    //   state.zoom = payload
+    //   state.closestPointMarkers = []
+    // },
     changeRadiusOfVisibility (state, newRadius) {
       if (newRadius) state.radiusOfVisibily = newRadius
     },
@@ -123,20 +129,16 @@ export default new Vuex.Store({
         state.pointMarkers = []
         state.status = 'success, but distance too long'
       } else {
+        state.closestPunktErrors = ''
         state.pointMarkers = points
         state.status = 'success, points loaded'
       }
     },
-    // get_closest_points_succ (state, points) {
-    //   if (state.zoom < 13) {
-    //     state.pointMarkers = []
-    //     state.status = 'success, but distance too long'
-    //   } else {
-    //     state.pointMarkers = points
-    //     state.zoom = 13
-    //     state.status = 'success, points loaded'
-    //   }
-    // },
+    get_closest_points_succ (state, points) {
+      state.pointMarkers = points
+      state.closestPunktErrors = 'success, but distance too long'
+      state.status = 'success, closest points loaded'
+    },
     get_points_err (state) {
       state.status = 'error, points couldnt be loaded'
     },
@@ -204,6 +206,8 @@ export default new Vuex.Store({
             const points = res.data.response.pickupPoints
             if (res.data.response_type === 'id') {
               commit('get_pointsById_succ', points)
+            } else if (res.data.response_type === '10 closest') {
+              commit('get_closest_points_succ', points)
             } else {
               commit('get_points_succ', points)
             }

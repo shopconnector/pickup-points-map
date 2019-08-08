@@ -1,5 +1,5 @@
 <template>
-    <div class='filters add-scroll-filters' :class="{ 'filtersV2' : !isWidgetVersion }">
+    <div class='filters add-scroll-filters' :key="forceKey" :class="{ 'filtersV2' : !isWidgetVersion }">
       <!-- Select suppliers first version -->
       <div class="suppliers" v-if="isWidgetVersion && !isMobile">
         <h2 class="title-supp">Wybierz dostawców</h2>
@@ -54,6 +54,7 @@ export default {
   mixins: [MobileDetected],
   data () {
     return {
+      forceKey: 0,
       suppliersLogosUrl: {
         'Poczta Polska': 'pocztapolska.png',
         'DPD Pickup': 'dpd-pickup.png',
@@ -146,10 +147,14 @@ export default {
     updateCustomer: {
       handler () {
         if (this.$store.state.keyError.length === 0 && this.frameData.data.content) {
-          if (this.allSuppliers.indexOf(this.frameData.data.content.filter) >= 0) {
-            if (this.filters.checkedSuppliers.indexOf(this.frameData.data.content.filter) === -1) {
-              this.filters.checkedSuppliers.push(this.frameData.data.content.filter)
-              return this.selectedFilter()
+          // || event.origin === 'http://localhost:8080'
+          if (event.origin.includes(this.$store.state.customer.domain)) {
+            if (this.allSuppliers.indexOf(this.frameData.data.content.filter) >= 0) {
+              if (this.filters.checkedSuppliers.indexOf(this.frameData.data.content.filter) === -1) {
+                this.filters.checkedSuppliers.push(this.frameData.data.content.filter)
+                this.forceRerender()
+                return this.selectedFilter()
+              }
             }
           }
         }
@@ -157,6 +162,9 @@ export default {
     }
   },
   methods: {
+    forceRerender () {
+      this.forceKey += 1
+    },
     filterApply: function (event) {
       this.frameData = event
       // if (event.origin.includes(this.$store.state.customer.domain) || event.origin === 'http://localhost:8081') {

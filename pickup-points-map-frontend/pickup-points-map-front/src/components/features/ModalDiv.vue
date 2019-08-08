@@ -73,7 +73,7 @@
           <p v-if="parentData.points && point.id.length" class="mobile-map-street">{{ parentData.points && point.id }}</p>
         </div>
       </div>
-      <div class="mobile-map-hours" v-if="parentData.points && point.working_hours.length > 0" :key="'hours-' + index">
+      <div class="mobile-map-hours" v-if="point && point.working_hours.length > 0" :key="'hours-' + index">
         <div class="mobile-map-hours-title">
           <b>Godziny otwarcia:</b>
         </div>
@@ -92,7 +92,7 @@
         <p v-if="parentData.points && point.features.cash_on_delivery" class="additional-info"><span class="mobile-map-icon-padding"><i class="icon pobraniem"/></span> - odbiór za pobraniem</p>
       </div>
       <div class="mobile-map-footer" :key="'btn-' + index">
-        <p class="mobile-map-btn-close" @click="closeModal(); setPoint(point);">WYBIERZ I ZAMKNIJ</p>
+        <p class="mobile-map-btn-close" @click="closeModal(); setPoint(point);">Wybierz "{{ parentData.pickup_type }}" i zamknij</p>
       </div>
       </template>
     </div>
@@ -141,7 +141,6 @@ export default {
   },
   methods: {
     setPoint (point) {
-      console.log(point)
       this.sendMessage(point)
     },
     sendMessage (point) {
@@ -161,6 +160,7 @@ export default {
   flex-direction: column;
   flex-wrap: wrap;
   max-height: 68px;
+  text-align: left;
   p {
     padding-right: 3px;
   }

@@ -26,7 +26,7 @@
           <i class="button-footer" @click="openFooterModal"/>
         </div>
         <div class="list-modal-footer" v-if="showListFooter && isMobile">
-          <p class="footer-btn">WYBIERZ TEN PUNKT</p>
+          <p class="footer-btn" @click="setPoint($store.state.markerDetails)">WYBIERZ TEN PUNKT</p>
         </div>
       </div>
       <div class="features-div" :class="{ 'first' : !isWidgetVersion }">
@@ -70,6 +70,12 @@ export default {
     openFilterMobile () {
       this.$store.commit('openFilterMobile')
       this.$store.commit('closeListFooter')
+    },
+    setPoint (point) {
+      this.sendMessage(point)
+    },
+    sendMessage (point) {
+      window.parent.postMessage(point, '*')
     }
   },
   computed: {

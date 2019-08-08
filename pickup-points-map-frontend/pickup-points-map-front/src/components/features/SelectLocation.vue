@@ -111,6 +111,7 @@ export default {
   },
   created () {
     window.addEventListener('message', this.filterApply)
+    // this.filterApply()
   },
   destroyed () {
     window.removeEventListener('message', this.filterApply)
@@ -147,12 +148,14 @@ export default {
   },
   methods: {
     filterApply: async function (event) {
-      if (event.data.content) {
+      if (event.data.content && event.data.content.hasOwnProperty('key')) {
         await this.$store.dispatch('get_essentials', {
           key: `${event.data.content.key}`
-          // key: `${'5DFC0961AB6BEF40736BA3099EE27491'}`
+        //  key: `${'5DFC0961AB6BEF40736BA3099EE27491'}`
         })
         this.locitAddress = event.data.content.address
+      } else {
+        this.$store.state.keyError = 'Not valid cutomer key'
       }
     },
     emitMethod () {

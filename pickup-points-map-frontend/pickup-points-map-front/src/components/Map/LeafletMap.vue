@@ -21,6 +21,11 @@
      <div v-else-if="($store.state.zoom < 13 || ($store.state.pointMarkers && $store.state.pointMarkers.length > 100)) && !toogleMap" class="error-info">
       <p>Powiększ zoom żeby zobaczyć punkty</p>
     </div>
+    <div v-else-if="$store.state.closestPunktErrors.length > 0 && !toogleMap" class="error-info">
+      <p class="closest-error">Nie znaleźiono żadnego punktu. Zmniejsz zoom żeby zobaczyć punkty.</p>
+         <!-- <br><br> -->
+         <!-- <span @click="zoomClosest()">Closest</span> -->
+    </div>
     <transition name="fade">
       <div  v-if="toogleMap" class="list-box" :class="{'listbox-margin-top' : isWidgetVersion}">
           <div class="list-title hidden-xs"><h1>Punkty odbioru w pobliżu Twojej lokalizacji</h1></div>
@@ -257,6 +262,9 @@ export default {
     zoomOrCenterUpdateOrFiltersUpdate () {
       return [this.$store.state.zoom, this.$store.state.lat, this.$store.state.lng, this.$store.state.storeFilters.features, this.$store.state.storeFilters.checkedSuppliers, this.$store.state.pointId].join()
     },
+    filtersUpdate () {
+      return [this.$store.state.storeFilters.features, this.$store.state.storeFilters.checkedSuppliers].join()
+    },
     pointIdUpdate () {
       return [this.$store.state.pointId].join()
     }
@@ -294,6 +302,29 @@ export default {
         setTimeout(() => {
           this.$store.commit('updatePosition', [{ lat: this.$store.state.pointMarkers[0].lat, lng: this.$store.state.pointMarkers[0].lon, zoom: 16 }])
         }, 100)
+      }
+    },
+    filtersUpdate: {
+      handler () {
+        if (this.$store.state.pointId) {
+          this.$store.dispatch('get_list_points', {
+            lat: '',
+            lng: '',
+            page: '',
+            filtered: '',
+            id: `id=${this.$store.state.pointId}`,
+            key: `&key=${this.$store.state.customer.key}`
+          })
+        } else {
+          this.$store.dispatch('get_list_points', {
+            lat: `lat=${this.$store.state.lat}`,
+            lng: `&lon=${this.$store.state.lng}`,
+            key: `&key=${this.$store.state.customer.key}`,
+            page: `&page=${this.$store.state.pageNumber}`,
+            filtered: this.filteredPoints(),
+            id: ''
+          })
+        }
       }
     }
   },
@@ -398,6 +429,26 @@ export default {
       var rad = Math.round(dist / 2)
       this.$store.commit('changeRadiusOfVisibility', rad)
     },
+    // zoomClosest () {
+    //   let pins = this.$store.state.pointMarkers
+    //   var dist = Math.max.apply(Math, pins.map((pin) => {
+    //     var fromLng = this.$store.state.lng / 180.0 * Math.PI
+    //     var fromLat = this.$store.state.lat / 180.0 * Math.PI
+    //     var pointLng = pin.lon / 180.0 * Math.PI
+    //     var pointLat = pin.lat / 180.0 * Math.PI
+    //     var dist = Math.acos(Math.sin(fromLat) * Math.sin(pointLat) + (Math.cos(fromLat) * Math.cos(pointLat) * Math.cos(pointLng - fromLng))) * 6371000
+    //     return dist
+    //   }))
+    //   var x = Math.pow(dist, 2)
+    //   var C = 2 * Math.PI * 6378137.000
+    //   var temp = Math.abs((C * Math.cos(53.06616)) / x)
+    //   var zoom = Math.round(Math.log2(temp) + 10)
+    //   this.$store.commit('changeZoomClosest', zoom)
+    //   setTimeout(() => {
+    //     this.$store.commit('changeZoomClosest', zoom)
+    //   }, 100)
+    //   console.log('hello', zoom)
+    // },
     toogleMethod (bool, num) {
       this.$store.commit('changeSelectedPoint', num)
       if (bool === 'true') {
@@ -489,6 +540,12 @@ export default {
 </style>
 
 <style lang="scss" scoped>
+.closest-error {
+  width: 55%;
+  @media (max-width: 767px) {
+    font-size: 14px;
+  }
+}
 .popup-box-next{
   margin-top: 20px;
 }
@@ -621,6 +678,17 @@ export default {
   p {
     margin: 0;
     padding: 15px;
+    border-radius: 5px;
+    color: #e4405f;
+    font-weight: 700;
+    text-transform: uppercase;
+    background-color: #ffffff;
+  }
+  span {
+    cursor: pointer;
+    margin: 0;
+    border: 2px solid #e4405f;
+    padding: 10px;
     border-radius: 5px;
     color: #e4405f;
     font-weight: 700;
