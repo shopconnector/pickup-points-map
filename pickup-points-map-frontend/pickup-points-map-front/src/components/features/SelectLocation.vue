@@ -147,13 +147,13 @@ export default {
     }
   },
   methods: {
-    filterApply: async function (event) {
+    filterApply: function (event) {
       console.log(event)
       if (event.data.content) {
-        await this.$store.dispatch('get_essentials', {
+        this.$store.dispatch('get_essentials', {
           key: `${event.data.content.key}`
         //  key: `${'5DFC0961AB6BEF40736BA3099EE27491'}`
-        })
+        }).then((res) => { console.log(res) }).catch(err => console.log(err))
         this.locitAddress = event.data.content.address
       }
       // else {
