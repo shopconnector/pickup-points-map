@@ -109,11 +109,11 @@ export default {
       address: ''
     }
   },
-  created () {
+  beforeMount () {
     window.addEventListener('message', this.filterApply)
     // this.filterApply()
   },
-  destroyed () {
+  beforeDestroy () {
     window.removeEventListener('message', this.filterApply)
   },
   computed: {
@@ -150,7 +150,6 @@ export default {
     filterApply: async function (event) {
       console.log(event)
       if (event.data.content) {
-        // console.log('from if')
         await this.$store.dispatch('get_essentials', {
           key: `${event.data.content.key}`
         //  key: `${'5DFC0961AB6BEF40736BA3099EE27491'}`

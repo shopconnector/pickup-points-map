@@ -191,7 +191,7 @@ export default new Vuex.Store({
     get_essentials_succ (state, customer) {
       state.customer = customer
       state.status = 'success, customer data loaded'
-      state.keyError = ''
+      // state.keyError = ''
     },
     get_essentials_err (state) {
       state.keyError = 'error, customer data couldnt be loaded'

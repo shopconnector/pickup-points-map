@@ -102,10 +102,10 @@ export default {
       frameData: null
     }
   },
-  created () {
+  beforeMount () {
     window.addEventListener('message', this.filterApply)
   },
-  destroyed () {
+  beforeDestroy () {
     window.removeEventListener('message', this.filterApply)
   },
   computed: {
