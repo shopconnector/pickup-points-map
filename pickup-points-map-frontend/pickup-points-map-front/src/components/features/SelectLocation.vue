@@ -111,7 +111,6 @@ export default {
   },
   beforeMount () {
     window.addEventListener('message', this.filterApply)
-    // this.filterApply()
   },
   beforeDestroy () {
     window.removeEventListener('message', this.filterApply)
@@ -148,17 +147,9 @@ export default {
   },
   methods: {
     filterApply: function (event) {
-      console.log(event)
       if (event.data.content) {
-        this.$store.dispatch('get_essentials', {
-          key: `${event.data.content.key}`
-        //  key: `${'5DFC0961AB6BEF40736BA3099EE27491'}`
-        })
         this.locitAddress = event.data.content.address
       }
-      // else {
-      //   this.$store.state.keyError = 'Not valid cutomer key'
-      // }
     },
     emitMethod () {
       EventBus.$emit('popupClose')
