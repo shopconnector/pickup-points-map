@@ -92,7 +92,7 @@
         <p v-if="parentData.points && point.features.cash_on_delivery" class="additional-info"><span class="mobile-map-icon-padding"><i class="icon pobraniem"/></span> - odbiór za pobraniem</p>
       </div>
       <div class="mobile-map-footer" :key="'btn-' + index">
-        <p class="mobile-map-btn-close" @click="closeModal(); setPoint(point);">Wybierz "{{ parentData.pickup_type }}" i zamknij</p>
+        <p class="mobile-map-btn-close" @click="closeModal(); setPoint(parentData);">Wybierz "{{ parentData.pickup_type }}" i zamknij</p>
       </div>
       </template>
     </div>

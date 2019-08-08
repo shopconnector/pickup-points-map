@@ -2,8 +2,9 @@
   <div>
     <div v-if="!$store.state.keyError" class="main-enter-info">
       <p class="error-text">
-        Klucz produktu jest nieprawidłowy.
-        <br>Proszę o kontakt z działem IT
+        Dostęp zablokowany dla niezautoryzowanych użytkowników.
+        <br>Jeśli interesuje cię użycie narzędzia PickupPoints, odwiedź
+        <a href="https://www.punktyodbiorupaczek.pl" target="_blank">punktyodbiorupaczek.pl</a>
       </p>
     </div>
     <div v-else class="widget-view">
@@ -73,7 +74,6 @@ export default {
   methods: {
     filterApply: function (event) {
       if (event.data.content) {
-        console.log(event)
         this.$store.dispatch('get_essentials', {
           key: `${event.data.content.key}`
         //  key: `${'5DFC0961AB6BEF40736BA3099EE27491'}`
@@ -157,10 +157,12 @@ export default {
     border-radius: 5px;
     color: #e4405f;
     font-weight: 700;
-    text-transform: uppercase;
     background-color: #ffffff;
     display: flex;
     flex-direction: column;
+  }
+  a {
+    padding-top: 5px;
   }
 }
 .scroll-box-filters{
