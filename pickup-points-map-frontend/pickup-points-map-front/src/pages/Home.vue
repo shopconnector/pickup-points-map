@@ -1,12 +1,12 @@
 <template>
   <div>
-    <div v-if="$store.state.keyError.length > 0" class="main-enter-info">
+    <div v-if="!$store.state.keyError" class="main-enter-info">
       <p class="error-text">
         Klucz produktu jest nieprawidłowy.
         <br>Proszę o kontakt z działem IT
       </p>
     </div>
-    <div v-else-if="$store.state.keyError.length === 0" class="widget-view">
+    <div v-else class="widget-view">
       <div class="header-view" v-if="isWidgetVersion">
         <select-location/>
       </div>

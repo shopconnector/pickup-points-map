@@ -28,7 +28,7 @@ export default new Vuex.Store({
     storeFilters: [],
     autocompleteList: [],
     pointId: '',
-    keyError: '',
+    keyError: false,
     suggestionTextLocit: '',
     providerToPickupTypeMapping: {
       'In Post': ['In Post'],
@@ -191,10 +191,10 @@ export default new Vuex.Store({
     get_essentials_succ (state, customer) {
       state.customer = customer
       state.status = 'success, customer data loaded'
-      // state.keyError = ''
+      state.keyError = true
     },
     get_essentials_err (state) {
-      state.keyError = 'error, customer data couldnt be loaded'
+      state.keyError = false
     }
   },
   actions: {

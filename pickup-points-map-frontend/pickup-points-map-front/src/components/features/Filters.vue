@@ -146,7 +146,7 @@ export default {
   watch: {
     updateCustomer: {
       handler () {
-        if (this.$store.state.keyError.length === 0 && this.frameData.data.content) {
+        if (this.frameData.data.content) {
           // || event.origin === 'http://localhost:8080'
           if (event.origin.includes(this.$store.state.customer.domain)) {
             if (this.allSuppliers.indexOf(this.frameData.data.content.filter) >= 0) {
