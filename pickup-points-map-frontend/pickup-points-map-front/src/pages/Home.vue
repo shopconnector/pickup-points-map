@@ -73,6 +73,7 @@ export default {
   },
   methods: {
     filterApply: function (event) {
+      console.log('home', event)
       if (event.data.content && event.data.content.hasOwnProperty('key')) {
         this.$store.dispatch('get_essentials', {
           key: `${event.data.content.key}`

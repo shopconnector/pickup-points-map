@@ -470,6 +470,7 @@ p {
     width: 100%;
     display: flex;
     p {
+      text-align: left;
       font-size: 16px;
       color: #000000;
       font-weight: 600;
@@ -488,6 +489,7 @@ p {
   width: 100%;
   display: flex;
   p {
+    text-align: left;
     font-size: 16px;
     color: #000000;
     font-weight: 600;

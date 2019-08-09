@@ -109,10 +109,10 @@ export default {
       filterApplyCount: 0
     }
   },
-  beforeMount () {
+  created () {
     window.addEventListener('message', this.filterApply)
   },
-  beforeDestroy () {
+  destroyed () {
     window.removeEventListener('message', this.filterApply)
   },
   computed: {
@@ -147,6 +147,7 @@ export default {
   },
   methods: {
     filterApply: function (event) {
+      console.log('location:', event)
       if (event.data.content && this.filterApplyCount === 0) {
         this.locitAddress = event.data.content.address
         this.filterApplyCount += 1

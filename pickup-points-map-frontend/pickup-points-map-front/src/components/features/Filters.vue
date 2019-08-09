@@ -102,10 +102,10 @@ export default {
       frameData: null
     }
   },
-  beforeMount () {
+  created () {
     window.addEventListener('message', this.filterApply)
   },
-  beforeDestroy () {
+  destroyed () {
     window.removeEventListener('message', this.filterApply)
   },
   computed: {
@@ -154,7 +154,7 @@ export default {
                 this.filters.checkedSuppliers.push(this.frameData.data.content.filter)
                 var n = this.filters.features.length + this.filters.checkedSuppliers.length
                 this.$store.commit('howManyFiltersApplies', n)
-                this.forceRerender()
+                // this.forceRerender()
                 return this.selectedFilter()
               }
             }
@@ -168,7 +168,9 @@ export default {
       this.forceKey += 1
     },
     filterApply: function (event) {
+      console.log('Filters', event)
       this.frameData = event
+      this.forceRerender()
       // if (event.origin.includes(this.$store.state.customer.domain) || event.origin === 'http://localhost:8081') {
       //   if (this.allSuppliers.indexOf(event.data.content.filter) >= 0) {
       //     if (this.filters.checkedSuppliers.indexOf(event.data.content.filter) === -1) {
