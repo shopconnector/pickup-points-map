@@ -64,19 +64,19 @@ export default {
     return {
     }
   },
-  beforeMount () {
+  created () {
     window.addEventListener('message', this.filterApply)
     // this.filterApply()
   },
-  beforeDestroy () {
+  destroyed () {
     window.removeEventListener('message', this.filterApply)
   },
   methods: {
     filterApply: function (event) {
-      if (event.data.content) {
+      if (event.data.content && event.data.content.hasOwnProperty('key')) {
         this.$store.dispatch('get_essentials', {
           key: `${event.data.content.key}`
-        //  key: `${'5DFC0961AB6BEF40736BA3099EE27491'}`
+          // key: `${'5DFC0961AB6BEF40736BA3099EE27491'}`
         })
       }
     },

@@ -21,7 +21,7 @@
      <div v-else-if="($store.state.zoom < 13 || ($store.state.pointMarkers && $store.state.pointMarkers.length > 100)) && !toogleMap" class="error-info">
       <p>Powiększ zoom żeby zobaczyć punkty</p>
     </div>
-    <div v-else-if="$store.state.closestPunktErrors.length > 0 && !toogleMap" class="error-info">
+    <div v-else-if="$store.state.closestPunktErrors.length > 0 && $store.state.pointMarkers.length === 10 && !toogleMap" class="error-info">
       <p class="closest-error">Nie znaleźiono żadnego punktu. Zmniejsz zoom żeby zobaczyć punkty.</p>
          <!-- <br><br> -->
          <!-- <span @click="zoomClosest()">Closest</span> -->
@@ -57,11 +57,18 @@
                   <transition name="fade">
                     <div class="list-modal" v-if="isOpenListModal(index) && isMobile && $store.state.markerDetails">
                       <template v-if="typeof $store.state.markerDetails.points !== 'undefined'">
-                        <div class="list-modal-hours" v-if="$store.state.markerDetails.points[0].working_hours.length">
+                        <div class="list-modal-hours" v-if="$store.state.markerDetails.points[0].working_hours.length > 0">
                           <b>Godziny otwarcia:</b>
                           <template v-for="day in $store.state.markerDetails.points[0].working_hours">
                             {{ day }}
                           </template>
+                        </div>
+                        <div class="list-modal-price" v-if="$store.state.markerDetails.points[0].prices">
+                          <b>Cennik: </b>
+                          <div class="list-modal-price-info">
+                            <p v-if="$store.state.markerDetails.points[0].prices.cod">Odbiór za pobraniem: {{ $store.state.markerDetails.points[0].prices.cod }} zł</p>
+                            <p v-if="$store.state.markerDetails.points[0].prices.pp">PrePaid: {{ $store.state.markerDetails.points[0].prices.pp }} zł</p>
+                          </div>
                         </div>
                         <div class="list-modal-additional">
                           <p v-if="$store.state.markerDetails.points[0].features.open_late" class="icon hours"/>
@@ -272,6 +279,11 @@ export default {
   watch: {
     zoomOrCenterUpdateOrFiltersUpdate: {
       handler () {
+        // var closePopup = document.getElementsByClassName('leaflet-popup-close-button')[0]
+        // if (closePopup) {
+        //   this.popupClose()
+        //   closePopup.click()
+        // }
         this.$store.commit('changePageNumber', 1)
         if (this.$store.state.pointId) {
           this.$store.dispatch('get_points', {
@@ -573,11 +585,24 @@ export default {
 .list-background-mobile-fix{
   background: #F5F5F5;
 }
+.list-modal-price {
+  display: flex;
+  justify-content: space-evenly;
+  b {
+    font-size: 14px;
+  }
+  .list-modal-price-info {
+    p {
+      margin: 0;
+      font-size: 14px;
+    }
+  }
+}
 .list-modal{
   width: 100%;
   .list-modal-hours{
     display: flex;
-    flex-direction: column;
+    justify-content: space-evenly;
     text-align: center;
     padding: 15px 0;
     font-size: 14px;

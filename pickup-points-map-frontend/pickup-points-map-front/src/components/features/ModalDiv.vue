@@ -36,15 +36,26 @@
                   <a :href="linkToRoad" target="_blank">Wyznacz trasę dojazdu <i class="play_arrow"/></a>
                 </div>
               </div>
-              <div class="open-hours" v-if="parentData.points && parentData.points[selectedPoint].working_hours.length > 0">
-                <div class="hours-title">
-                  <p>Godziny otwarcia</p>
+              <div class="col-3">
+                <div class="open-hours" v-if="parentData.points && parentData.points[selectedPoint].working_hours.length > 0">
+                  <div class="hours-title">
+                    <p>Godziny otwarcia</p>
+                  </div>
+                  <div class="week">
+                    <div class="hourse-info">
+                      <template v-for="(day, index) in parentData.points[selectedPoint].working_hours">
+                        <p :key="index">{{ day }}</p>
+                      </template>
+                    </div>
+                  </div>
                 </div>
-                <div class="week">
-                  <div class="hourse-info">
-                    <template v-for="(day, index) in parentData.points[selectedPoint].working_hours">
-                      <p :key="index">{{ day }}</p>
-                    </template>
+                <div class="price" v-if="parentData.points && parentData.points[selectedPoint].prices">
+                  <div class="price-title">
+                    <p>Cennik</p>
+                  </div>
+                  <div class="price-info">
+                    <p v-if="parentData.points[selectedPoint].prices.cod">Odbiór za pobraniem: {{ parentData.points[selectedPoint].prices.cod }} zł</p>
+                    <p v-if="parentData.points[selectedPoint].prices.pp">PrePaid: {{ parentData.points[selectedPoint].prices.pp }} zł</p>
                   </div>
                 </div>
               </div>
@@ -81,6 +92,15 @@
             <template v-for="(day, index) in point.working_hours">
               <p class="day-p" :key="index">{{ day }}</p>
             </template>
+        </div>
+      </div>
+      <div class="mobile-price" v-if="point && point.prices" :key="'price-' + index">
+        <div class="mobile-price-title">
+          <b>Cennik: </b>
+        </div>
+        <div class="mobile-price-info">
+          <p v-if="point.prices.cod">Odbiór za pobraniem: {{ point.prices.cod }} zł</p>
+          <p v-if="point.prices.pp">PrePaid: {{ point.prices.pp }} zł</p>
         </div>
       </div>
       <div class="mobile-map-additional" :key="'add-' + index">
@@ -130,8 +150,11 @@ export default {
       return this.$store.state.customer.theme
     },
     linkToRoad () {
-      if (this.$store.state.geolocation.lat && this.$store.state.suggestionTextLocit.length === 0) {
+      if (this.$store.state.geolocation.lat && this.$store.state.suggestionTextLocit.length === 0 && this.$store.state.linkToRoad.x === 0) {
         let url = 'https://www.google.pl/maps/dir/' + this.$store.state.geolocation.lat + ',' + this.$store.state.geolocation.lng + '/' + this.parentData.lat + ',' + this.parentData.lon + '/@52.2502198,21.0280249 + ,16z/data=!4m2!4m1!3e3?hl=pl'
+        return url
+      } else if (this.$store.state.linkToRoad.x > 0 && this.$store.state.suggestionTextLocit.length === 0) {
+        let url = 'https://www.google.pl/maps/dir/' + this.$store.state.linkToRoad.x + ',' + this.$store.state.linkToRoad.y + '/' + this.parentData.lat + ',' + this.parentData.lon + '/@52.2502198,21.0280249 + ,16z/data=!4m2!4m1!3e3?hl=pl'
         return url
       } else {
         let url = 'https://www.google.pl/maps/dir/' + this.$store.state.suggestionTextLocit.city + ',' + this.$store.state.suggestionTextLocit.street + ',' + this.$store.state.suggestionTextLocit.building + '/' + this.parentData.lat + ',' + this.parentData.lon + '/@52.2502198,21.0280249 + ,16z/data=!4m2!4m1!3e3?hl=pl'
@@ -154,22 +177,18 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.col-3 {
+  display: flex;
+  justify-content: space-between;
+}
 .hourse-info{
   font-size: 14px;
   display: flex;
   flex-direction: column;
-  flex-wrap: wrap;
-  max-height: 68px;
   text-align: left;
-  p {
-    padding-right: 3px;
-  }
 }
 .day-p {
   padding-left: 3px;
-}
-.mobile-map-hours-title{
-  padding: 0 10px;
 }
 .arrow_left{
   width: 35px;
@@ -236,13 +255,32 @@ export default {
   }
   .mobile-map-hours{
     display: flex;
-    align-items: flex-start;
+     align-items: baseline;
+    .mobile-map-hours-title{
+      padding-left: 15px;
+      padding-right: 10px;
+    }
     .mobile-map-hours-info{
+      text-align: left;
       font-size: 14px;
       display: flex;
       flex-direction: column;
       flex-wrap: wrap;
       max-height: 68px;
+    }
+  }
+  .mobile-price {
+    display: flex;
+    align-items: baseline;
+    .mobile-price-title {
+      padding-left: 15px;
+      padding-right: 10px;
+    }
+    .mobile-price-info {
+      text-align: left;
+      font-size: 14px;
+      display: flex;
+      flex-direction: column;
     }
   }
   .mobile-map-additional{
@@ -424,6 +462,28 @@ p {
   flex-wrap: wrap;
   flex-direction: column;
 }
+.price {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: column;
+  .price-title {
+    width: 100%;
+    display: flex;
+    p {
+      font-size: 16px;
+      color: #000000;
+      font-weight: 600;
+      padding: 6px 0 ;
+    }
+  }
+  .price-info {
+    color: #000000;
+    font-size: 14px;
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+  }
+}
 .hours-title{
   width: 100%;
   display: flex;
@@ -431,7 +491,7 @@ p {
     font-size: 16px;
     color: #000000;
     font-weight: 600;
-    padding: 10px 0;
+    padding: 6px 0;
   }
 }
 .week{

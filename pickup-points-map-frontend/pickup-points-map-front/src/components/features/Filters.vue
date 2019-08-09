@@ -152,6 +152,8 @@ export default {
             if (this.allSuppliers.indexOf(this.frameData.data.content.filter) >= 0) {
               if (this.filters.checkedSuppliers.indexOf(this.frameData.data.content.filter) === -1) {
                 this.filters.checkedSuppliers.push(this.frameData.data.content.filter)
+                var n = this.filters.features.length + this.filters.checkedSuppliers.length
+                this.$store.commit('howManyFiltersApplies', n)
                 this.forceRerender()
                 return this.selectedFilter()
               }

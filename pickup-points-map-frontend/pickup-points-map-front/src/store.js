@@ -30,6 +30,10 @@ export default new Vuex.Store({
     pointId: '',
     keyError: false,
     suggestionTextLocit: '',
+    linkToRoad: {
+      x: 0,
+      y: 0
+    },
     providerToPickupTypeMapping: {
       'In Post': ['In Post'],
       'Poczta Polska': ['Fresh Market', 'Paczka w Ruchu', 'Poczta Polska', 'Żabka', 'Orlen'],
@@ -46,6 +50,10 @@ export default new Vuex.Store({
     }
   },
   mutations: {
+    updateLinkToRoad (state, payload) {
+      state.linkToRoad.x = payload.x
+      state.linkToRoad.y = payload.y
+    },
     updateLocitAddress (state, payload) {
       state.suggestionTextLocit = payload
     },

@@ -103,10 +103,10 @@ export default {
       suggestionCode: '',
       limit: 10,
       locitSuggestions: [],
-      customSuggestion: [],
+      // customSuggestion: [],
       placeHolder: 'Wpisz adres',
       placeHolderCode: 'Podaj kod odboiru',
-      address: ''
+      filterApplyCount: 0
     }
   },
   beforeMount () {
@@ -147,8 +147,16 @@ export default {
   },
   methods: {
     filterApply: function (event) {
-      if (event.data.content) {
+      if (event.data.content && this.filterApplyCount === 0) {
         this.locitAddress = event.data.content.address
+        this.filterApplyCount += 1
+        return this.$http.post('https://locit.eu/webservice/address-hygiene-single-string/v2.2.0/', { address: this.locitAddress, format: 'json', charset: 'UTF-8', key: 'bc0cc95a94b26d9f92308b7ed33719bd' }).then(res => {
+          const locitOnce = JSON.parse(res.bodyText)
+          this.$store.commit('updateLinkToRoad', { x: locitOnce.data.y, y: locitOnce.data.x })
+          this.$store.commit('updatePosition', [{ lat: locitOnce.data.y, lng: locitOnce.data.x, zoom: 16 }])
+        }).catch(err => {
+          console.log(err)
+        })
       }
     },
     emitMethod () {
@@ -169,6 +177,8 @@ export default {
     },
     currentPos () {
       this.$vuexGeolocation.getCurrentPosition()
+      this.$store.commit('updateLocitAddress', '')
+      this.$store.commit('updateLinkToRoad', {x: 0, y: 0})
       if (this.IsFooterModalOpen) {
         this.closeFooterModal()
       }
@@ -177,8 +187,9 @@ export default {
       if (suggestion) {
         this.suggestionText = suggestion.item
         this.$store.commit('updatePosition', [{ lat: Number(suggestion.item.y), lng: Number(suggestion.item.x), zoom: 16 }])
-        this.customSuggestion = suggestion.item
+        // this.customSuggestion = suggestion.item
         this.$store.commit('updateLocitAddress', this.suggestionText)
+        this.$store.commit('updateLinkToRoad', {x: 0, y: 0})
         return this.suggestionText.city + ', ' + this.suggestionText.prefix + ' ' + this.suggestionText.street + ' ' + this.suggestionText.building
       } else {
         return 'Wybierz punkt z listy'
