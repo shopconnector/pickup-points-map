@@ -181,11 +181,14 @@ export default {
   display: flex;
   justify-content: space-between;
 }
-.hourse-info{
+.hourse-info {
   font-size: 14px;
   display: flex;
   flex-direction: column;
   text-align: left;
+  @media only screen and (max-width: 1000px) {
+    font-size: 12px;
+  }
 }
 .day-p {
   padding-left: 3px;
@@ -475,6 +478,9 @@ p {
       color: #000000;
       font-weight: 600;
       padding: 6px 0 ;
+      @media only screen and (max-width: 1000px) {
+        font-size: 13px;
+      }
     }
   }
   .price-info {
@@ -483,6 +489,9 @@ p {
     display: flex;
     flex-direction: column;
     text-align: left;
+    @media only screen and (max-width: 1000px){
+      font-size: 12px;
+    }
   }
 }
 .hours-title{

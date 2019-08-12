@@ -52,9 +52,11 @@ export default {
   components: {
   },
   mixins: [MobileDetected],
+  props: ['innerFilter'],
   data () {
     return {
       forceKey: 0,
+      homeFilter: this.innerFilter,
       suppliersLogosUrl: {
         'Poczta Polska': 'pocztapolska.png',
         'DPD Pickup': 'dpd-pickup.png',
@@ -102,12 +104,6 @@ export default {
       frameData: null
     }
   },
-  created () {
-    window.addEventListener('message', this.filterApply)
-  },
-  destroyed () {
-    window.removeEventListener('message', this.filterApply)
-  },
   computed: {
     customerSuppliers () {
       if (this.$store.state.customer.providers && this.$store.state.customer.providers.length !== 0) {
@@ -138,25 +134,19 @@ export default {
     },
     isFilterMobilOpen () {
       return this.$store.state.isFilterMobilOpen
-    },
-    updateCustomer () {
-      return this.frameData
     }
   },
   watch: {
-    updateCustomer: {
+    innerFilter: {
+      immediate: true,
       handler () {
-        if (this.frameData.data.content) {
-          // || event.origin === 'http://localhost:8080'
-          if (event.origin.includes(this.$store.state.customer.domain)) {
-            if (this.allSuppliers.indexOf(this.frameData.data.content.filter) >= 0) {
-              if (this.filters.checkedSuppliers.indexOf(this.frameData.data.content.filter) === -1) {
-                this.filters.checkedSuppliers.push(this.frameData.data.content.filter)
-                var n = this.filters.features.length + this.filters.checkedSuppliers.length
-                this.$store.commit('howManyFiltersApplies', n)
-                // this.forceRerender()
-                return this.selectedFilter()
-              }
+        if (this.homeFilter) {
+          if (this.allSuppliers.indexOf(this.homeFilter) >= 0) {
+            if (this.filters.checkedSuppliers.indexOf(this.homeFilter) === -1) {
+              this.filters.checkedSuppliers.push(this.homeFilter)
+              var n = this.filters.features.length + this.filters.checkedSuppliers.length
+              this.$store.commit('howManyFiltersApplies', n)
+              return this.selectedFilter()
             }
           }
         }
@@ -164,22 +154,6 @@ export default {
     }
   },
   methods: {
-    forceRerender () {
-      this.forceKey += 1
-    },
-    filterApply: function (event) {
-      console.log('Filters', event)
-      this.frameData = event
-      this.forceRerender()
-      // if (event.origin.includes(this.$store.state.customer.domain) || event.origin === 'http://localhost:8081') {
-      //   if (this.allSuppliers.indexOf(event.data.content.filter) >= 0) {
-      //     if (this.filters.checkedSuppliers.indexOf(event.data.content.filter) === -1) {
-      //       this.filters.checkedSuppliers.push(event.data.content.filter)
-      //       this.selectedFilter()
-      //     }
-      //   }
-      // }
-    },
     selectedFilter () {
       this.$store.commit('newStoreFilters', this.filters)
     },

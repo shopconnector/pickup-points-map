@@ -9,7 +9,7 @@
     </div>
     <div v-else class="widget-view">
       <div class="header-view" v-if="isWidgetVersion">
-        <select-location/>
+        <select-location :innerAddress="innerAddress"/>
       </div>
       <div class="container-map">
         <div class="mobile-header" v-if="isMobile">
@@ -19,7 +19,7 @@
         </div>
         <vue-over-body :dim="false" :open="this.$store.state.isFilterMobileOpen" before="beforeFilters" after="afterFilters" :transition="0.3">
           <div v-if="isMobile" class="scroll-box-filters">
-            <Filters/>
+            <Filters :innerFilter="innerFilter"/>
           </div>
         </vue-over-body>
         <Map/>
@@ -32,8 +32,8 @@
       </div>
       <div class="features-div" :class="{ 'first' : !isWidgetVersion }">
         <div :class="{ 'features-box-ver2' : !isWidgetVersion }">
-          <select-location v-if="!isWidgetVersion"/>
-          <Filters v-if="!isMobile"/>
+          <select-location v-if="!isWidgetVersion" :innerAddress="innerAddress"/>
+          <Filters :innerFilter="innerFilter" v-if="!isMobile"/>
         </div>
       </div>
     </div>
@@ -62,11 +62,12 @@ export default {
   mixins: [MobileDetected],
   data () {
     return {
+      innerAddress: '',
+      innerFilter: null
     }
   },
   created () {
     window.addEventListener('message', this.filterApply)
-    // this.filterApply()
   },
   destroyed () {
     window.removeEventListener('message', this.filterApply)
@@ -75,6 +76,8 @@ export default {
     filterApply: function (event) {
       console.log('home', event)
       if (event.data.content && event.data.content.hasOwnProperty('key')) {
+        this.innerFilter = event.data.content.filter
+        this.innerAddress = event.data.content.address
         this.$store.dispatch('get_essentials', {
           key: `${event.data.content.key}`
           // key: `${'5DFC0961AB6BEF40736BA3099EE27491'}`

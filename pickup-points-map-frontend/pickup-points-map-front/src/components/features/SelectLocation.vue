@@ -94,8 +94,10 @@ export default {
   components: {
     vueOverBody
   },
+  props: ['innerAddress'],
   data () {
     return {
+      homeAddress: this.innerAddress,
       isInputAddress: false,
       kodOdbioru: '',
       locitAddress: '',
@@ -103,17 +105,10 @@ export default {
       suggestionCode: '',
       limit: 10,
       locitSuggestions: [],
-      // customSuggestion: [],
       placeHolder: 'Wpisz adres',
       placeHolderCode: 'Podaj kod odboiru',
       filterApplyCount: 0
     }
-  },
-  created () {
-    window.addEventListener('message', this.filterApply)
-  },
-  destroyed () {
-    window.removeEventListener('message', this.filterApply)
   },
   computed: {
     isWidgetVersion () {
@@ -143,23 +138,25 @@ export default {
         }
       },
       deep: true
+    },
+    innerAddress: {
+      immediate: true,
+      handler () {
+        if (this.homeAddress && this.filterApplyCount === 0) {
+          this.filterApplyCount += 1
+          this.locitAddress = this.homeAddress
+          return this.$http.post('https://locit.eu/webservice/address-hygiene-single-string/v2.2.0/', { address: this.locitAddress, format: 'json', charset: 'UTF-8', key: 'bc0cc95a94b26d9f92308b7ed33719bd' }).then(res => {
+            const locitOnce = JSON.parse(res.bodyText)
+            this.$store.commit('updateLinkToRoad', { x: locitOnce.data.y, y: locitOnce.data.x })
+            this.$store.commit('updatePosition', [{ lat: locitOnce.data.y, lng: locitOnce.data.x, zoom: 16 }])
+          }).catch(err => {
+            console.log(err)
+          })
+        }
+      }
     }
   },
   methods: {
-    filterApply: function (event) {
-      console.log('location:', event)
-      if (event.data.content && this.filterApplyCount === 0) {
-        this.locitAddress = event.data.content.address
-        this.filterApplyCount += 1
-        return this.$http.post('https://locit.eu/webservice/address-hygiene-single-string/v2.2.0/', { address: this.locitAddress, format: 'json', charset: 'UTF-8', key: 'bc0cc95a94b26d9f92308b7ed33719bd' }).then(res => {
-          const locitOnce = JSON.parse(res.bodyText)
-          this.$store.commit('updateLinkToRoad', { x: locitOnce.data.y, y: locitOnce.data.x })
-          this.$store.commit('updatePosition', [{ lat: locitOnce.data.y, lng: locitOnce.data.x, zoom: 16 }])
-        }).catch(err => {
-          console.log(err)
-        })
-      }
-    },
     emitMethod () {
       EventBus.$emit('popupClose')
     },
@@ -188,7 +185,6 @@ export default {
       if (suggestion) {
         this.suggestionText = suggestion.item
         this.$store.commit('updatePosition', [{ lat: Number(suggestion.item.y), lng: Number(suggestion.item.x), zoom: 16 }])
-        // this.customSuggestion = suggestion.item
         this.$store.commit('updateLocitAddress', this.suggestionText)
         this.$store.commit('updateLinkToRoad', {x: 0, y: 0})
         return this.suggestionText.city + ', ' + this.suggestionText.prefix + ' ' + this.suggestionText.street + ' ' + this.suggestionText.building
