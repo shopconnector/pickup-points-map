@@ -13,6 +13,7 @@ export default new Vuex.Store({
     isFooterModalOpen: 1,
     isLocitModalOpen: 0,
     isFilterMobilOpen: 1,
+    toogleModal: false,
     zoom: 7,
     lat: 53.0409,
     lng: 19.2850,

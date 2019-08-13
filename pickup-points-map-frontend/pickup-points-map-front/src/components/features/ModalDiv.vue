@@ -37,7 +37,7 @@
                 </div>
               </div>
               <div class="col-3">
-                <div class="open-hours" v-if="parentData.points && parentData.points[selectedPoint].working_hours.length > 0">
+                <div class="open-hours" v-if="parentData.points && parentData.points[selectedPoint].working_hours.length > 0 && parentData.points[selectedPoint].working_hours[0] !== ''">
                   <div class="hours-title">
                     <p>Godziny otwarcia</p>
                   </div>
@@ -49,7 +49,7 @@
                     </div>
                   </div>
                 </div>
-                <div class="price" v-if="parentData.points && parentData.points[selectedPoint].prices">
+                <!-- <div class="price" v-if="parentData.points && parentData.points[selectedPoint].prices">
                   <div class="price-title">
                     <p>Cennik</p>
                   </div>
@@ -57,7 +57,7 @@
                     <p v-if="parentData.points[selectedPoint].prices.cod">Odbiór za pobraniem: {{ parentData.points[selectedPoint].prices.cod }} zł</p>
                     <p v-if="parentData.points[selectedPoint].prices.pp">PrePaid: {{ parentData.points[selectedPoint].prices.pp }} zł</p>
                   </div>
-                </div>
+                </div> -->
               </div>
             </div>
           </div>
@@ -84,7 +84,7 @@
           <p v-if="parentData.points && point.id.length" class="mobile-map-street">{{ parentData.points && point.id }}</p>
         </div>
       </div>
-      <div class="mobile-map-hours" v-if="point && point.working_hours.length > 0" :key="'hours-' + index">
+      <div class="mobile-map-hours" v-if="point && point.working_hours.length > 0 && point.working_hours[0] !== ''" :key="'hours-' + index">
         <div class="mobile-map-hours-title">
           <b>Godziny otwarcia:</b>
         </div>
@@ -94,7 +94,7 @@
             </template>
         </div>
       </div>
-      <div class="mobile-price" v-if="point && point.prices" :key="'price-' + index">
+      <!-- <div class="mobile-price" v-if="point && point.prices" :key="'price-' + index">
         <div class="mobile-price-title">
           <b>Cennik: </b>
         </div>
@@ -102,7 +102,7 @@
           <p v-if="point.prices.cod">Odbiór za pobraniem: {{ point.prices.cod }} zł</p>
           <p v-if="point.prices.pp">PrePaid: {{ point.prices.pp }} zł</p>
         </div>
-      </div>
+      </div> -->
       <div class="mobile-map-additional" :key="'add-' + index">
         <p v-if="parentData.points && point.features.open_late" class="additional-info"><span class="mobile-map-icon-padding"><i class="icon hours"/></span> - otwarte do pózna</p>
         <p v-if="parentData.points && point.features.open_saturday" class="additional-info"><span class="mobile-map-icon-padding"><i class="icon sobota"/></span> - otwarte w soboty</p>
@@ -240,7 +240,7 @@ export default {
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 15px 0;
+    padding: 5px 0;
     .mobile-map-logo{
       padding-right: 20px;
     }
@@ -290,8 +290,8 @@ export default {
     display: flex;
     flex-direction: column;
     flex-wrap: wrap;
-    // height: 75px;
-    padding: 15px;
+    max-height: 90px;
+    padding: 12px;
     font-size: 15px;
     .additional-info{
     display: flex;

@@ -48,6 +48,7 @@ import Filters from '../components/features/Filters.vue'
 import Map from '../components/Map/LeafletMap.vue'
 import vueOverBody from 'vue-over-body'
 import { MobileDetected } from '../components/mobileDetected.ts'
+import EventBus from '../event-bus'
 
 export default {
   name: 'Home',
@@ -74,7 +75,6 @@ export default {
   },
   methods: {
     filterApply: function (event) {
-      console.log('home', event)
       if (event.data.content && event.data.content.hasOwnProperty('key')) {
         this.innerFilter = event.data.content.filter
         this.innerAddress = event.data.content.address
@@ -88,6 +88,9 @@ export default {
       this.$store.commit('openFooterModal')
     },
     openFilterMobile () {
+      if (this.$store.state.toogleModal === true) {
+        EventBus.$emit('toogleMethodBus', false)
+      }
       this.$store.commit('openFilterMobile')
       this.$store.commit('closeListFooter')
     },

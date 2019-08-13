@@ -63,13 +63,13 @@
                             {{ day }}
                           </template>
                         </div>
-                        <div class="list-modal-price" v-if="$store.state.markerDetails.points[0].prices">
+                        <!-- <div class="list-modal-price" v-if="$store.state.markerDetails.points[0].prices">
                           <b>Cennik: </b>
                           <div class="list-modal-price-info">
                             <p v-if="$store.state.markerDetails.points[0].prices.cod">Odbiór za pobraniem: {{ $store.state.markerDetails.points[0].prices.cod }} zł</p>
                             <p v-if="$store.state.markerDetails.points[0].prices.pp">PrePaid: {{ $store.state.markerDetails.points[0].prices.pp }} zł</p>
                           </div>
-                        </div>
+                        </div> -->
                         <div class="list-modal-additional">
                           <p v-if="$store.state.markerDetails.points[0].features.open_late" class="icon hours"/>
                           <p v-if="$store.state.markerDetails.points[0].features.open_saturday" class="icon sobota"/>
@@ -143,7 +143,7 @@
   </div>
     <div>
       <transition :name="isMobile ? 'fade-in-up' : 'bounce'">
-        <div class="modal-position" :class="{'modal-positionV2' : !isWidgetVersion}" v-if="toogleModal">
+        <div class="modal-position" :class="{'modal-positionV2' : !isWidgetVersion}" v-if="$store.state.toogleModal">
           <ModalDiv @closed="onCloseChild"/>
         </div>
       </transition>
@@ -191,7 +191,6 @@ export default {
       isPopupOpen: false,
       selectedPoint: Number,
       toogleMap: false,
-      toogleModal: false,
       url: 'https://scorch.openstreetmap.org/{z}/{x}/{y}.png',
       attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
       closeButton: false,
@@ -267,7 +266,7 @@ export default {
       return this.$store.state.customer.theme
     },
     zoomOrCenterUpdateOrFiltersUpdate () {
-      return [this.$store.state.zoom, this.$store.state.lat, this.$store.state.lng, this.$store.state.storeFilters.features, this.$store.state.storeFilters.checkedSuppliers, this.$store.state.pointId].join()
+      return [this.$store.state.zoom, this.$store.state.lat, this.$store.state.lng, this.$store.state.storeFilters.features, this.$store.state.storeFilters.checkedSuppliers, this.$store.state.pointId, this.isPopupOpen].join()
     },
     filtersUpdate () {
       return [this.$store.state.storeFilters.features, this.$store.state.storeFilters.checkedSuppliers].join()
@@ -348,6 +347,15 @@ export default {
         closePopup.click()
       }
     })
+    EventBus.$on('toogleMethodBus', (bool) => {
+      if (bool === 'true') {
+        this.$store.state.toogleModal = true
+      } else if (bool === 'false') {
+        this.$store.state.toogleModal = false
+      } else {
+        this.$store.state.toogleModal = !this.$store.state.toogleModal
+      }
+    })
   },
   methods: {
     filteredPoints () {
@@ -374,7 +382,7 @@ export default {
       this.isPopupOpen = true
     },
     popupClose () {
-      this.toogleModal = false
+      this.$store.state.toogleModal = false
       this.isPopupOpen = false
       this.$store.commit('clear_point_details')
     },
@@ -464,15 +472,15 @@ export default {
     toogleMethod (bool, num) {
       this.$store.commit('changeSelectedPoint', num)
       if (bool === 'true') {
-        this.toogleModal = true
+        this.$store.state.toogleModal = true
       } else if (bool === 'false') {
-        this.toogleModal = false
+        this.$store.state.toogleModal = false
       } else {
-        this.toogleModal = !this.toogleModal
+        this.$store.state.toogleModal = !this.$store.state.toogleModal
       }
     },
     onCloseChild () {
-      this.toogleModal = false
+      this.$store.state.toogleModal = false
     },
     openListModal (index) {
       this.selectedPoint = index
