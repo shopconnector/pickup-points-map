@@ -1,5 +1,5 @@
 <template>
-    <div class='filters add-scroll-filters' :key="forceKey" :class="{ 'filtersV2' : !isWidgetVersion }">
+    <div class='filters add-scroll-filters' :key="componentKey" :class="{ 'filtersV2' : !isWidgetVersion }">
       <!-- Select suppliers first version -->
       <div class="suppliers" v-if="isWidgetVersion && !isMobile">
         <h2 class="title-supp">Wybierz dostawców</h2>
@@ -55,7 +55,6 @@ export default {
   props: ['innerFilter'],
   data () {
     return {
-      forceKey: 0,
       homeFilter: this.innerFilter,
       suppliersLogosUrl: {
         'Poczta Polska': 'pocztapolska.png',
@@ -79,7 +78,8 @@ export default {
         checkedSuppliers: [],
         features: []
       },
-      frameData: null
+      frameData: null,
+      componentKey: 0
     }
   },
   computed: {
@@ -140,6 +140,7 @@ export default {
       handler () {
         console.log(this.homeFilter)
         if (this.homeFilter) {
+          this.componentKey += 0
           if (this.allSuppliers.indexOf(this.homeFilter) >= 0) {
             if (this.filters.checkedSuppliers.indexOf(this.homeFilter) === -1) {
               this.filters.checkedSuppliers.push(this.homeFilter)

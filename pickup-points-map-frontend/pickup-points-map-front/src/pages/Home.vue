@@ -80,6 +80,8 @@ export default {
         this.$forceUpdate()
         this.innerFilter = event.data.content.filter
         this.innerAddress = event.data.content.address
+        console.log(this.innerFilter)
+        console.log(this.innerAddress)
         this.$store.dispatch('get_essentials', {
           key: `${event.data.content.key}`,
           origin: `${event.origin}`
