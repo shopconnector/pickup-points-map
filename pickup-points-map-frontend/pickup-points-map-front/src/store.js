@@ -35,12 +35,12 @@ export default new Vuex.Store({
       x: 0,
       y: 0
     },
-    providerToPickupTypeMapping: {
-      'In Post': ['In Post'],
-      'Poczta Polska': ['Fresh Market', 'Paczka w Ruchu', 'Poczta Polska', 'Żabka', 'Orlen'],
-      'DPD Pickup': ['DPD Pickup'],
-      'Paczka w Ruchu': ['Paczka w Ruchu']
-    },
+    // providerToPickupTypeMapping: {
+    // 'In Post': ['In Post'],
+    // 'Poczta Polska': ['Fresh Market', 'Paczka w Ruchu', 'Poczta Polska', 'Żabka', 'Orlen'],
+    // 'DPD Pickup': ['DPD Pickup'],
+    // 'Paczka w Ruchu': ['Paczka w Ruchu']
+    // },
     customer: {
       // key: '5DFC0961AB6BEF40736BA3099EE27491',
       // id: '123123',
