@@ -108,12 +108,22 @@ export default {
       }
     },
     allSuppliers () {
-      return Array.from(new Set(Object.values(this.$store.state.customer.providers).flat(1)))
+      return Array.from(new Set(Object.values(this.providerToPickupTypeMapping).flat(1)))
     },
 
-    // providerToPickupTypeMapping () {
-    //   return this.$store.state.customer.providers
-    // },
+    providerToPickupTypeMapping () {
+      if (this.$store.state.customer.providers) {
+        let allProviders = []
+        for (let supplier in this.$store.state.customer.providers) {
+          for (let type in this.$store.state.customer.providers[supplier]) {
+            if (allProviders.indexOf(type) === -1) {
+              allProviders.push(type)
+            }
+          }
+        }
+        return allProviders
+      }
+    },
     customerUrl () {
       return this.$store.state.customer.url
     },
