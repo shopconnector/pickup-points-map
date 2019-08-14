@@ -145,7 +145,7 @@ export default {
         if (this.homeAddress && this.filterApplyCount === 0) {
           this.filterApplyCount += 1
           this.locitAddress = this.homeAddress
-          return this.$http.post('https://locit.eu/webservice/address-hygiene-single-string/v2.2.0/', { address: this.locitAddress, format: 'json', charset: 'UTF-8', key: 'bc0cc95a94b26d9f92308b7ed33719bd' }).then(res => {
+          return this.$http.post('https://api.locit.dev.beecommerce.pl/address_hygiene_single_string', { address: this.locitAddress, format: 'json', charset: 'UTF-8' }).then(res => {
             const locitOnce = JSON.parse(res.bodyText)
             this.$store.commit('updateLinkToRoad', { x: locitOnce.data.y, y: locitOnce.data.x })
             this.$store.commit('updatePosition', [{ lat: locitOnce.data.y, lng: locitOnce.data.x, zoom: 16 }])
@@ -200,9 +200,9 @@ export default {
     },
     locitAdres () {
       if (this.locitAddress.length >= 3) {
-        return this.$http.get('https://locit.eu/webservice/address-autocomplete/v2.2.0/basic/' + this.locitAddress, { params: { format: 'json', charset: 'UTF-8', key: 'bc0cc95a94b26d9f92308b7ed33719bd' } }).then(response => {
+        return this.$http.get('https://api.locit.dev.beecommerce.pl/autocomplete/basic/' + this.locitAddress, { params: { format: 'json', charset: 'UTF-8' } }).then(response => {
           const locit = JSON.parse(response.bodyText)
-          this.locitSuggestions = locit.data.address_listing
+          this.locitSuggestions = locit.data
         }).catch(error => {
           console.log(error)
         })
