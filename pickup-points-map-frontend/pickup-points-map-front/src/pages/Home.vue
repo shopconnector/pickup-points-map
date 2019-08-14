@@ -75,6 +75,7 @@ export default {
   },
   methods: {
     filterApply: function (event) {
+      console.log(event.data)
       if (event.data.content && event.data.content.hasOwnProperty('key')) {
         this.innerFilter = event.data.content.filter
         this.innerAddress = event.data.content.address
