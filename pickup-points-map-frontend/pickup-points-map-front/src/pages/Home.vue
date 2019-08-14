@@ -79,8 +79,8 @@ export default {
         this.innerFilter = event.data.content.filter
         this.innerAddress = event.data.content.address
         this.$store.dispatch('get_essentials', {
-          key: `${event.data.content.key}`
-          // key: `${'5DFC0961AB6BEF40736BA3099EE27491'}`
+          key: `${event.data.content.key}`,
+          origin: `${event.origin}`
         })
       }
     },

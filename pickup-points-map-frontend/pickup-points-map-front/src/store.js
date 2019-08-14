@@ -274,8 +274,12 @@ export default new Vuex.Store({
         commit('get_essentials')
         APIService.get_essentials(query)
           .then(res => {
-            const customer = res.data.response
-            commit('get_essentials_succ', customer)
+            if (query.origin.includes(res.data.response.domain)) {
+              const customer = res.data.response
+              commit('get_essentials_succ', customer)
+            } else {
+              commit('get_essentials_err')
+            }
             resolve(res)
           }).catch(err => {
             commit('get_essentials_err')
