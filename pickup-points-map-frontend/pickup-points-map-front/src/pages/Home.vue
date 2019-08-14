@@ -77,6 +77,7 @@ export default {
     filterApply: function (event) {
       console.log(event.data)
       if (event.data.content && event.data.content.hasOwnProperty('key')) {
+        this.$forceUpdate()
         this.innerFilter = event.data.content.filter
         this.innerAddress = event.data.content.address
         this.$store.dispatch('get_essentials', {

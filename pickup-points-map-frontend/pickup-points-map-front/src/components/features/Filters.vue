@@ -138,6 +138,7 @@ export default {
     innerFilter: {
       immediate: true,
       handler () {
+        console.log(this.homeFilter)
         if (this.homeFilter) {
           if (this.allSuppliers.indexOf(this.homeFilter) >= 0) {
             if (this.filters.checkedSuppliers.indexOf(this.homeFilter) === -1) {
