@@ -69,6 +69,7 @@ export default {
   },
   created () {
     window.addEventListener('message', this.filterApply)
+    // this.filterApply()
   },
   destroyed () {
     window.removeEventListener('message', this.filterApply)
@@ -80,6 +81,8 @@ export default {
         this.$forceUpdate()
         this.innerFilter = event.data.content.filter
         this.innerAddress = event.data.content.address
+        // this.$store.commit('updateInnerAddress', 'Warszwa')
+        // this.$store.commit('updateInnerFilter', 'Paczka w Ruchu')
         console.log(this.innerFilter)
         console.log(this.innerAddress)
         this.$store.dispatch('get_essentials', {

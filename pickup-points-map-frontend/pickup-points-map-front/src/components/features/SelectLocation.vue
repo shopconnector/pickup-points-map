@@ -141,19 +141,23 @@ export default {
       deep: true
     },
     innerAddress: {
+      deep: true,
       immediate: true,
       handler () {
-        if (this.homeAddress && this.filterApplyCount === 0) {
-          this.componentKey += 1
-          this.filterApplyCount += 1
-          this.locitAddress = this.homeAddress
-          return this.$http.post('https://api.locit.dev.beecommerce.pl/address_hygiene_single_string', { address: this.locitAddress, format: 'json', charset: 'UTF-8' }).then(res => {
-            const locitOnce = JSON.parse(res.bodyText)
-            this.$store.commit('updateLinkToRoad', { x: locitOnce.data.y, y: locitOnce.data.x })
-            this.$store.commit('updatePosition', [{ lat: locitOnce.data.y, lng: locitOnce.data.x, zoom: 16 }])
-          }).catch(err => {
-            console.log(err)
-          })
+        if (this.innerAddress) {
+          this.locitAddress = this.innerAddress
+          console.log(this.innerAddress)
+          if (this.filterApplyCount === 0) {
+            this.componentKey += 1
+            this.filterApplyCount += 1
+            return this.$http.post('https://api.locit.dev.beecommerce.pl/address_hygiene_single_string', { address: this.locitAddress, format: 'json', charset: 'UTF-8' }).then(res => {
+              const locitOnce = JSON.parse(res.bodyText)
+              this.$store.commit('updateLinkToRoad', { x: locitOnce.data.y, y: locitOnce.data.x })
+              this.$store.commit('updatePosition', [{ lat: locitOnce.data.y, lng: locitOnce.data.x, zoom: 16 }])
+            }).catch(err => {
+              console.log(err)
+            })
+          }
         }
       }
     }
