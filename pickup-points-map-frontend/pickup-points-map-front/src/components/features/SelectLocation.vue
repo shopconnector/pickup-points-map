@@ -146,7 +146,6 @@ export default {
       handler () {
         if (this.innerAddress) {
           this.locitAddress = this.innerAddress
-          console.log(this.innerAddress)
           if (this.filterApplyCount === 0) {
             this.componentKey += 1
             this.filterApplyCount += 1

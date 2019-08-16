@@ -139,14 +139,13 @@ export default {
       deep: true,
       immediate: true,
       handler () {
-        console.log(this.innerFilter)
         if (this.innerFilter) {
           this.componentKey += 0
           if (this.allSuppliers.indexOf(this.innerFilter) >= 0) {
             if (this.filters.checkedSuppliers.indexOf(this.innerFilter) === -1) {
-              var filter = this.filters.checkedSuppliers.slice()
-              filter.push(this.innerFilter)
-              this.filters.checkedSuppliers = filter
+              // var filter = this.filters.checkedSuppliers.slice()
+              // filter.push(this.innerFilter)
+              this.filters.checkedSuppliers = [this.innerFilter]
               var n = this.filters.features.length + this.filters.checkedSuppliers.length
               this.$store.commit('howManyFiltersApplies', n)
               return this.selectedFilter()

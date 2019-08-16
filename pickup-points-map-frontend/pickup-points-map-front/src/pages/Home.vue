@@ -76,15 +76,10 @@ export default {
   },
   methods: {
     filterApply: function (event) {
-      console.log(event.data)
       if (event.data.content && event.data.content.hasOwnProperty('key')) {
         this.$forceUpdate()
         this.innerFilter = event.data.content.filter
         this.innerAddress = event.data.content.address
-        // this.$store.commit('updateInnerAddress', 'Warszwa')
-        // this.$store.commit('updateInnerFilter', 'Paczka w Ruchu')
-        console.log(this.innerFilter)
-        console.log(this.innerAddress)
         this.$store.dispatch('get_essentials', {
           key: `${event.data.content.key}`,
           origin: `${event.origin}`
