@@ -526,6 +526,9 @@ export default {
     right: 220px;
     top: 5px;
     color: #333333;
+    @media (max-width: 767px) {
+      display: none;
+    }
   }
   // padding-top: calc( 50vh - 122px );
   padding-right: 210px !important;
@@ -552,7 +555,7 @@ export default {
 }
 @media (max-width: 767px) {
   .leaflet-popup .leaflet-popup-content-wrapper {
-    border: 1px solid #E54C69;
+    display: none;
   }
 }
 @media (max-width: 767px) {
