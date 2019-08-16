@@ -90,7 +90,7 @@
         <l-map
           :zoom="zoom"
           :center="center"
-          :options="{zoomControl: false}"
+          :options="{zoomControl: true}"
           @update:bounds="boundsUpdated"
           @update:center="centerUpdated"
           @update:zoom="zoomUpdated"
@@ -498,6 +498,15 @@ export default {
 </script>
 
 <style lang="scss">
+.leaflet-touch .leaflet-bar a {
+  width: 24px;
+  height: 24px;
+  line-height: 25px;
+}
+.leaflet-touch .leaflet-control-zoom-in,
+.leaflet-touch .leaflet-control-zoom-out {
+  font-size: 18px;
+}
 .mt10 {
   margin-top: 10px;
 }
@@ -541,20 +550,14 @@ export default {
 ::-webkit-scrollbar-track {
   background: transparent;
 }
- @media only screen and (max-width: 1100px) {
-   .leaflet-touch .leaflet-bar a {
-     width: 25px;
-     height: 25px;
-     line-height: 25px;
-   }
-   .leaflet-touch .leaflet-control-zoom-in,
-   .leaflet-touch .leaflet-control-zoom-out {
-     font-size: 19px;
-   }
-}
 @media (max-width: 767px) {
   .leaflet-popup .leaflet-popup-content-wrapper {
     border: 1px solid #E54C69;
+  }
+}
+@media (max-width: 767px) {
+  .leaflet-touch .leaflet-bar {
+    display: none;
   }
 }
 </style>
