@@ -69,7 +69,6 @@ export default {
   },
   created () {
     window.addEventListener('message', this.filterApply)
-    // this.filterApply()
   },
   destroyed () {
     window.removeEventListener('message', this.filterApply)
@@ -77,7 +76,7 @@ export default {
   methods: {
     filterApply: function (event) {
       if (event.data.content && event.data.content.hasOwnProperty('key')) {
-        this.$forceUpdate()
+      // this.$forceUpdate()
         this.innerFilter = event.data.content.filter
         this.innerAddress = event.data.content.address
         this.$store.dispatch('get_essentials', {

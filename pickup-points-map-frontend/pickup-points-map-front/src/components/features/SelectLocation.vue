@@ -1,5 +1,5 @@
 <template>
-  <div :class="isWidgetVersion ? 'location' : 'locationV2'" :key="componentKey">
+  <div :class="isWidgetVersion ? 'location' : 'locationV2'">
     <div :class="isWidgetVersion ? 'location-header' : 'location-headerV2'" v-if="!isMobile">
       <h2 class="title">Wybierz lokalizację</h2>
     </div>
@@ -107,8 +107,7 @@ export default {
       locitSuggestions: [],
       placeHolder: 'Wpisz adres',
       placeHolderCode: 'Podaj kod odboiru',
-      filterApplyCount: 0,
-      componentKey: 0
+      filterApplyCount: 0
     }
   },
   computed: {
@@ -147,7 +146,6 @@ export default {
         if (this.innerAddress) {
           this.locitAddress = this.innerAddress
           if (this.filterApplyCount === 0) {
-            this.componentKey += 1
             this.filterApplyCount += 1
             return this.$http.post('https://api.locit.dev.beecommerce.pl/address_hygiene_single_string', { address: this.locitAddress, format: 'json', charset: 'UTF-8' }).then(res => {
               const locitOnce = JSON.parse(res.bodyText)

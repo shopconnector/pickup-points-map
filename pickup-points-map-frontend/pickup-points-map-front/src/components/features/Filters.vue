@@ -1,5 +1,5 @@
 <template>
-    <div class='filters add-scroll-filters' :key="componentKey" :class="{ 'filtersV2' : !isWidgetVersion }">
+    <div class='filters add-scroll-filters' :class="{ 'filtersV2' : !isWidgetVersion }">
       <!-- Select suppliers first version -->
       <div class="suppliers" v-if="isWidgetVersion && !isMobile">
         <h2 class="title-supp">Wybierz dostawców</h2>
@@ -78,8 +78,7 @@ export default {
         checkedSuppliers: [],
         features: []
       },
-      frameData: null,
-      componentKey: 0
+      frameData: null
     }
   },
   computed: {
@@ -140,7 +139,6 @@ export default {
       immediate: true,
       handler () {
         if (this.innerFilter) {
-          this.componentKey += 0
           if (this.allSuppliers.indexOf(this.innerFilter) >= 0) {
             if (this.filters.checkedSuppliers.indexOf(this.innerFilter) === -1) {
               // var filter = this.filters.checkedSuppliers.slice()

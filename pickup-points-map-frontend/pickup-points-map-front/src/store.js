@@ -53,14 +53,6 @@ export default new Vuex.Store({
     }
   },
   mutations: {
-    // updateInnerAddress (state, payload) {
-    //   state.innerAddress = payload
-    //   console.log(state.innerAddress)
-    // },
-    // updateInnerFilter (state, payload) {
-    //   state.innerFilter = payload
-    //   console.log(state.innerFilter)
-    // },
     updateLinkToRoad (state, payload) {
       state.linkToRoad.x = payload.x
       state.linkToRoad.y = payload.y
