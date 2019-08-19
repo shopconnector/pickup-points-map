@@ -7,6 +7,7 @@
         <h3 :class="[ isWidgetVersion ? 'my-location' : 'my-locationV2', $store.state.geolocation.lat ? 'active' : '']" @click="currentPos()">Moja lokalizacja</h3>
         <p class="lub">lub</p>
         <div class="suggest-box">
+          <!-- :class="{ 'active-input' : isInputAddress}" -->
         <vue-autosuggest
             class='input-tag'
             :class="{'input-tagV2' : !isWidgetVersion}"
@@ -14,6 +15,8 @@
             v-model="locitAddress"
             @input="locitAdres()"
             @selected="logResult"
+            @focus="isInputAddress = true"
+            @blur="isInputAddress = false"
             :get-suggestion-value="getSuggestionValue"
             :suggestions="[{data:locitSuggestions}]"
             :input-props="{id:'autosuggest__input', placeholder:'Zacznij wpisywać adres'}"
@@ -25,6 +28,26 @@
         </vue-autosuggest>
         <span class="span-location" :class="{'span-locationV2' : isWidgetVersion}" @click="locitAddress = ''"><i class="clear-input"/></span>
         </div>
+        <!--Wpisz kod odbioru -->
+        <!-- <p class="lub">lub</p>
+        <div class="suggest-box-punkt">
+        <vue-autosuggest
+            class='input-tag'
+            :class="{'input-tagV2' : !isWidgetVersion}"
+            :limit="10"
+            v-model="kodOdbioru"
+            @input="kodOdbioruMethod()"
+            @selected="logKodResult"
+            :get-suggestion-value="getSuggestionCode"
+            :suggestions="[{data:autocompleteList}]"
+            :input-props="{id:'autosuggest__input', placeholder:'Podaj kod odbioru'}"
+        >
+          <template slot-scope="{suggestion}">
+            {{ suggestion.item }}
+          </template>
+        </vue-autosuggest>
+        <span class="span-location" :class="{'span-locationV2' : isWidgetVersion}" @click="clearKodObioru()"><i class="clear-input"/></span>
+        </div> -->
     </div>
     <vue-over-body v-if="isMobile" :dim="false" :open="IsFooterModalOpen" before="beforeFooterModal" after="afterFooterModal" :transition="0.3">
       <div class="footer-box">
@@ -63,6 +86,7 @@
 <script>
 import vueOverBody from 'vue-over-body'
 import { MobileDetected } from '../../components/mobileDetected.ts'
+import EventBus from '../../event-bus'
 
 export default {
   name: 'SelectLocation',
@@ -70,22 +94,21 @@ export default {
   components: {
     vueOverBody
   },
+  props: ['innerAddress'],
   data () {
     return {
+      homeAddress: this.innerAddress,
+      isInputAddress: false,
+      kodOdbioru: '',
       locitAddress: '',
       suggestionText: '',
+      suggestionCode: '',
       limit: 10,
       locitSuggestions: [],
-      customSuggestion: [],
       placeHolder: 'Wpisz adres',
-      address: ''
+      placeHolderCode: 'Podaj kod odboiru',
+      filterApplyCount: 0
     }
-  },
-  created () {
-    window.addEventListener('message', this.filterApply)
-  },
-  destroyed () {
-    window.removeEventListener('message', this.filterApply)
   },
   computed: {
     isWidgetVersion () {
@@ -102,6 +125,9 @@ export default {
     },
     customerUrl () {
       return this.$store.state.customer.url
+    },
+    autocompleteList () {
+      return this.$store.state.autocompleteList
     }
   },
   watch: {
@@ -112,15 +138,34 @@ export default {
         }
       },
       deep: true
+    },
+    innerAddress: {
+      deep: true,
+      immediate: true,
+      handler () {
+        if (this.innerAddress) {
+          this.locitAddress = this.innerAddress
+          if (this.filterApplyCount === 0) {
+            this.filterApplyCount += 1
+            return this.$http.post('https://api.locit.dev.beecommerce.pl/address_hygiene_single_string', { address: this.locitAddress, format: 'json', charset: 'UTF-8' }).then(res => {
+              const locitOnce = JSON.parse(res.bodyText)
+              this.$store.commit('updateLinkToRoad', { x: locitOnce.data.y, y: locitOnce.data.x })
+              this.$store.commit('updatePosition', [{ lat: locitOnce.data.y, lng: locitOnce.data.x, zoom: 16 }])
+            }).catch(err => {
+              console.log(err)
+            })
+          }
+        }
+      }
     }
   },
   methods: {
-    filterApply: function (event) {
-      if (event.origin === this.customerUrl || event.origin === 'http://localhost:8081') {
-        if (event.data.content.address !== 0) {
-          this.locitAddress = event.data.content.address
-        }
-      }
+    emitMethod () {
+      EventBus.$emit('popupClose')
+    },
+    clearKodObioru () {
+      this.kodOdbioru = ''
+      this.$store.commit('clearPointId')
     },
     openLocitModal () {
       this.$store.commit('openLocitModal')
@@ -133,6 +178,8 @@ export default {
     },
     currentPos () {
       this.$vuexGeolocation.getCurrentPosition()
+      this.$store.commit('updateLocitAddress', '')
+      this.$store.commit('updateLinkToRoad', {x: 0, y: 0})
       if (this.IsFooterModalOpen) {
         this.closeFooterModal()
       }
@@ -141,7 +188,8 @@ export default {
       if (suggestion) {
         this.suggestionText = suggestion.item
         this.$store.commit('updatePosition', [{ lat: Number(suggestion.item.y), lng: Number(suggestion.item.x), zoom: 16 }])
-        this.customSuggestion = suggestion.item
+        this.$store.commit('updateLocitAddress', this.suggestionText)
+        this.$store.commit('updateLinkToRoad', {x: 0, y: 0})
         return this.suggestionText.city + ', ' + this.suggestionText.prefix + ' ' + this.suggestionText.street + ' ' + this.suggestionText.building
       } else {
         return 'Wybierz punkt z listy'
@@ -155,12 +203,57 @@ export default {
     },
     locitAdres () {
       if (this.locitAddress.length >= 3) {
-        return this.$http.get('https://locit.eu/webservice/address-autocomplete/v2.2.0/basic/' + this.locitAddress, { params: { format: 'json', charset: 'UTF-8', key: 'bc0cc95a94b26d9f92308b7ed33719bd' } }).then(response => {
+        return this.$http.get('https://api.locit.dev.beecommerce.pl/autocomplete/basic/' + this.locitAddress, { params: { format: 'json', charset: 'UTF-8' } }).then(response => {
           const locit = JSON.parse(response.bodyText)
-          this.locitSuggestions = locit.data.address_listing
+          this.locitSuggestions = locit.data
         }).catch(error => {
           console.log(error)
         })
+      }
+    },
+    kodOdbioruMethod () {
+      if (this.kodOdbioru.length >= 3) {
+        return this.$store.dispatch('get_autocomplete', {
+          id: this.kodOdbioru,
+          key: this.$store.state.customer.key
+        })
+      }
+    },
+    logKodResult (item) {
+      this.closeLocitModal()
+      if (item) {
+        this.placeHolder = item.item
+        this.kodOdbioru = item.item
+        this.$store.commit('changePointId', this.kodOdbioru)
+        // this.$http.get(`https://api.pickuppointsmap.dev.beecommerce.pl/pickup-points-map?id=` + this.kodOdbioru).then(res => {
+        //   var mapPoint = res.data.response
+        //   this.$store.commit('updatePosition', [{ lat: Number(mapPoint.pickupPoints[0].lat), lng: Number(mapPoint.pickupPoints[0].lon), zoom: 16 }])
+        //   console.log('Map point: ', mapPoint)
+        // }).catch(error => {
+        //   console.log(error)
+        // })
+        // this.$store.dispatch('get_points', {
+        //   lat: '',
+        //   lng: '',
+        //   dist: '',
+        //   filtered: '',
+        //   id: `id=${this.kodOdbioru}`
+        // })
+        // this.$http.get(`https://api.pickuppointsmap.dev.beecommerce.pl/pickup-points-list?id=` + this.kodOdbioru).then(res => {
+        //   var listPoint = res.data.response
+        //   console.log('List point: ', listPoint)
+        // }).catch(error => {
+        //   console.log(error)
+        // })
+      }
+    },
+    getSuggestionCode (suggestion) {
+      if (suggestion) {
+        this.emitMethod()
+        this.suggestionCode = suggestion.item
+        return this.suggestionCode
+      } else {
+        return 'Wybierz punkt z listy'
       }
     }
   }
@@ -252,13 +345,26 @@ export default {
     margin-top: 40px;
   }
 }
+.autosuggest__results-item--highlighted{
+    background-color: #DD2C54;
+}
+
 </style>
 
 <style lang="scss" scoped>
+.active-input {
+  flex-basis: 60% !important;
+}
 .suggest-box {
   position: relative;
   display: block;
+  // flex-basis: 40%;
   width: 75%;
+}
+.suggest-box-punkt{
+  position: relative;
+  display: block;
+  flex-basis: 25%;
 }
 .span-location{
   position: absolute;
@@ -324,7 +430,6 @@ export default {
   background-size: cover;
 }
 .title{
-  // padding-left: 20px;
   font-family: 'Lato', sans-serif;
   font-size: 22px;
   font-weight: 900;
@@ -371,8 +476,10 @@ export default {
 }
 .my-locationV2{
   cursor: pointer;
-  flex-basis: 30%;
+  // padding-left: 5px;
   padding-left: 25px;
+  // flex-basis: 25%;
+  flex-basis: 30%;
   color: #989898;
   font-size: 14px;
   font-family: 'Lato', sans-serif;
@@ -391,7 +498,6 @@ export default {
     content: url(../../assets/icons/gps24px.svg);
     position: absolute;
     left: 5px;
-    padding-right: 10px;
     width: 17px;
     height: 25px;
     filter: opacity(0.4)
@@ -403,11 +509,12 @@ export default {
   }
 }
 .lub{
-  font-size: 16px;
+  flex-basis: 5%;
+  font-size: 14px;
   font-family: 'Lato', sans-serif;
   color: #AAAAAA;
   margin: 0;
-  padding: 0 15px;
+  padding: 0 5px;
 }
 .input-tag{
   position: relative;
@@ -471,7 +578,7 @@ input::placeholder{
    font-size: 16px;
  }
  .lub{
-   font-size: 14px;
+   font-size: 12px;
  }
 }
 </style>

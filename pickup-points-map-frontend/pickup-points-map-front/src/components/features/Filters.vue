@@ -28,9 +28,9 @@
             Wyczyść filtry<span :class="isWidgetVersion ? 'clear' : 'clearV2'">X</span></p>
       </div>
       <div class="filters-menu">
-        <div class="checkbox-container" v-for="box in checkboxes" :key="box.id">
-          <input class="custom-checkbox" :class="{'custom-checkboxV2' : !isWidgetVersion}" type="checkbox" :id="box.id" :value="box.value" @click="selectedFilter()" v-model="filters.features">
-          <label class="custom-icon" :class="box.icon" :for="box.id">{{box.info}}</label>
+        <div class="checkbox-container" v-for="(box, index) in customerFeatures" :key="index">
+          <input class="custom-checkbox" :class="{'custom-checkboxV2' : !isWidgetVersion}" type="checkbox" :id="box" :value="box" @click="selectedFilter()" v-model="filters.features">
+          <label class="custom-icon" :class="box" :for="box">{{featuresInfo[box]}}</label>
         </div>
       </div>
       <div class="mobile-filters-footer">
@@ -52,8 +52,10 @@ export default {
   components: {
   },
   mixins: [MobileDetected],
+  props: ['innerFilter'],
   data () {
     return {
+      homeFilter: this.innerFilter,
       suppliersLogosUrl: {
         'Poczta Polska': 'pocztapolska.png',
         'DPD Pickup': 'dpd-pickup.png',
@@ -63,55 +65,37 @@ export default {
         'Paczka w Ruchu': 'paczka_w_ruchu.jpg',
         'Orlen': 'orlen.png'
       },
-      checkboxes: [{
-        id: 'otwarteDoPozna',
-        value: 'open_late',
-        info: 'Otwarte do póżna',
-        icon: 'pozna'
-      }, {
-        id: 'otwarteWSobotu',
-        value: 'open_saturday',
-        info: 'Otwarte w soboty',
-        icon: 'sobota'
-      }, {
-        id: 'otwarteWNiedziele',
-        value: 'open_sunday',
-        info: 'Otwarte w niedziele',
-        icon: 'niedziela'
-      }, {
-        id: 'dlaOsobNiepelnosprawnych',
-        value: 'disabled_friendly',
-        info: 'Ułatwienie dla osób niepełnosprawnych',
-        icon: 'niepelnosprawni'
-      }, {
-        id: 'parking',
-        value: 'parking',
-        info: 'Parking',
-        icon: 'parking'
-      }, {
-        id: 'odbiorZaPobraniem',
-        value: 'cash_on_delivery',
-        info: 'Odbiór za pobraniem',
-        icon: 'pobraniem'
-      }],
+      featuresInfo: {
+        'open_late': 'Otwarte do póżna',
+        'open_saturday': 'Otwarte w soboty',
+        'open_sunday': 'Otwarte w niedziele',
+        'disabled_friendly': 'Ułatwienie dla osób niepełnosprawnych',
+        'parking': 'Parking',
+        'cash_on_delivery': 'Odbiór za pobraniem'
+      },
+      checkboxes: ['open_late', 'open_saturday', 'open_sunday', 'disabled_friendly', 'parking', 'cash_on_delivery'],
       filters: {
         checkedSuppliers: [],
         features: []
-      }
+      },
+      frameData: null
     }
   },
-  created () {
-    window.addEventListener('message', this.filterApply)
-  },
-  destroyed () {
-    window.removeEventListener('message', this.filterApply)
-  },
   computed: {
+    customerFeatures () {
+      if (this.$store.state.customer.providers) {
+        let finalFeatures = Array.from(new Set(Object.values(this.$store.state.customer.providers)
+          .map((provider) => Object.values(provider)).flat(2)))
+        return finalFeatures
+      } else {
+        return this.checkboxes
+      }
+    },
     customerSuppliers () {
-      if (this.$store.state.customer.providers.length !== 0) {
+      if (this.$store.state.customer.providers) {
         let finalList = []
-        for (let supplier of this.$store.state.customer.providers) {
-          for (let type of this.providerToPickupTypeMapping[supplier]) {
+        for (let supplier in this.$store.state.customer.providers) {
+          for (let type in this.$store.state.customer.providers[supplier]) {
             if (finalList.indexOf(type) === -1) {
               finalList.push(type)
             }
@@ -125,8 +109,19 @@ export default {
     allSuppliers () {
       return Array.from(new Set(Object.values(this.providerToPickupTypeMapping).flat(1)))
     },
+
     providerToPickupTypeMapping () {
-      return this.$store.state.providerToPickupTypeMapping
+      if (this.$store.state.customer.providers) {
+        let allProviders = []
+        for (let supplier in this.$store.state.customer.providers) {
+          for (let type in this.$store.state.customer.providers[supplier]) {
+            if (allProviders.indexOf(type) === -1) {
+              allProviders.push(type)
+            }
+          }
+        }
+        return allProviders
+      }
     },
     customerUrl () {
       return this.$store.state.customer.url
@@ -138,17 +133,27 @@ export default {
       return this.$store.state.isFilterMobilOpen
     }
   },
-  methods: {
-    filterApply: function (event) {
-      if (event.origin === this.customerUrl || event.origin === 'http://localhost:8081') {
-        if (this.allSuppliers.indexOf(event.data.content.filter) === 0) {
-          if (this.filters.checkedSuppliers.indexOf(event.data.content.filter) === -1) {
-            this.filters.checkedSuppliers.push(event.data.content.filter)
-            this.selectedFilter()
+  watch: {
+    innerFilter: {
+      deep: true,
+      immediate: true,
+      handler () {
+        if (this.innerFilter) {
+          if (this.allSuppliers.indexOf(this.innerFilter) >= 0) {
+            if (this.filters.checkedSuppliers.indexOf(this.innerFilter) === -1) {
+              // var filter = this.filters.checkedSuppliers.slice()
+              // filter.push(this.innerFilter)
+              this.filters.checkedSuppliers = [this.innerFilter]
+              var n = this.filters.features.length + this.filters.checkedSuppliers.length
+              this.$store.commit('howManyFiltersApplies', n)
+              return this.selectedFilter()
+            }
           }
         }
       }
-    },
+    }
+  },
+  methods: {
     selectedFilter () {
       this.$store.commit('newStoreFilters', this.filters)
     },
@@ -319,25 +324,25 @@ export default {
       border-color:  #3F87F5;
     }
 }
-.custom-checkbox + .pozna:before{
+.custom-checkbox + .open_late:before{
     background: url('../../assets/icons/ZEGAR.png');
     background-position: center;
     background-repeat: no-repeat;
     background-size: contain;
 }
-.custom-checkbox + .sobota:before{
+.custom-checkbox + .open_saturday:before{
     background: url('../../assets/icons/sobota.png');
     background-position: center;
     background-repeat: no-repeat;
     background-size: contain;
 }
-.custom-checkbox + .niedziela:before{
+.custom-checkbox + .open_sunday:before{
     background: url('../../assets/icons/niedziela.png');
     background-position: center;
     background-repeat: no-repeat;
     background-size: contain;
 }
-.custom-checkbox + .niepelnosprawni:before{
+.custom-checkbox + .disabled_friendly:before{
     background: url('../../assets/icons/niepelnosprawni.png');
     background-position: center;
     background-repeat: no-repeat;
@@ -349,7 +354,7 @@ export default {
     background-repeat: no-repeat;
     background-size: contain;
 }
-.custom-checkbox + .pobraniem:before{
+.custom-checkbox + .cash_on_delivery:before{
     background: url('../../assets/icons/za-pobraniem.png');
     background-position: center;
     background-repeat: no-repeat;

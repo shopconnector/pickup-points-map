@@ -1,31 +1,40 @@
 <template>
-  <div class="widget-view">
-    <div class="header-view" v-if="isWidgetVersion">
-      <select-location/>
+  <div>
+    <div v-if="!$store.state.keyError" class="main-enter-info">
+      <p class="error-text">
+        Dostęp zablokowany dla niezautoryzowanych użytkowników.
+        <br>Jeśli interesuje cię użycie narzędzia PickupPoints, odwiedź
+        <a href="https://www.punktyodbiorupaczek.pl" target="_blank">punktyodbiorupaczek.pl</a>
+      </p>
     </div>
-    <div class="container-map">
-      <div class="mobile-header" v-if="isMobile">
-        <div class="mobile-container">
-          <i class="lejek-icon" @click="openFilterMobile"  :data-content="filtersCount"></i>
+    <div v-else class="widget-view">
+      <div class="header-view" v-if="isWidgetVersion">
+        <select-location :innerAddress="innerAddress"/>
+      </div>
+      <div class="container-map">
+        <div class="mobile-header" v-if="isMobile">
+          <div class="mobile-container">
+            <i class="lejek-icon" @click="openFilterMobile"  :data-content="filtersCount"></i>
+          </div>
+        </div>
+        <vue-over-body :dim="false" :open="this.$store.state.isFilterMobileOpen" before="beforeFilters" after="afterFilters" :transition="0.3">
+          <div v-if="isMobile" class="scroll-box-filters">
+            <Filters :innerFilter="innerFilter"/>
+          </div>
+        </vue-over-body>
+        <Map/>
+        <div class="mobile-footer" v-if="!showListFooter && isMobile">
+          <i class="button-footer" @click="openFooterModal"/>
+        </div>
+        <div class="list-modal-footer" v-if="showListFooter && isMobile">
+          <p class="footer-btn" @click="setPoint($store.state.markerDetails)">WYBIERZ TEN PUNKT</p>
         </div>
       </div>
-      <vue-over-body :dim="false" :open="this.$store.state.isFilterMobileOpen" before="beforeFilters" after="afterFilters" :transition="0.3">
-        <div v-if="isMobile" class="scroll-box-filters">
-          <Filters/>
+      <div class="features-div" :class="{ 'first' : !isWidgetVersion }">
+        <div :class="{ 'features-box-ver2' : !isWidgetVersion }">
+          <select-location v-if="!isWidgetVersion" :innerAddress="innerAddress"/>
+          <Filters :innerFilter="innerFilter" v-if="!isMobile"/>
         </div>
-      </vue-over-body>
-      <Map/>
-      <div class="mobile-footer" v-if="!showListFooter && isMobile">
-        <i class="button-footer" @click="openFooterModal"/>
-      </div>
-      <div class="list-modal-footer" v-if="showListFooter && isMobile">
-        <p class="footer-btn">WYBIERZ TEN PUNKT</p>
-      </div>
-    </div>
-    <div class="features-div" :class="{ 'first' : !isWidgetVersion }">
-      <div :class="{ 'features-box-ver2' : !isWidgetVersion }">
-        <select-location v-if="!isWidgetVersion"/>
-        <Filters v-if="!isMobile"/>
       </div>
     </div>
   </div>
@@ -39,6 +48,7 @@ import Filters from '../components/features/Filters.vue'
 import Map from '../components/Map/LeafletMap.vue'
 import vueOverBody from 'vue-over-body'
 import { MobileDetected } from '../components/mobileDetected.ts'
+import EventBus from '../event-bus'
 
 export default {
   name: 'Home',
@@ -53,15 +63,43 @@ export default {
   mixins: [MobileDetected],
   data () {
     return {
+      innerAddress: '',
+      innerFilter: null
     }
   },
+  created () {
+    window.addEventListener('message', this.filterApply)
+  },
+  destroyed () {
+    window.removeEventListener('message', this.filterApply)
+  },
   methods: {
+    filterApply: function (event) {
+      if (event.data.content && event.data.content.hasOwnProperty('key')) {
+      // this.$forceUpdate()
+        this.innerFilter = event.data.content.filter
+        this.innerAddress = event.data.content.address
+        this.$store.dispatch('get_essentials', {
+          key: `${event.data.content.key}`,
+          origin: `${event.origin}`
+        })
+      }
+    },
     openFooterModal () {
       this.$store.commit('openFooterModal')
     },
     openFilterMobile () {
+      if (this.$store.state.toogleModal === true) {
+        EventBus.$emit('toogleMethodBus', false)
+      }
       this.$store.commit('openFilterMobile')
       this.$store.commit('closeListFooter')
+    },
+    setPoint (point) {
+      this.sendMessage(point)
+    },
+    sendMessage (point) {
+      window.parent.postMessage(point, '*')
     }
   },
   computed: {
@@ -106,6 +144,35 @@ export default {
 </style>
 
 <style lang="scss" scoped>
+.main-enter-info {
+  position: absolute;
+  z-index: 1001;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  margin: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: gray;
+  @media (max-width: 767px) {
+    top: 70px;
+  }
+  p {
+    margin: 0;
+    padding: 15px;
+    border-radius: 5px;
+    color: #e4405f;
+    font-weight: 700;
+    background-color: #ffffff;
+    display: flex;
+    flex-direction: column;
+  }
+  a {
+    padding-top: 5px;
+  }
+}
 .scroll-box-filters{
   height: 100%;
   width: 100%;
