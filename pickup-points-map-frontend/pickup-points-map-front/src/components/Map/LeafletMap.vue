@@ -266,9 +266,12 @@ export default {
       return this.$store.state.customer.theme
     },
     zoomOrCenterUpdateOrFiltersUpdate () {
-      return [this.$store.state.zoom, this.$store.state.lat, this.$store.state.lng, this.$store.state.storeFilters.features, this.$store.state.storeFilters.checkedSuppliers, this.$store.state.pointId, this.isPopupOpen].join()
+      return [this.$store.state.zoom, this.$store.state.lat, this.$store.state.lng, this.$store.state.pointId, this.isPopupOpen].join()
     },
     filtersUpdate () {
+      return [this.$store.state.storeFilters.features, this.$store.state.storeFilters.checkedSuppliers].join()
+    },
+    filtersUpdateMap () {
       return [this.$store.state.storeFilters.features, this.$store.state.storeFilters.checkedSuppliers].join()
     },
     pointIdUpdate () {
@@ -317,6 +320,7 @@ export default {
     },
     filtersUpdate: {
       handler () {
+        this.forceClosePopup()
         if (this.$store.state.pointId) {
           this.$store.dispatch('get_list_points', {
             lat: '',
@@ -337,15 +341,36 @@ export default {
           })
         }
       }
+    },
+    filtersUpdateMap: {
+      handler () {
+        this.forceClosePopup()
+        if (this.$store.state.pointId) {
+          this.$store.dispatch('get_points', {
+            lat: '',
+            lng: '',
+            dist: '',
+            filtered: '',
+            id: `id=${this.$store.state.pointId}`,
+            key: `&key=${this.$store.state.customer.key}`
+          })
+        } else if (this.$store.state.zoom >= 13 && !this.isPopupOpen && this.$store.state.radiusOfVisibily !== 0) {
+          this.$store.dispatch('get_points', {
+            lat: `lat=${this.$store.state.lat}`,
+            lng: `&lon=${this.$store.state.lng}`,
+            key: `&key=${this.$store.state.customer.key}`,
+            dist: `&dist=${this.$store.state.radiusOfVisibily}`,
+            filtered: this.filteredPoints(),
+            id: ''
+          })
+        }
+      }
     }
   },
   mounted () {
     EventBus.$on('popupClose', () => {
       this.popupClose()
-      var closePopup = document.getElementsByClassName('leaflet-popup-close-button')[0]
-      if (closePopup) {
-        closePopup.click()
-      }
+      this.forceClosePopup()
     })
     EventBus.$on('toogleMethodBus', (bool) => {
       if (bool === 'true') {
@@ -358,6 +383,12 @@ export default {
     })
   },
   methods: {
+    forceClosePopup () {
+      var closePopup = document.getElementsByClassName('leaflet-popup-close-button')[0]
+      if (closePopup) {
+        closePopup.click()
+      }
+    },
     filteredPoints () {
       var features = []
       var pickupTypes = []
