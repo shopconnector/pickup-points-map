@@ -174,15 +174,12 @@ export default {
   },
   methods: {
     setMobileUniqPoint (i) {
-      console.log(i)
       let newData1 = {...this.parentData}
       newData1.points = newData1.points.filter((item, index) => i === item.id)
-      console.log(newData1)
       return newData1
     },
     setPoint (point) {
-      console.log(point)
-      // this.sendMessage(point)
+      this.sendMessage(point)
     },
     sendMessage (point) {
       window.parent.postMessage(point, '*')
