@@ -2,7 +2,7 @@
 <div :class="{'list-background-mobile-fix' : isMobile}">
   <div :class="isWidgetVersion ? 'map-v2' : 'map'">
     <div class="type-actions" :class="{'type-actions-v2' : !isWidgetVersion}">
-      <p class="button-action" :class="{ 'active' : !toogleMap }" @click="toogleMapMethod('show')">Mapa </p>
+      <p class="button-action" :class="{ 'active' : !toogleMap }" @click="toogleMapMethod('show')">Mapa</p>
       <p class="button-action" :class="{ 'active' : toogleMap }" @click="toogleMapMethod('hide')">Lista</p>
     </div>
     <div v-if="this.$store.state.geolocation.error.code === 1 && ($store.state.pointMarkers && !$store.state.pointMarkers.length)" class="first-enter-info">
@@ -37,7 +37,7 @@
                 v-for="(listMarker, index) in listMarkers"
                 :key="index"
                 @click="openListModal(index)"
-                v-on="isMobile ? { click: () => getPointDetails(listMarker.lat, listMarker.lon, listMarker.pickup_point_type) } : {} "
+                v-on="isMobile ? { click: () => getPointDetails(listMarker.lat, listMarker.lon, listMarker.pickup_point_type, listMarker.id) } : {} "
                 >
                   <div class="list-elem list-elem-img">
                     <img :class="{'img-modal' : isOpenListModal(index)}" :src="logosUrl[listMarker.pickup_point_type]" width="auto" height="70px" />
@@ -52,12 +52,12 @@
                     {{ listMarker.working_hours }}
                   </div>
                   <div class="list-elem btn-elem">
-                    <p class="list-button" @click="getPointDetails(listMarker.lat, listMarker.lon, listMarker.pickup_point_type),toogleMethod('true', 0)">Wybierz</p>
+                    <p class="list-button" @click="getPointDetails(listMarker.lat, listMarker.lon, listMarker.pickup_point_type),toogleMethod('true', listMarker.id)">Wybierz</p>
                   </div>
                   <transition name="fade">
                     <div class="list-modal" v-if="isOpenListModal(index) && isMobile && $store.state.markerDetails">
                       <template v-if="typeof $store.state.markerDetails.points !== 'undefined'">
-                        <div class="list-modal-hours" v-if="$store.state.markerDetails.points[0].working_hours.length > 0">
+                        <div class="list-modal-hours" v-if="$store.state.markerDetails.points[0].working_hours && $store.state.markerDetails.points[0].working_hours.length > 0">
                           <b>Godziny otwarcia:</b>
                           <template v-for="day in $store.state.markerDetails.points[0].working_hours">
                             {{ day }}
@@ -130,7 +130,7 @@
                           </div>
                         </div>
                         <div class="popup-action" :key="'btn-' + index">
-                          <p id="btn-wybierz" class="popup-button" @click="toogleMethod('true', index)">Wybierz</p>
+                          <p id="btn-wybierz" class="popup-button" @click="toogleMethod('true', point.id)">Wybierz</p>
                         </div>
                       </template>
                     </div>
@@ -189,7 +189,7 @@ export default {
   data () {
     return {
       isPopupOpen: false,
-      selectedPoint: Number,
+      // selectedPoint: Number,
       toogleMap: false,
       url: 'https://scorch.openstreetmap.org/{z}/{x}/{y}.png',
       attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
@@ -224,6 +224,9 @@ export default {
     }
   },
   computed: {
+    currentIndex () {
+      return this.$store.state.selectedPoint
+    },
     points () {
       if (this.$store.state.markerDetails && this.$store.state.markerDetails.points) {
         return this.$store.state.markerDetails.points
@@ -386,12 +389,13 @@ export default {
       this.isPopupOpen = false
       this.$store.commit('clear_point_details')
     },
-    getPointDetails (lat, lng, type) {
+    getPointDetails (lat, lng, type, id) {
       this.$store.dispatch('get_point_details', {
         lat: lat,
         lng: lng,
         key: this.$store.state.customer.key,
-        type: type
+        type: type,
+        id: id
       })
     },
     loadMorePoints () {

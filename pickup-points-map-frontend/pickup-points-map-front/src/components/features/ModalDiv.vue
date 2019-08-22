@@ -6,44 +6,44 @@
           <div class="selected-supplier">
             <div class="col-1">
               <div class="address">
-                <h4>{{ parentData.street }}</h4>
-                <p>{{ parentData.zip }} {{ parentData.city }}</p>
-                <p v-if="parentData.points && parentData.points[selectedPoint].id.length > 0" >{{ parentData.points[selectedPoint].id }}</p>
+                <h4>{{ setUniqPoint.street }}</h4>
+                <p>{{ setUniqPoint.zip }} {{ setUniqPoint.city }}</p>
+                <p v-if="setUniqPoint.points && setUniqPoint.points.length > 0 && setUniqPoint.points[0].id.length > 0" >{{ setUniqPoint.points[0].id }}</p>
               </div>
               <div class="shop paddbott">
-                <p>{{ parentData.pickup_type }}</p>
-                <p v-if="parentData.point && parentData.points[selectedPoint].phones.length" >
-                  <template v-for="phone in parentData.points[selectedPoint].phones">
+                <p>{{ setUniqPoint.pickup_type }}</p>
+                <p v-if="setUniqPoint.point && setUniqPoint.points[0].phones.length" >
+                  <template v-for="phone in setUniqPoint.points[0].phones">
                     {{ phone }}
                   </template>
                 </p>
               </div>
-              <div class="shop additional" v-if="parentData.points">
-                <p v-if="parentData.points && parentData.points[selectedPoint].features.open_late"> Otwarte do pózna</p>
-                <p v-if="parentData.points && parentData.points[selectedPoint].features.open_saturday"> Otwarte w soboty</p>
-                <p v-if="parentData.points && parentData.points[selectedPoint].features.open_sunday"> Otwarte w niedziele</p>
-                <p v-if="parentData.points && parentData.points[selectedPoint].features.parking"> Parking</p>
-                <p v-if="parentData.points && parentData.points[selectedPoint].features.disabled_friendly"> Ułatwienie dla osób niepełnosprawnych</p>
-                <p v-if="parentData.points && parentData.points[selectedPoint].features.cash_on_delivery" > Odbiór za pobraniem</p>
+              <div class="shop additional" v-if="setUniqPoint.points">
+                <p v-if="setUniqPoint.points && setUniqPoint.points.length > 0 && setUniqPoint.points[0].features.open_late"> Otwarte do pózna</p>
+                <p v-if="setUniqPoint.points && setUniqPoint.points.length > 0 && setUniqPoint.points[0].features.open_saturday"> Otwarte w soboty</p>
+                <p v-if="setUniqPoint.points && setUniqPoint.points.length > 0 && setUniqPoint.points[0].features.open_sunday"> Otwarte w niedziele</p>
+                <p v-if="setUniqPoint.points && setUniqPoint.points.length > 0 && setUniqPoint.points[0].features.parking"> Parking</p>
+                <p v-if="setUniqPoint.points && setUniqPoint.points.length > 0 && setUniqPoint.points[0].features.disabled_friendly"> Ułatwienie dla osób niepełnosprawnych</p>
+                <p v-if="setUniqPoint.points && setUniqPoint.points.length > 0 && setUniqPoint.points[0].features.cash_on_delivery" > Odbiór za pobraniem</p>
               </div>
             </div>
             <div class="col-2">
               <div class="info-box">
                 <div class="logo">
-                  <img :src="logosUrl[parentData.pickup_type]" class="img">
+                  <img :src="logosUrl[setUniqPoint.pickup_type]" class="img">
                 </div>
                 <div class="road">
                   <a :href="linkToRoad" target="_blank">Wyznacz trasę dojazdu <i class="play_arrow"/></a>
                 </div>
               </div>
               <div class="col-3">
-                <div class="open-hours" v-if="parentData.points && parentData.points[selectedPoint].working_hours.length > 0 && parentData.points[selectedPoint].working_hours[0] !== ''">
+                <div class="open-hours" v-if="setUniqPoint.points && setUniqPoint.points.length > 0 && typeof setUniqPoint.points[0].working_hours !== 'undefined' && setUniqPoint.points[0].working_hours.length > 0">
                   <div class="hours-title">
                     <p>Godziny otwarcia</p>
                   </div>
                   <div class="week">
                     <div class="hourse-info">
-                      <template v-for="(day, index) in parentData.points[selectedPoint].working_hours">
+                      <template v-for="(day, index) in setUniqPoint.points[0].working_hours">
                         <p :key="index">{{ day }}</p>
                       </template>
                     </div>
@@ -64,7 +64,7 @@
        </div>
        <div class="footer">
          <p class="powrot" @click="closeModal()"><i class="arrow_left"/>POWRÓT</p>
-         <p class="zamknij" id="set-point" @click="setPoint(parentData)">Wybierz {{ parentData.pickup_type }} i zamknij</p>
+         <p class="zamknij" id="set-point" @click="setPoint(setUniqPoint)">Wybierz {{ parentData.pickup_type }} i zamknij</p>
        </div>
     </div>
     <!-- Modal DIV for mobile map -->
@@ -112,7 +112,8 @@
         <p v-if="parentData.points && point.features.cash_on_delivery" class="additional-info"><span class="mobile-map-icon-padding"><i class="icon pobraniem"/></span> - odbiór za pobraniem</p>
       </div>
       <div class="mobile-map-footer" :key="'btn-' + index">
-        <p class="mobile-map-btn-close" @click="closeModal(); setPoint(parentData);">Wybierz "{{ parentData.pickup_type }}" i zamknij</p>
+        <p class="mobile-map-btn-close" @click="closeModal(); setPoint(setMobileUniqPoint(point.id))">Wybierz "{{ parentData.pickup_type }}" i zamknij</p>
+        <!-- setPoint(parentData); -->
       </div>
       </template>
     </div>
@@ -146,6 +147,15 @@ export default {
     selectedPoint () {
       return this.$store.state.selectedPoint
     },
+    setUniqPoint () {
+      if (this.selectedPoint !== null) {
+        let newData = {...this.parentData}
+        newData.points = newData.points.filter((item, index) => this.selectedPoint === item.id)
+        return newData
+      } else {
+        return this.parentData
+      }
+    },
     isWidgetVersion () {
       return this.$store.state.customer.theme
     },
@@ -163,8 +173,16 @@ export default {
     }
   },
   methods: {
+    setMobileUniqPoint (i) {
+      console.log(i)
+      let newData1 = {...this.parentData}
+      newData1.points = newData1.points.filter((item, index) => i === item.id)
+      console.log(newData1)
+      return newData1
+    },
     setPoint (point) {
-      this.sendMessage(point)
+      console.log(point)
+      // this.sendMessage(point)
     },
     sendMessage (point) {
       window.parent.postMessage(point, '*')

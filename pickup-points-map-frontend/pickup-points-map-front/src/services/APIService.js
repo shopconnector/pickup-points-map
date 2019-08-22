@@ -36,8 +36,14 @@ export default {
     })
   },
   get_point_details (query) {
-    return axios({
-      url: `${API_URL}/address-details?lat=${query.lat}&lon=${query.lng}&key=${query.key}&pickup_type=${query.type}`
-    })
+    if (query.id) {
+      return axios({
+        url: `${API_URL}/address-details?lat=${query.lat}&lon=${query.lng}&key=${query.key}&pickup_type=${query.type}&id=${query.id}`
+      })
+    } else {
+      return axios({
+        url: `${API_URL}/address-details?lat=${query.lat}&lon=${query.lng}&key=${query.key}&pickup_type=${query.type}`
+      })
+    }
   }
 }
