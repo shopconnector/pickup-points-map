@@ -1,5 +1,5 @@
 <template>
-    <div class='filters add-scroll-filters' :key="componentKey" :class="{ 'filtersV2' : !isWidgetVersion }">
+    <div class='filters add-scroll-filters' :class="{ 'filtersV2' : !isWidgetVersion }">
       <!-- Select suppliers first version -->
       <div class="suppliers" v-if="isWidgetVersion && !isMobile">
         <h2 class="title-supp">Wybierz dostawców</h2>
@@ -78,8 +78,7 @@ export default {
         checkedSuppliers: [],
         features: []
       },
-      frameData: null,
-      componentKey: 0
+      frameData: null
     }
   },
   computed: {
@@ -136,14 +135,22 @@ export default {
   },
   watch: {
     innerFilter: {
+      deep: true,
       immediate: true,
       handler () {
-        console.log(this.homeFilter)
-        if (this.homeFilter) {
-          this.componentKey += 0
-          if (this.allSuppliers.indexOf(this.homeFilter) >= 0) {
-            if (this.filters.checkedSuppliers.indexOf(this.homeFilter) === -1) {
-              this.filters.checkedSuppliers.push(this.homeFilter)
+        if (this.innerFilter) {
+          if (this.allSuppliers.indexOf(this.innerFilter) >= 0) {
+            if (this.filters.checkedSuppliers.indexOf(this.innerFilter) === -1) {
+              // var filter = this.filters.checkedSuppliers.slice()
+              // filter.push(this.innerFilter)
+              this.filters.checkedSuppliers = [this.innerFilter]
+              if (this.$store.state.toogleModal === true) {
+                this.$store.commit('closeToogleModal', false)
+              }
+              var closePopup = document.getElementsByClassName('leaflet-popup-close-button')[0]
+              if (closePopup) {
+                closePopup.click()
+              }
               var n = this.filters.features.length + this.filters.checkedSuppliers.length
               this.$store.commit('howManyFiltersApplies', n)
               return this.selectedFilter()

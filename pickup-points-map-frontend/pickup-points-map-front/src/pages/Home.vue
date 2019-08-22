@@ -75,18 +75,15 @@ export default {
   },
   methods: {
     filterApply: function (event) {
-      console.log(event.data)
-      // if (event.data.content && event.data.content.hasOwnProperty('key')) {
-      this.$forceUpdate()
-      // this.innerFilter = event.data.content.filter
-      // this.innerAddress = event.data.content.address
-      console.log(this.innerFilter)
-      console.log(this.innerAddress)
-      this.$store.dispatch('get_essentials', {
-        key: `5DFC0961AB6BEF40736BA3099EE27491`,
-        origin: `bardotti.pl`
-      })
-      // }
+      if (event.data.content && event.data.content.hasOwnProperty('key')) {
+      // this.$forceUpdate()
+        this.innerFilter = event.data.content.filter
+        this.innerAddress = event.data.content.address
+        this.$store.dispatch('get_essentials', {
+          key: `${event.data.content.key}`,
+          origin: `${event.origin}`
+        })
+      }
     },
     openFooterModal () {
       this.$store.commit('openFooterModal')
