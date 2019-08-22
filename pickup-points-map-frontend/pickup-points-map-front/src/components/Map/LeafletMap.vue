@@ -29,7 +29,7 @@
     <transition name="fade">
       <div  v-if="toogleMap" class="list-box" :class="{'listbox-margin-top' : isWidgetVersion}">
           <div class="list-title hidden-xs"><h1>Punkty odbioru w pobliżu Twojej lokalizacji</h1></div>
-          <div v-if="listMarkers.length === 0 && !$store.state.storeFilters.checkedSuppliers.length">
+          <div v-if="listMarkers.length === 0 && $store.state.storeFilters.checkedSuppliers &&!$store.state.storeFilters.checkedSuppliers.length">
             <p class="empty-text">Wybierz adres/lokalizację aby zobaczyć najbliższe punkty odbioru</p>
           </div>
           <div class="scroll-box" :class="{'change-vh' : !isWidgetVersion}">
@@ -48,8 +48,10 @@
                     {{ listMarker.address.zip }} {{ listMarker.address.city }}</p>
                   </div>
                   <div class="list-elem hours-elem">
-                    <b>Godziny otwarcia:</b>
-                    {{ listMarker.working_hours }}
+                    <b v-if="listMarker.working_hours && listMarker.working_hours.length > 0">Godziny otwarcia:</b>
+                    <template v-for="day in listMarker.working_hours">
+                      {{ day }}
+                    </template>
                   </div>
                   <div class="list-elem btn-elem">
                     <p class="list-button" @click="getPointDetails(listMarker.lat, listMarker.lon, listMarker.pickup_point_type),toogleMethod('true', listMarker.id)">Wybierz</p>

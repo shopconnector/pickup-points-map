@@ -1,7 +1,7 @@
 <template>
   <div>
     <div :class="!isWidgetVersion ? 'modal' : 'modalV2'" v-if="!isMobile">
-       <div class="content">
+       <div class="content" v-if="setUniqPoint">
           <div class="title"><h3>Wybrany sposób dostawy</h3></div>
           <div class="selected-supplier">
             <div class="col-1">
@@ -148,12 +148,14 @@ export default {
       return this.$store.state.selectedPoint
     },
     setUniqPoint () {
-      if (this.selectedPoint !== null) {
-        let newData = {...this.parentData}
-        newData.points = newData.points.filter((item, index) => this.selectedPoint === item.id)
-        return newData
-      } else {
-        return this.parentData
+      if (this.parentData.points && this.selectedPoint) {
+        if (this.selectedPoint !== null) {
+          let newData = {...this.parentData}
+          newData.points = newData.points.filter((item, index) => this.selectedPoint === item.id)
+          return newData
+        } else {
+          return this.parentData
+        }
       }
     },
     isWidgetVersion () {
