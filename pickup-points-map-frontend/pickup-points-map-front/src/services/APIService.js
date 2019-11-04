@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const API_URL = 'https://api.pickuppointsmap.dev.beecommerce.pl'
+const API_URL = process.env.API_URL
 
 export default {
   get_essentials (query) {
