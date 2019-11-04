@@ -53,6 +53,9 @@ export default new Vuex.Store({
     }
   },
   mutations: {
+    closeToogleModal (state, payload) {
+      state.toogleModal = payload
+    },
     updateLinkToRoad (state, payload) {
       state.linkToRoad.x = payload.x
       state.linkToRoad.y = payload.y

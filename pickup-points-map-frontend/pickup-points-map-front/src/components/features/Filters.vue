@@ -144,6 +144,13 @@ export default {
               // var filter = this.filters.checkedSuppliers.slice()
               // filter.push(this.innerFilter)
               this.filters.checkedSuppliers = [this.innerFilter]
+              if (this.$store.state.toogleModal === true) {
+                this.$store.commit('closeToogleModal', false)
+              }
+              var closePopup = document.getElementsByClassName('leaflet-popup-close-button')[0]
+              if (closePopup) {
+                closePopup.click()
+              }
               var n = this.filters.features.length + this.filters.checkedSuppliers.length
               this.$store.commit('howManyFiltersApplies', n)
               return this.selectedFilter()
