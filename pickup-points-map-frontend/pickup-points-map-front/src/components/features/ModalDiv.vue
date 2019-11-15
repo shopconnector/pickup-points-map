@@ -134,7 +134,7 @@ export default {
         'Fresh Market': require('../../assets/logos/freshmarket.png'),
         'In Post': require('../../assets/logos/inpost.png'),
         'Poczta Polska': require('../../assets/logos/pocztapolska.png'),
-        'Paczka w Ruchu': require('../../assets/logos/paczka_w_ruchu.jpg'),
+        'Paczka w RUCHu': require('../../assets/logos/paczka_w_ruchu.jpg'),
         'Orlen': require('../../assets/logos/orlen.png')
       }
     }

@@ -68,22 +68,25 @@ export default {
     }
   },
   created () {
-    window.addEventListener('message', this.filterApply)
+    // window.addEventListener('message', this.filterApply)
+    this.filterApply()
   },
   destroyed () {
     window.removeEventListener('message', this.filterApply)
   },
   methods: {
     filterApply: function (event) {
-      if (event.data.content && event.data.content.hasOwnProperty('key')) {
+      // if (event.data.content && event.data.content.hasOwnProperty('key')) {
       // this.$forceUpdate()
-        this.innerFilter = event.data.content.filter
-        this.innerAddress = event.data.content.address
-        this.$store.dispatch('get_essentials', {
-          key: `${event.data.content.key}`,
-          origin: `${event.origin}`
-        })
-      }
+      // this.innerFilter = event.data.content.filter
+      // this.innerAddress = event.data.content.address
+      this.$store.dispatch('get_essentials', {
+        // key: `${event.data.content.key}`,
+        // origin: `${event.origin}`
+        key: '5DFC0961AB6BEF40736BA3099EE27492',
+        origin: 'localhost'
+      })
+      // }
     },
     openFooterModal () {
       this.$store.commit('openFooterModal')
@@ -185,13 +188,13 @@ export default {
   flex-wrap: wrap;
 }
 .features-div{
-  width: 55%;
+  width: 35%;
   @media (max-width: 767px) {
     width: auto;
   }
 }
 .container-map{
-  width: 45%;
+  width: 65%;
   @media (max-width: 767px) {
     width: 100%;
   }
@@ -212,7 +215,7 @@ export default {
   }
 }
 .features-box-ver2 {
-  margin: 20px 40px 0 40px;
+  margin: 20px 25px 0 25px;
   @media (max-width: 767px) {
     margin: 0;
   }

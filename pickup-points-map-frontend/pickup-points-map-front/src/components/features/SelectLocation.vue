@@ -4,8 +4,7 @@
       <h2 class="title">Wybierz lokalizację</h2>
     </div>
     <div class="choose-location" v-if="!isMobile">
-        <h3 :class="[ isWidgetVersion ? 'my-location' : 'my-locationV2', $store.state.geolocation.lat ? 'active' : '']" @click="currentPos()">Moja lokalizacja</h3>
-        <p class="lub">lub</p>
+        <h3 :class="[ isWidgetVersion ? 'my-location' : 'my-locationV2', $store.state.geolocation.lat ? 'active' : '']" @click="currentPos()">Użyj mojej lokalizacji</h3>
         <div class="suggest-box">
           <!-- :class="{ 'active-input' : isInputAddress}" -->
         <vue-autosuggest
@@ -296,7 +295,6 @@ export default {
 .input-tag ul li {
   padding: 5px 0;
   text-overflow: ellipsis;
-  white-space: nowrap;
   overflow: hidden;
   @media (max-width: 767px) {
     padding: 10px 0;
@@ -358,8 +356,6 @@ export default {
 .suggest-box {
   position: relative;
   display: block;
-  // flex-basis: 40%;
-  width: 75%;
 }
 .suggest-box-punkt{
   position: relative;
@@ -438,9 +434,8 @@ export default {
 }
 .choose-location{
   display: flex;
-  align-items: center;
+  flex-direction: column;
   width: 100%;
-  justify-content: center;
 }
 .my-location{
   flex: 0 0 25%;
@@ -476,10 +471,7 @@ export default {
 }
 .my-locationV2{
   cursor: pointer;
-  // padding-left: 5px;
   padding-left: 25px;
-  // flex-basis: 25%;
-  flex-basis: 30%;
   color: #989898;
   font-size: 14px;
   font-family: 'Lato', sans-serif;
@@ -507,14 +499,6 @@ export default {
     color:#FFFFFF;
     cursor: pointer;
   }
-}
-.lub{
-  flex-basis: 5%;
-  font-size: 14px;
-  font-family: 'Lato', sans-serif;
-  color: #AAAAAA;
-  margin: 0;
-  padding: 0 5px;
 }
 .input-tag{
   position: relative;
@@ -576,9 +560,6 @@ input::placeholder{
  }
  .my-location{
    font-size: 16px;
- }
- .lub{
-   font-size: 12px;
  }
 }
 </style>

@@ -1,5 +1,5 @@
 <template>
-    <div class='filters add-scroll-filters' :class="{ 'filtersV2' : !isWidgetVersion }">
+    <div class='filters add-scroll-filters'>
       <!-- Select suppliers first version -->
       <div class="suppliers" v-if="isWidgetVersion && !isMobile">
         <h2 class="title-supp">Wybierz dostawców</h2>
@@ -12,7 +12,10 @@
       </div>
       <!-- Select suppliers second version -->
       <div v-if="!isWidgetVersion || isMobile">
-        <h2 class="title-dostawcow">Wybierz dostawców</h2>
+        <div class="header">
+          <h2 class="title-dostawcow">Wybierz dostawców</h2><p v-if="filters.checkedSuppliers.length > 0 || filters.features.length > 0" :class="isWidgetVersion ? 'subtitle' : 'subtitleV2'" @click="clearAPIFilter()">
+            Wyczyść filtry<span :class="isWidgetVersion ? 'clear' : 'clearV2'">X</span></p>
+        </div>
         <div class="suppliers-menu-dostawcow">
           <div class="select-suppliers-dostawcow" v-for="(supp, index) in customerSuppliers" :key="index">
             <input class="styled-checkbox-dostawcow" type="checkbox" :id="supp" :value="supp" @click="selectedFilter()" v-model="filters.checkedSuppliers">
@@ -24,8 +27,7 @@
       </div>
       <!-- Filters Menu -->
       <div class="header">
-        <h2 class="title" :class="{'titleV2' : !isWidgetVersion}">Filtry</h2><p :class="isWidgetVersion ? 'subtitle' : 'subtitleV2'" @click="clearAPIFilter()">
-            Wyczyść filtry<span :class="isWidgetVersion ? 'clear' : 'clearV2'">X</span></p>
+        <h2 class="title" :class="{'titleV2' : !isWidgetVersion}">Filtry</h2>
       </div>
       <div class="filters-menu">
         <div class="checkbox-container" v-for="(box, index) in customerFeatures" :key="index">
@@ -62,11 +64,11 @@ export default {
         'Żabka': 'żabka.png',
         'Fresh Market': 'freshmarket.png',
         'In Post': 'inpost.png',
-        'Paczka w Ruchu': 'paczka_w_ruchu.jpg',
+        'Paczka w RUCHu': 'paczka_w_ruchu.jpg',
         'Orlen': 'orlen.png'
       },
       featuresInfo: {
-        'open_late': 'Otwarte do póżna',
+        'open_late': 'Otwarte do późna',
         'open_saturday': 'Otwarte w soboty',
         'open_sunday': 'Otwarte w niedziele',
         'disabled_friendly': 'Ułatwienie dla osób niepełnosprawnych',
@@ -210,12 +212,6 @@ export default {
     color: #E54C69;
   }
 }
-.filters{
-  margin: 0 20px;
-}
-.filtersV2 {
-  margin: 0 20px 0 0;
-}
 .header{
   display: flex;
   justify-content: space-between;
@@ -236,20 +232,28 @@ export default {
 .subtitle{
   margin: 0 2% 0 0;
   font-size: 18px;
+  cursor: pointer;
+  background-color: #E5E5E5;
+  padding: 4px 8px;
+  border-radius: 12px;
   &:hover{
-    color: #E5E5E5;
-    cursor: pointer;
+    background-color: #DD2C54;
   }
 }
 .subtitleV2{
+  background-color: #E5E5E5;
+  padding: 0 8px;
+  margin: 5px 0;
+  border-radius: 12px;
   font-size: 16px;
-  color: #000000;
+  color:#4A4A4A;
   display: flex;
   align-items: center;
-  margin: 0;
+  font-size: 13px;
+  cursor: pointer;
   &:hover{
-    color: #989898;
-    cursor: pointer;
+    background-color: #DD2C54;
+    color: #FFF;
   }
 }
 .clear{
@@ -468,9 +472,6 @@ export default {
  .subtitle{
    font-size: 16px;
  }
- .subtitleV2{
-   font-size: 14px;
- }
  .custom-checkbox{
    & + .custom-icon{
      font-size: 14px;
@@ -526,7 +527,7 @@ export default {
   scroll-behavior: smooth;
 }
 .filters{
-   padding: 30px 35px 0 35px;
+   padding: 20px 15px 0 15px;
    margin: 0;
  }
  .title-dostawcow{
