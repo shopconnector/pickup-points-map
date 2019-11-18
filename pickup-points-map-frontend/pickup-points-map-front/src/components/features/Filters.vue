@@ -190,7 +190,7 @@ export default {
   background-color: white;
   height: 20px;
   position: absolute;
-  bottom: 16px;
+  bottom: 25px;
   left: 0;
   right: 0;
   display: flex;
@@ -203,13 +203,33 @@ export default {
     width: 50%;
     align-items: center;
     margin: 0;
-    color: #000000;
+    p {
+      width: fit-content;
+      background: rgb(229, 229, 229);
+      color: rgb(74, 74, 74);
+      margin: 0px auto;
+      padding: 5px 10px;
+      border-radius: 9px;
+      cursor: pointer;
+      &:hover{
+        background-color: #DD2C54;
+        color: #FFF;
+      }
+    }
   }
   .zastosuj{
     width: 50%;
     align-items: center;
     margin: 0;
-    color: #E54C69;
+    p {
+      width: fit-content;
+      margin: 0 auto;
+      background: #DD2C54;
+      color: #fff;
+      border-radius: 9px;
+      padding: 5px 10px;
+      cursor: pointer;
+    }
   }
 }
 .header{
@@ -277,6 +297,7 @@ export default {
   opacity: 0;
   position: relative;
   & +.custom-icon{
+    cursor: pointer;
     position: relative;
     padding-left: 30px;
     margin: 12px 0;
@@ -311,6 +332,7 @@ export default {
 
 .custom-checkboxV2{
     & + .custom-icon{
+      cursor: pointer;
         &:after{
           content: '';
           position: absolute;
@@ -369,7 +391,7 @@ export default {
   flex-direction: column;
 }
 .title-supp{
-  font-family: 'Lato', sans-serif;
+  font-family: 'sofia-pro', sans-serif;
   font-size: 22px;
   font-weight: 900;
   text-align: left;
@@ -390,7 +412,7 @@ export default {
   position: absolute;
   display: none;
     & + label {
-      font-family: 'Lato', sans-serif;
+      font-family: 'sofia-pro', sans-serif;
       font-size: 16px;
       position: relative;
       padding: 0;
@@ -400,6 +422,7 @@ export default {
       line-height: 16px;
       align-items: center;
       text-align: left;
+      cursor: pointer;
     }
     & + label:before {
       content: '';
@@ -440,7 +463,8 @@ export default {
   opacity: 0;
     & + label {
       position: relative;
-      padding-left: 45px
+      padding-left: 45px;
+      cursor: pointer;
     }
     & + label:before {
       content: '';
@@ -539,8 +563,8 @@ export default {
      padding: 0
    }
    & + label:before {
-     top: -12px;
-     left: 20px;
+     top: 37px;
+     left: -30px;
      border: 2px solid #E4E4E4;
    }
    &:checked + label:before{
@@ -550,7 +574,6 @@ export default {
    }
  }
  .select-suppliers-dostawcow{
-   padding-top: 35px;
    justify-content: center;
  }
  .title{

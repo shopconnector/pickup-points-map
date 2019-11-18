@@ -55,7 +55,7 @@
           <template v-if="suggestionText">{{ suggestionText.city + ', ' + suggestionText.prefix + ' ' + suggestionText.street + ' ' + suggestionText.building }}</template>
           <template v-else>Zacznij wpisywać adres</template>
         </div>
-        <div class='input-modal-button'>Wpisz kod odbioru</div>
+        <!-- <div class='input-modal-button'>Wpisz kod odbioru</div> -->
       </div>
     </vue-over-body>
     <vue-over-body :dim="false" :open="IsLocitModalOpen" before="beforeLocitModal" after="afterLocitModal" :transition="0.3">
@@ -76,7 +76,7 @@
             <small>({{ suggestion.item.voiv + ' ' + suggestion.item.pov + ' ' + suggestion.item.mun }})</small>
           </template>
         </vue-autosuggest>
-        <span class="span-location" @click="locitAddress = ''"><i class="clear-input"/></span>
+        <span class="span-location" @click="locitAddress = ''"><i class="szczotka-clear-input"/></span>
       </div>
     </vue-over-body>
   </div>
@@ -106,7 +106,8 @@ export default {
       locitSuggestions: [],
       placeHolder: 'Wpisz adres',
       placeHolderCode: 'Podaj kod odboiru',
-      filterApplyCount: 0
+      filterApplyCount: 0,
+      selectedSuggestion: null
     }
   },
   computed: {
@@ -185,6 +186,7 @@ export default {
     },
     getSuggestionValue (suggestion) {
       if (suggestion) {
+        this.selectedSuggestion = suggestion.item
         this.suggestionText = suggestion.item
         this.$store.commit('updatePosition', [{ lat: Number(suggestion.item.y), lng: Number(suggestion.item.x), zoom: 16 }])
         this.$store.commit('updateLocitAddress', this.suggestionText)
@@ -275,8 +277,8 @@ export default {
 .beforeFooterModal {
   bottom: -100vh;
   width: 100%;
-  height: 165px;
-  margin-top: calc( 100vh - 165px );
+  height: 120px;
+  margin-top: calc( 100vh - 120px );
   background-color: white;
   position:absolute;
 }
@@ -310,7 +312,7 @@ export default {
     border: 0;
     color: black;
     font-size: 16px;
-    font-family: 'Lato', sans-serif;
+    font-family: 'sofia-pro', sans-serif;
     @media (max-width: 767px) {
       font-weight: bold;
       border-radius: 5px;
@@ -416,6 +418,16 @@ export default {
 .location-headerV2{
   display: block;
 }
+.szczotka-clear-input {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  cursor: pointer;
+  filter: grayscale(0.5) opacity(0.5);
+  background: url('../../assets/icons/szczotka.svg') 0 0 no-repeat;
+  background-size: cover;
+}
 .clear-input{
   width: 22px;
   height: 22px;
@@ -426,7 +438,7 @@ export default {
   background-size: cover;
 }
 .title{
-  font-family: 'Lato', sans-serif;
+  font-family: 'sofia-pro', sans-serif;
   font-size: 22px;
   font-weight: 900;
   text-align: left;
@@ -441,7 +453,7 @@ export default {
   flex: 0 0 25%;
   color: #000000;
   font-size: 18px;
-  font-family: 'Lato', sans-serif;
+  font-family: 'sofia-pro', sans-serif;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -474,7 +486,7 @@ export default {
   padding-left: 25px;
   color: #989898;
   font-size: 14px;
-  font-family: 'Lato', sans-serif;
+  font-family: 'sofia-pro', sans-serif;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -508,7 +520,7 @@ export default {
   border-radius: 3px;
   margin: 9px 0;
   padding: 0px;
-  font-family: 'Lato', sans-serif;
+  font-family: 'sofia-pro', sans-serif;
   color: #303030;
   @media (max-width: 767px) {
     width: auto;
@@ -531,7 +543,7 @@ export default {
   border-radius: 5px;
   background-color: #e5e5e5;
   color: #AAAAAA;
-  font-family: 'Lato', sans-serif;
+  font-family: 'sofia-pro', sans-serif;
   @media (max-width: 767px) {
   }
 }
@@ -551,7 +563,7 @@ export default {
 input::placeholder{
  color: #AAAAAA;
  font-size: 16px;
- font-family: 'Lato', sans-serif;
+ font-family: 'sofia-pro', sans-serif;
 }
 
 @media only screen and (max-width: 1000px) {

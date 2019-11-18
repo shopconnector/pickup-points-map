@@ -1,167 +1,181 @@
 <template>
-<div :class="{'list-background-mobile-fix' : isMobile}">
-  <div :class="isWidgetVersion ? 'map-v2' : 'map'">
-    <div class="type-actions" :class="{'type-actions-v2' : !isWidgetVersion}">
-      <p class="button-action" :class="{ 'active' : !toogleMap }" @click="toogleMapMethod('show')">Mapa </p>
-      <p class="button-action" :class="{ 'active' : toogleMap }"
-         v-on="$store.state.pointMarkers && $store.state.pointMarkers.length > 100 ? {} : { click: () => toogleMapMethod('hide') }">Lista</p>
-    </div>
-    <div v-if="this.$store.state.geolocation.error.code === 1 && ($store.state.pointMarkers && !$store.state.pointMarkers.length)" class="first-enter-info">
-      <p class="error-text">
-        Wybierz adres/lokalizację aby
-        <br>zobaczyć najbliższe punkty odbioru
-        <span class="mt10">Uwaga: Lokalizacja dla tej domeny jest zablokowana. <br>Możesz ponownie włączyć w ustawieniach przeglądarki.</span>
-      </p>
-    </div>
-    <div v-else-if="$store.state.pointMarkers && !$store.state.pointMarkers.length" class="first-enter-info">
-      <p>Wybierz adres/lokalizację aby<br>zobaczyć najbliższe punkty odbioru</p>
-    </div>
-    <div v-else-if="$store.state.status === 'error, points couldnt be loaded' || $store.state.status === 'error, list points couldnt be loaded'" class="first-enter-info">
-      <p>Nie znaleziono żadnego punktu. Zmień kryteria wyboru.</p>
-    </div>
-     <div v-else-if="($store.state.pointMarkers && $store.state.pointMarkers.length > 100) && !toogleMap" class="error-info">
-      <p>Powiększ zoom żeby zobaczyć punkty</p>
-    </div>
-    <div v-else-if="$store.state.closestPunktErrors.length > 0 && $store.state.pointMarkers.length === 10 && !toogleMap" class="error-info">
-      <p class="closest-error">Nie znaleziono żadnego punktu. Zmniejsz zoom żeby zobaczyć punkty.</p>
-         <!-- <br><br> -->
-         <!-- <span @click="zoomClosest()">Closest</span> -->
-    </div>
-    <transition name="fade">
-      <div  v-if="toogleMap" class="list-box" :class="{'listbox-margin-top' : isWidgetVersion}">
+  <div :class="{ 'list-background-mobile-fix': isMobile }">
+    <div :class="isWidgetVersion ? 'map-v2' : 'map'">
+      <div class="type-actions" :class="{ 'type-actions-v2': !isWidgetVersion, 'box-shadow' : !isMobile }">
+        <p class="button-action" :class="{ active: !toogleMap }" @click="toogleMapMethod('show')">Mapa</p>
+        <p
+          class="button-action"
+          :class="{ active: toogleMap }"
+          v-on="$store.state.pointMarkers && $store.state.pointMarkers.length > 100 ? {} : { click: () => toogleMapMethod('hide') }"
+        >
+          Lista
+        </p>
+      </div>
+      <div v-if="this.$store.state.geolocation.error.code === 1 && $store.state.pointMarkers && !$store.state.pointMarkers.length" class="first-enter-info">
+        <p class="error-text">
+          Wybierz adres/lokalizację aby
+          <br />zobaczyć najbliższe punkty odbioru
+          <span class="mt10">Uwaga: Lokalizacja dla tej domeny jest zablokowana. <br />Możesz ponownie włączyć w ustawieniach przeglądarki.</span>
+        </p>
+      </div>
+      <div v-else-if="$store.state.pointMarkers && !$store.state.pointMarkers.length" class="first-enter-info">
+        <p>Wybierz adres/lokalizację aby<br />zobaczyć najbliższe punkty odbioru</p>
+      </div>
+      <div
+        v-else-if="$store.state.status === 'error, points couldnt be loaded' || $store.state.status === 'error, list points couldnt be loaded'"
+        class="first-enter-info"
+      >
+        <p>Nie znaleziono żadnego punktu. Zmień kryteria wyboru.</p>
+      </div>
+      <div v-else-if="$store.state.pointMarkers && $store.state.pointMarkers.length > 100 && !toogleMap" class="error-info">
+        <p>Powiększ zoom żeby zobaczyć punkty</p>
+      </div>
+      <div v-else-if="$store.state.closestPunktErrors.length > 0 && $store.state.pointMarkers.length === 10 && !toogleMap" class="error-info">
+        <p class="closest-error">Nie znaleziono żadnego punktu. Zmniejsz zoom żeby zobaczyć punkty.</p>
+        <!-- <br><br> -->
+        <!-- <span @click="zoomClosest()">Closest</span> -->
+      </div>
+      <transition name="fade">
+        <div v-if="toogleMap" class="list-box" :class="{ 'listbox-margin-top': isWidgetVersion }">
           <div class="list-title hidden-xs"><h1>Punkty odbioru w pobliżu Twojej lokalizacji</h1></div>
-          <div v-if="listMarkers.length === 0 && ($store.state.storeFilters.checkedSuppliers && !$store.state.storeFilters.checkedSuppliers.length)">
+          <div v-if="listMarkers.length === 0 && $store.state.storeFilters.checkedSuppliers && !$store.state.storeFilters.checkedSuppliers.length">
             <p class="empty-text">Wybierz adres/lokalizację aby zobaczyć najbliższe punkty odbioru</p>
           </div>
-          <div class="scroll-box" :class="{'change-vh' : !isWidgetVersion}">
-              <div class="list-row" :class="{'list-row-modal' : isOpenListModal(index)}"
-                v-for="(listMarker, index) in listMarkers"
-                :key="index"
-                @click="openListModal(index)"
-                v-on="isMobile ? { click: () => getPointDetails(listMarker.lat, listMarker.lon, listMarker.pickup_point_type) } : {} "
-                >
-                  <div class="list-elem list-elem-img">
-                    <img :class="{'img-modal' : isOpenListModal(index)}" :src="logosUrl[listMarker.pickup_point_type]" width="auto" height="70px" />
-                  </div>
-                  <div class="list-elem list-elem-address">
-                    <b>{{ listMarker.id }}</b>
-                    <p class="address-parag">{{ listMarker.address.street }}, {{ listMarker.address.zip }} {{ listMarker.address.city }}</p>
-                  </div>
-                  <div class="list-elem hours-elem">
-                    <b>Godziny otwarcia:</b>
-                    {{ listMarker.working_hours.join(', ') }}
-                  </div>
-                  <div class="list-elem btn-elem">
-                    <p class="list-button" @click="setPoint(listMarker)">Wybierz {{ listMarker.pickup_point_type }} i zamknij</p>
-                    <a class="list-link" :href="linkToRoad" target="_blank">Wyznacz trasę dojazdu</a>
-                  </div>
-                  <transition name="fade">
-                    <div class="list-modal" v-if="isOpenListModal(index) && isMobile && $store.state.markerDetails">
-                      <template v-if="typeof $store.state.markerDetails.points !== 'undefined'">
-                        <div class="list-modal-hours" v-if="$store.state.markerDetails.points[0].working_hours.length > 0">
-                          <b>Godziny otwarcia:</b>
-                          <template v-for="day in $store.state.markerDetails.points[0].working_hours">
-                            {{ day }}
-                          </template>
-                        </div>
-                        <!-- <div class="list-modal-price" v-if="$store.state.markerDetails.points[0].prices">
-                          <b>Cennik: </b>
-                          <div class="list-modal-price-info">
-                            <p v-if="$store.state.markerDetails.points[0].prices.cod">Odbiór za pobraniem: {{ $store.state.markerDetails.points[0].prices.cod }} zł</p>
-                            <p v-if="$store.state.markerDetails.points[0].prices.pp">PrePaid: {{ $store.state.markerDetails.points[0].prices.pp }} zł</p>
-                          </div>
-                        </div> -->
-                        <div class="list-modal-additional">
-                          <p v-if="$store.state.markerDetails.points[0].features.open_late" class="icon hours"/>
-                          <p v-if="$store.state.markerDetails.points[0].features.open_saturday" class="icon sobota"/>
-                          <p v-if="$store.state.markerDetails.points[0].features.open_sunday" class="icon niedziela"/>
-                          <p v-if="$store.state.markerDetails.points[0].features.parking" class="icon parking"/>
-                          <p v-if="$store.state.markerDetails.points[0].features.disabled_friendly" class="icon niepelnosprawni"/>
-                          <p v-if="$store.state.markerDetails.points[0].features.cash_on_delivery" class="icon pobraniem"/>
-                        </div>
-                    </template>
-                      </div>
-                  </transition>
+          <div class="scroll-box" :class="{ 'change-vh': !isWidgetVersion }">
+            <div
+              class="list-row"
+              :class="{ 'list-row-modal': isOpenListModal(index) }"
+              v-for="(listMarker, index) in listMarkers"
+              :key="index"
+              @click="openListModal(index)"
+              v-on="isMobile ? { click: () => getPointDetails(listMarker.lat, listMarker.lon, listMarker.pickup_point_type) } : {}"
+            >
+              <div class="list-elem list-elem-img">
+                <img :class="{ 'img-modal': isOpenListModal(index) }" :src="logosUrl[listMarker.pickup_point_type]" width="auto" height="70px" />
               </div>
-              <div v-if="$store.state.listMarkers.length !== 0" class="load-box" @click="loadMorePoints()"><p class="load-button">Załaduj więcej</p></div>
+              <div class="list-elem list-elem-address">
+                <b>{{ listMarker.id }}</b>
+                <p class="address-parag">{{ listMarker.address.street }}, {{ listMarker.address.zip }} {{ listMarker.address.city }}</p>
+              </div>
+              <div class="list-elem hours-elem">
+                <b>Godziny otwarcia:</b>
+                {{ listMarker.working_hours.join(', ') }}
+              </div>
+              <div class="list-elem btn-elem">
+                <p class="list-button" @click="setPoint(listMarker)">Wybierz {{ listMarker.pickup_point_type }} i zamknij</p>
+                <a class="list-link" :href="linkToRoad" target="_blank">Wyznacz trasę dojazdu</a>
+              </div>
+              <transition name="fade">
+                <div class="list-modal" v-if="isOpenListModal(index) && isMobile && $store.state.markerDetails">
+                  <template v-if="typeof $store.state.markerDetails.points !== 'undefined'">
+                    <div class="list-modal-hours" v-if="$store.state.markerDetails.points[0].working_hours.length > 0">
+                      <b>Godziny otwarcia:</b>
+                      <div>
+                        <template v-for="(day, index) in $store.state.markerDetails.points[0].working_hours">
+                          <p class="day-mobile" :key="index">{{ day }}</p>
+                        </template>
+                      </div>
+                    </div>
+                    <div class="list-modal-additional">
+                      <p v-if="$store.state.markerDetails.points[0].features.open_late" class="icon hours" />
+                      <p v-if="$store.state.markerDetails.points[0].features.open_saturday" class="icon sobota" />
+                      <p v-if="$store.state.markerDetails.points[0].features.open_sunday" class="icon niedziela" />
+                      <p v-if="$store.state.markerDetails.points[0].features.parking" class="icon parking" />
+                      <p v-if="$store.state.markerDetails.points[0].features.disabled_friendly" class="icon niepelnosprawni" />
+                      <p v-if="$store.state.markerDetails.points[0].features.cash_on_delivery" class="icon pobraniem" />
+                    </div>
+                  </template>
+                </div>
+              </transition>
+            </div>
+            <div v-if="$store.state.listMarkers.length !== 0" class="load-box" @click="loadMorePoints()"><p class="load-button">Załaduj więcej</p></div>
           </div>
-      </div>
-    </transition>
-    <transition name="fade">
+        </div>
+      </transition>
+      <transition name="fade">
         <l-map
           :zoom="zoom"
           :center="center"
-          :options="{zoomControl: true}"
+          :options="{ zoomControl: true}"
           @update:bounds="boundsUpdated"
           @update:center="centerUpdated"
           @update:zoom="zoomUpdated"
           @popupopen="popupOpen"
           @popupclose="popupClose"
         >
-            <l-tile-layer :url="url" :attribution="attribution" />
-            <template>
-              <l-marker
-                v-for="marker in pointMarkers"
-                :key="marker.id"
-                :visible="true"
-                :lat-lng="{ lat: marker.lat, lng: marker.lon }"
-                class-name="markertype"
-                @click="getPointDetails(marker.lat, marker.lon, marker.pickup_type)"
-                v-on="isMobile ? { click: () => toogleMethod('true') } : {} "
-              >
-                <l-icon :icon-anchor="[iconsUrl[marker.pickup_type]]" :icon-size="[52, 52]" class-name="someExtraClass">
-                  <img :src="pinsUrl[marker.pickup_type]" width="52" height="52"/>
-                </l-icon>
-                <transition name="bounce">
-                    <l-popup v-if="!isMobile && $store.state.markerDetails">
-                    <div class="popup-box">
-                      <template v-for="(point, index) in points">
-                        <!-- <img class="popup-marker" :src="pinsUrl[marker.pickup_type]" width="102" height="102" :key="'img-' + index"/> -->
-                        <div class="popup-info" :key="'info-' + index">
-                          <div class="popup-text-box">
-                            <template v-if="typeof point !== 'undefined'">
-                              <p class="popup-text" v-if="$store.state.markerDetails.length !== 0">
-                                <b>{{ point.name }}</b><br>
-                                <b>{{ $store.state.markerDetails.street }}</b><br> {{ $store.state.markerDetails.zip }} {{ $store.state.markerDetails.city }}, <br> {{ point.id }}
-                              </p>
-                            </template>
-                          </div>
-                          <div class="popup-img" >
-                            <img :src="logosUrl[marker.pickup_type]" width="100%" height="auto"/>
-                          </div>
-                           <template v-if="typeof point !== 'undefined' && $store.state.markerDetails.length !== 0">
-                            <div class="popup-add">
-                              <p class="popup-time" v-if="point && point.working_hours.length > 0">Godziny otwarcia: <br> {{ point.working_hours.join(' ') }}</p>
-                              <div class="popup-features">
-                                <p class="features-item" v-if="point.features.open_late"> Otwarte do pózna</p>
-                                <p class="features-item" v-if="point.features.open_saturday"> Otwarte w soboty</p>
-                                <p class="features-item" v-if="point.features.open_sunday"> Otwarte w niedziele</p>
-                                <p class="features-item" v-if="point.features.parking"> Parking</p>
-                                <p class="features-item" v-if="point.features.disabled_friendly"> Ułatwienie dla osób niepełnosprawnych</p>
-                                <p class="features-item" v-if="point.features.cash_on_delivery" > Odbiór za pobraniem</p>
-                              </div>
+          <l-tile-layer :url="url" :attribution="attribution" />
+          <template>
+            <l-marker
+              v-for="marker in pointMarkers"
+              :key="marker.id"
+              :visible="true"
+              :lat-lng="{ lat: marker.lat, lng: marker.lon }"
+              class-name="markertype"
+              @click="getPointDetails(marker.lat, marker.lon, marker.pickup_type)"
+              v-on="isMobile ? { click: () => toogleMethod('true') } : {}"
+            >
+              <l-icon :icon-anchor="[iconsUrl[marker.pickup_type]]" :icon-size="[52, 52]" class-name="someExtraClass">
+                <img :src="pinsUrl[marker.pickup_type]" width="52" height="52" />
+              </l-icon>
+              <transition name="bounce">
+                <l-popup v-if="!isMobile && $store.state.markerDetails">
+                  <div class="popup-box">
+                    <template v-for="(point, index) in points">
+                      <div class="popup-info" :key="'info-' + index">
+                        <div class="popup-text-box">
+                          <template v-if="typeof point !== 'undefined'">
+                            <p class="popup-text" v-if="$store.state.markerDetails.length !== 0">
+                              <b><img class="popup-icon" :src="popupIcons[marker.pickup_type]" />{{ point.name }}</b
+                              ><br />
+                              <b>{{ $store.state.markerDetails.street }}</b
+                              ><br />
+                              {{ $store.state.markerDetails.zip }} {{ $store.state.markerDetails.city }}, <br />
+                              {{ point.id }}
+                            </p>
+                          </template>
+                        </div>
+                        <div class="popup-img">
+                          <img :src="logosUrl[marker.pickup_type]" width="100%" height="auto" />
+                        </div>
+                        <template v-if="typeof point !== 'undefined' && $store.state.markerDetails.length !== 0">
+                          <div class="popup-add">
+                            <p class="popup-time" v-if="point && point.working_hours.length > 0">
+                              Godziny otwarcia: <br />
+                              {{ point.working_hours.join(' ') }}
+                            </p>
+                            <div class="popup-features">
+                              <p class="features-item" v-if="point.features.open_late">Otwarte do pózna</p>
+                              <p class="features-item" v-if="point.features.open_saturday">Otwarte w soboty</p>
+                              <p class="features-item" v-if="point.features.open_sunday">Otwarte w niedziele</p>
+                              <p class="features-item" v-if="point.features.parking">Parking</p>
+                              <p class="features-item" v-if="point.features.disabled_friendly">Ułatwienie dla osób niepełnosprawnych</p>
+                              <p class="features-item" v-if="point.features.cash_on_delivery">Odbiór za pobraniem</p>
                             </div>
-                           </template>
-                        </div>
-                        <div class="popup-action" :key="'btn-' + index">
-                          <div class="road">
-                            <a :href="linkToRoad" target="_blank">Wyznacz trasę dojazdu</a>
                           </div>
-                          <p id="btn-wybierz" class="popup-button" @click="setPoint($store.state.markerDetails)">Wybierz {{ $store.state.markerDetails.pickup_type }} i zamknij</p>
+                        </template>
+                      </div>
+                      <div class="popup-action" :key="'btn-' + index">
+                        <div class="road">
+                          <a :href="linkToRoad" target="_blank">Wyznacz trasę dojazdu</a>
                         </div>
-                      </template>
-                    </div>
-                  </l-popup>
-                </transition>
-              </l-marker>
-            </template>
+                        <p id="btn-wybierz" class="popup-button" @click="setPoint($store.state.markerDetails)">
+                          Wybierz {{ $store.state.markerDetails.pickup_type }} i zamknij
+                        </p>
+                      </div>
+                    </template>
+                  </div>
+                  <!-- <span class="test"></span> -->
+                </l-popup>
+              </transition>
+            </l-marker>
+          </template>
         </l-map>
-    </transition>
-  </div>
+      </transition>
+    </div>
     <div>
       <transition :name="isMobile ? 'fade-in-up' : 'bounce'">
-        <div class="modal-position" :class="{'modal-positionV2' : !isWidgetVersion}" v-if="$store.state.toogleModal">
-          <ModalDiv @closed="onCloseChild"/>
+        <div class="modal-position" :class="{ 'modal-positionV2': !isWidgetVersion }" v-if="$store.state.toogleModal">
+          <ModalDiv @closed="onCloseChild" />
         </div>
       </transition>
     </div>
@@ -175,21 +189,6 @@ import 'leaflet/dist/leaflet.css'
 import ModalDiv from '../features/ModalDiv.vue'
 import { MobileDetected } from '../mobileDetected.ts'
 import EventBus from '../../event-bus'
-// Test
-// import iconRetinaUrl from 'leaflet/dist/images/marker-icon-2x.png'
-// import iconUrl from 'leaflet/dist/images/marker-icon.png'
-// import shadowUrl from 'leaflet/dist/images/marker-shadow.png'
-// L.Marker.prototype.options.icon = L.icon({
-//   iconRetinaUrl,
-//   iconUrl,
-//   shadowUrl,
-//   iconSize: [25, 41],
-//   iconAnchor: [12, 41],
-//   popupAnchor: [1, -34],
-//   tooltipAnchor: [16, -28],
-//   shadowSize: [41, 41]
-// })
-// End of test
 export default {
   name: 'Home',
   components: {
@@ -211,32 +210,38 @@ export default {
       url: 'https://scorch.openstreetmap.org/{z}/{x}/{y}.png',
       attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
       closeButton: false,
+      popupIcons: {
+        'DPD Pickup': require('../../assets/popup-icons/dpd16x16.png'),
+        'In Post': require('../../assets/popup-icons/paczkomaty-16x16.png'),
+        'Poczta Polska': require('../../assets/popup-icons/poczta-16x16.png'),
+        'Paczka w RUCHu': require('../../assets/popup-icons/ruch16x16.png')
+      },
       iconsUrl: {
-        'Żabka': require('../../assets/logos/żabka.png'),
+        Żabka: require('../../assets/logos/żabka.png'),
         'DPD Pickup': require('../../assets/logos/dpd-pickup.png'),
         'Fresh Market': require('../../assets/logos/freshmarket.png'),
         'In Post': require('../../assets/logos/inpost.png'),
         'Poczta Polska': require('../../assets/logos/pocztapolska.png'),
         'Paczka w RUCHu': require('../../assets/logos/paczka_w_ruchu.jpg'),
-        'Orlen': require('../../assets/logos/orlen.png')
+        Orlen: require('../../assets/logos/orlen.png')
       },
       logosUrl: {
-        'Żabka': require('../../assets/logos/żabka.png'),
+        Żabka: require('../../assets/logos/żabka.png'),
         'DPD Pickup': require('../../assets/logos/dpd-pickup.png'),
         'Fresh Market': require('../../assets/logos/freshmarket.png'),
         'In Post': require('../../assets/logos/inpost.png'),
         'Poczta Polska': require('../../assets/logos/pocztapolska.png'),
         'Paczka w RUCHu': require('../../assets/logos/paczka_w_ruchu.jpg'),
-        'Orlen': require('../../assets/logos/orlen.png')
+        Orlen: require('../../assets/logos/orlen.png')
       },
       pinsUrl: {
-        'Żabka': require('../../assets/zabka.png'),
+        Żabka: require('../../assets/zabka.png'),
         'DPD Pickup': require('../../assets/dpdpickup.png'),
         'Fresh Market': require('../../assets/fresh.png'),
         'In Post': require('../../assets/inpost.png'),
         'Poczta Polska': require('../../assets/poczta-polska.png'),
         'Paczka w RUCHu': require('../../assets/paczka-w-ruchu.png'),
-        'Orlen': require('../../assets/orlen.png')
+        Orlen: require('../../assets/orlen.png')
       }
     }
   },
@@ -250,25 +255,45 @@ export default {
     },
     linkToRoad () {
       if (this.$store.state.geolocation.lat && this.$store.state.suggestionTextLocit.length === 0 && this.$store.state.linkToRoad.x === 0) {
-        let url = 'https://www.google.pl/maps/dir/' + this.$store.state.geolocation.lat + ',' + this.$store.state.geolocation.lng + '/' + this.$store.state.markerDetails.lat + ',' + this.$store.state.markerDetails.lon + '/@52.2502198,21.0280249 + ,16z/data=!4m2!4m1!3e3?hl=pl'
+        let url =
+          'https://www.google.pl/maps/dir/' +
+          this.$store.state.geolocation.lat +
+          ',' +
+          this.$store.state.geolocation.lng +
+          '/' +
+          this.$store.state.markerDetails.lat +
+          ',' +
+          this.$store.state.markerDetails.lon +
+          '/@52.2502198,21.0280249 + ,16z/data=!4m2!4m1!3e3?hl=pl'
         return url
       } else if (this.$store.state.linkToRoad.x > 0 && this.$store.state.suggestionTextLocit.length === 0) {
-        let url = 'https://www.google.pl/maps/dir/' + this.$store.state.linkToRoad.x + ',' + this.$store.state.linkToRoad.y + '/' + this.$store.state.markerDetails.lat + ',' + this.$store.state.markerDetails.lon + '/@52.2502198,21.0280249 + ,16z/data=!4m2!4m1!3e3?hl=pl'
+        let url =
+          'https://www.google.pl/maps/dir/' +
+          this.$store.state.linkToRoad.x +
+          ',' +
+          this.$store.state.linkToRoad.y +
+          '/' +
+          this.$store.state.markerDetails.lat +
+          ',' +
+          this.$store.state.markerDetails.lon +
+          '/@52.2502198,21.0280249 + ,16z/data=!4m2!4m1!3e3?hl=pl'
         return url
       } else {
-        let url = 'https://www.google.pl/maps/dir/' + this.$store.state.suggestionTextLocit.city + ',' + this.$store.state.suggestionTextLocit.street + ',' + this.$store.state.suggestionTextLocit.building + '/' + this.$store.state.markerDetails.lat + ',' + this.$store.state.markerDetails.lon + '/@52.2502198,21.0280249 + ,16z/data=!4m2!4m1!3e3?hl=pl'
+        let url =
+          'https://www.google.pl/maps/dir/' +
+          this.$store.state.suggestionTextLocit.city +
+          ',' +
+          this.$store.state.suggestionTextLocit.street +
+          ',' +
+          this.$store.state.suggestionTextLocit.building +
+          '/' +
+          this.$store.state.markerDetails.lat +
+          ',' +
+          this.$store.state.markerDetails.lon +
+          '/@52.2502198,21.0280249 + ,16z/data=!4m2!4m1!3e3?hl=pl'
         return url
       }
     },
-    // changeFiltersError () {
-    //   if ((this.$store.state.pointMarkers && this.$store.state.pointMarkers.length === 0) &&
-    //   ((this.$store.state.storeFilters.checkedSuppliers && this.$store.state.storeFilters.checkedSuppliers.length !== 0) ||
-    //   (this.$store.state.storeFilters.features && this.$store.state.storeFilters.features.length !== 0))) {
-    //     return true
-    //   } else {
-    //     return false
-    //   }
-    // },
     storeFilters () {
       return this.$store.state.storeFilters
     },
@@ -295,7 +320,15 @@ export default {
       return this.$store.state.customer.theme
     },
     zoomOrCenterUpdateOrFiltersUpdate () {
-      return [this.$store.state.zoom, this.$store.state.lat, this.$store.state.lng, this.$store.state.storeFilters.features, this.$store.state.storeFilters.checkedSuppliers, this.$store.state.pointId, this.isPopupOpen].join()
+      return [
+        this.$store.state.zoom,
+        this.$store.state.lat,
+        this.$store.state.lng,
+        this.$store.state.storeFilters.features,
+        this.$store.state.storeFilters.checkedSuppliers,
+        this.$store.state.pointId,
+        this.isPopupOpen
+      ].join()
     },
     filtersUpdate () {
       return [this.$store.state.storeFilters.features, this.$store.state.storeFilters.checkedSuppliers].join()
@@ -307,11 +340,6 @@ export default {
   watch: {
     zoomOrCenterUpdateOrFiltersUpdate: {
       handler () {
-        // var closePopup = document.getElementsByClassName('leaflet-popup-close-button')[0]
-        // if (closePopup) {
-        //   this.popupClose()
-        //   closePopup.click()
-        // }
         this.$store.commit('changePageNumber', 1)
         if (this.$store.state.pointId) {
           this.$store.dispatch('get_points', {
@@ -322,9 +350,6 @@ export default {
             id: `id=${this.$store.state.pointId}`,
             key: `&key=${this.$store.state.customer.key}`
           })
-          // if (this.$store.state.pointMarkers) {
-          //   this.$store.commit('updatePosition', [{ lat: this.$store.state.pointMarkers[0].lat, lng: this.$store.state.pointMarkers[0].lon, zoom: 16 }])
-          // }
         } else if (!this.isPopupOpen && this.$store.state.radiusOfVisibily !== 0) {
           this.$store.dispatch('get_points', {
             lat: `lat=${this.$store.state.lat}`,
@@ -376,7 +401,7 @@ export default {
         closePopup.click()
       }
     })
-    EventBus.$on('toogleMethodBus', (bool) => {
+    EventBus.$on('toogleMethodBus', bool => {
       if (bool === 'true') {
         this.$store.state.toogleModal = true
       } else if (bool === 'false') {
@@ -422,7 +447,8 @@ export default {
       this.$store.commit('clear_point_details')
     },
     getPointDetails (lat, lng, type) {
-      // this.centerUpdated({lat, lng})
+      // LMap.flyTo([lat, lng], 7)
+      this.centerUpdated({lat, lng}, 7)
       this.$store.dispatch('get_point_details', {
         lat: lat,
         lng: lng,
@@ -470,6 +496,9 @@ export default {
       this.toogleMethod('false')
       this.$store.commit('closeListFooter')
     },
+    // flyTo (value) {
+    //   console.log(value)
+    // },
     centerUpdated (center) {
       this.$store.commit('updatePosition', [{ lat: center.lat, lng: center.lng, zoom: null }])
     },
@@ -477,11 +506,11 @@ export default {
       this.$store.commit('updatePosition', [{ lat: null, lng: null, zoom: zoom }])
     },
     boundsUpdated (bounds) {
-      var fromLng = bounds._northEast.lng / 180.0 * Math.PI
-      var fromLat = bounds._northEast.lat / 180.0 * Math.PI
-      var pointLng = bounds._southWest.lng / 180.0 * Math.PI
-      var pointLat = bounds._southWest.lat / 180.0 * Math.PI
-      var dist = Math.acos(Math.sin(fromLat) * Math.sin(pointLat) + (Math.cos(fromLat) * Math.cos(pointLat) * Math.cos(pointLng - fromLng))) * 6371000
+      var fromLng = (bounds._northEast.lng / 180.0) * Math.PI
+      var fromLat = (bounds._northEast.lat / 180.0) * Math.PI
+      var pointLng = (bounds._southWest.lng / 180.0) * Math.PI
+      var pointLat = (bounds._southWest.lat / 180.0) * Math.PI
+      var dist = Math.acos(Math.sin(fromLat) * Math.sin(pointLat) + Math.cos(fromLat) * Math.cos(pointLat) * Math.cos(pointLng - fromLng)) * 6371000
       var rad = Math.round(dist / 2)
       this.$store.commit('changeRadiusOfVisibility', rad)
     },
@@ -536,6 +565,13 @@ export default {
 <style lang="scss">
 .leaflet-popup-content {
   width: 350px !important;
+  max-height: 400px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  margin-right: 10px;
+}
+.leaflet-popup-content>div {
+  padding-right: 10px;
 }
 .leaflet-touch .leaflet-bar a {
   width: 24px;
@@ -545,6 +581,7 @@ export default {
 .leaflet-touch .leaflet-control-zoom-in,
 .leaflet-touch .leaflet-control-zoom-out {
   font-size: 18px;
+  box-shadow: 5px 6px 9px 4px rgba(0, 0, 0, 0.4);
 }
 .mt10 {
   margin-top: 10px;
@@ -556,8 +593,7 @@ export default {
 }
 .leaflet-popup {
   .leaflet-popup-content-wrapper {
-    box-shadow: 5px 6px 9px 4px rgba(0,0,0,0.4);
-    // border: 3px solid #3F87F5;
+    box-shadow: 5px 6px 9px 4px rgba(0, 0, 0, 0.4);
   }
   .leaflet-popup-tip-container {
     display: none;
@@ -570,25 +606,24 @@ export default {
       display: none;
     }
   }
-  // padding-top: calc( 50vh - 122px );
   padding-right: 210px !important;
-  // bottom: -20px !important;
-  margin-left: 210px !important;
-  margin-bottom: 0 !important;
- }
+  margin-left: 115px !important;
+  margin-bottom: 55px !important;
+}
 .leaflet-right .leaflet-control {
   margin-right: 0;
 }
 .leaflet-bottom .leaflet-control {
   margin-bottom: 0;
 }
-.leaflet-control-attribution, .leaflet-control-scale-line {
+.leaflet-control-attribution,
+.leaflet-control-scale-line {
   font-size: 11px;
   background: rgba(255, 255, 255, 0.7);
   margin: 0;
 }
 .leaflet-control-attribution a {
-  color: #0078A8;
+  color: #0078a8;
 }
 ::-webkit-scrollbar-track {
   background: transparent;
@@ -606,18 +641,22 @@ export default {
 </style>
 
 <style lang="scss" scoped>
+.test {
+  position: absolute;
+  bottom: 20px;
+  left: 0;
+  right: 220px;
+  box-shadow: 6px 10px 10px 2px rgba(0, 0, 0, 0.75);
+}
 .closest-error {
   width: 55%;
   @media (max-width: 767px) {
     font-size: 14px;
   }
 }
-.popup-box-next{
-  margin-top: 20px;
-}
 .empty-text {
   margin: 0;
-  color: #E54C69;
+  color: #e54c69;
   @media (max-width: 767px) {
     text-align: center;
   }
@@ -627,7 +666,7 @@ export default {
   justify-content: center;
   .load-button {
     margin: 40px 0;
-    background-color: #E4405F;
+    background-color: #e4405f;
     padding: 10px 15px;
     border-radius: 50px;
     color: white;
@@ -636,78 +675,69 @@ export default {
     cursor: pointer;
   }
 }
-.list-background-mobile-fix{
-  background: #F5F5F5;
+.list-background-mobile-fix {
+  background: #f5f5f5;
 }
-.list-modal-price {
-  display: flex;
-  justify-content: space-evenly;
-  b {
-    font-size: 14px;
-  }
-  .list-modal-price-info {
-    p {
-      margin: 0;
-      font-size: 14px;
-    }
-  }
-}
-.list-modal{
+.list-modal {
   width: 100%;
-  .list-modal-hours{
+  .list-modal-hours {
     display: flex;
     justify-content: space-evenly;
     text-align: center;
     padding: 15px 0;
     font-size: 14px;
+    .day-mobile {
+      margin: 0;
+      text-align: left;
+    }
   }
-  .list-modal-additional{
+  .list-modal-additional {
     display: flex;
     justify-content: space-evenly;
-    .icon{
+    .icon {
       width: 17px;
       height: 17px;
       display: flex;
     }
-    .hours{
+    .hours {
       background: url('../../assets/icons/ZEGAR.png') 0 0 no-repeat;
       background-size: cover;
     }
-    .sobota{
+    .sobota {
       background: url('../../assets/icons/sobota.png') 0 0 no-repeat;
       background-size: cover;
     }
-    .niedziela{
+    .niedziela {
       background: url('../../assets/icons/niedziela.png') 0 0 no-repeat;
       background-size: cover;
     }
-    .parking{
+    .parking {
       background: url('../../assets/icons/parking.png') 0 0 no-repeat;
       background-size: cover;
     }
-    .pobraniem{
+    .pobraniem {
       background: url('../../assets/icons/za-pobraniem.png') 0 0 no-repeat;
       background-size: cover;
-      }
-    .niepelnosprawni{
+    }
+    .niepelnosprawni {
       background: url('../../assets/icons/niepelnosprawni.png') 0 0 no-repeat;
       background-size: cover;
     }
   }
 }
-.map{
+.map {
   width: 100%;
   height: 100vh;
   overflow: hidden;
   max-height: 100vh;
   position: relative;
 }
-.map-v2{
+.map-v2 {
   position: relative;
   width: 100%;
-  height: calc( 100vh - 110px );
+  height: calc(100vh - 110px);
   overflow: hidden;
-  max-height: calc( 100vh - 110px );
+  max-height: calc(100vh - 110px);
   @media (max-width: 767px) {
     height: 100vh;
     max-height: 100vh;
@@ -723,11 +753,9 @@ export default {
   right: 0;
   display: flex;
   align-items: center;
+    box-shadow: 5px 6px 9px 4px rgba(0, 0, 0, 0.4);
   justify-content: center;
   background-color: #00000054;
-  @media (max-width: 767px) {
-    top: 70px;
-  }
   p {
     margin: 0;
     padding: 15px;
@@ -762,6 +790,7 @@ export default {
     font-weight: 700;
     text-transform: uppercase;
     background-color: #ffffff;
+    box-shadow: 5px 6px 9px 4px rgba(0, 0, 0, 0.4);
   }
   span {
     cursor: pointer;
@@ -784,6 +813,9 @@ export default {
     width: 70%;
     .popup-text {
       margin: 0;
+      .popup-icon {
+        margin-right: 5px;
+      }
     }
   }
   .popup-img {
@@ -808,35 +840,34 @@ export default {
   }
 }
 .popup-action {
-.popup-button {
-  margin: 7px 0;
-  background-color: #E4405F;
-  padding: 8px 14px;
-  border-radius: 9px;
-  text-transform: uppercase;
-  color: white;
-  display: inline;
-  text-align: center;
-  font-weight: 700;
-  cursor: pointer;
+  .popup-button {
+    margin: 7px 0;
+    background-color: #e4405f;
+    padding: 6px 8px;
+    border-radius: 9px;
+    text-transform: uppercase;
+    color: white;
+    display: inline;
+    text-align: center;
+    font-weight: 700;
+    font-size: 11px;
+    cursor: pointer;
+    @media (max-width: 1100px) {
+      font-size: 11px;
+    }
+  }
+  justify-content: space-between;
+  align-items: center;
+  display: flex;
 }
-justify-content: space-between;
-align-items: center;
-display: flex;
-}
-// .popup-marker {
-//   position: absolute;
-//   left: -15px;
-//   top: -92px;
-// }
 .type-actions {
   .button-action {
     &.active {
       color: white;
-      background-color: #DD2C54;
+      background-color: #dd2c54;
     }
-    color: #4A4A4A;
-    background-color: #E5E5E5;
+    color: #4a4a4a;
+    background-color: #e5e5e5;
     padding: 8px 40px 10px 40px;
     margin: 0;
     cursor: pointer;
@@ -851,15 +882,15 @@ display: flex;
   overflow: hidden;
   @media (max-width: 767px) {
     position: fixed;
-    right: 20px;
+    right: 12px;
     left: auto;
     top: 15px;
-    .button-action {
-      padding: 12px 40px 12px 40px;
-    }
   }
 }
-.type-actions-v2{
+.box-shadow {
+  box-shadow: 5px 6px 9px 4px rgba(0, 0, 0, 0.4);
+}
+.type-actions-v2 {
   left: auto;
   right: 20px;
   top: 20px;
@@ -882,14 +913,19 @@ display: flex;
   .list-row {
     .list-elem {
       .list-button {
+        font-size: 14px;
         margin: 5px 0;
-        background-color: #E4405F;
+        background-color: #e4405f;
         padding: 5px 10px;
-        border-radius: 50px;
+        border-radius: 15px;
         color: white;
         display: inline;
         text-align: center;
         cursor: pointer;
+        @media (max-width: 1100px) {
+          font-size: 12px;
+          padding: 5px 6px;
+        }
       }
       text-align: center;
       flex-basis: 15%;
@@ -898,7 +934,7 @@ display: flex;
       flex-wrap: wrap;
       align-items: center;
       justify-content: center;
-      .address-parag{
+      .address-parag {
         margin: 0;
       }
     }
@@ -906,20 +942,22 @@ display: flex;
       flex-basis: 30%;
       max-width: 30%;
     }
-    .hours-elem{
+    .hours-elem {
       flex-basis: 20%;
       max-width: 20%;
     }
-    .btn-elem{
+    .btn-elem {
       flex-basis: 35%;
       max-width: 35%;
+      display: flex;
+      flex-direction: column;
       .list-link {
-        color: #4A4A4A;
-        text-decoration: underline #E4405F;
+        color: #4a4a4a;
+        text-decoration: underline #e4405f;
       }
     }
     padding: 20px 0;
-    border-bottom: 1px solid #AAAAAA;
+    border-bottom: 1px solid #aaaaaa;
     display: flex;
     flex: 0 1 auto;
     flex-direction: row;
@@ -930,14 +968,14 @@ display: flex;
     -webkit-overflow-scrolling: touch;
     overflow-y: scroll;
     height: 70vh;
-    border: 1px solid #AAAAAA;
+    border: 1px solid #aaaaaa;
   }
   height: 100vh;
   margin-top: 80px;
   padding: 0px 20px;
   text-align: left;
 }
-.listbox-margin-top{
+.listbox-margin-top {
   margin-top: 70px !important;
 }
 .modal-position {
@@ -948,30 +986,30 @@ display: flex;
   z-index: 999;
   transition: 0.3s all;
 }
-.modal-positionV2{
+.modal-positionV2 {
   left: 0;
   width: 55%;
 }
-.change-vh{
+.change-vh {
   min-height: 81vh !important;
 }
 // transitions
 .fade-enter-active {
-  transition: opacity .5s;
+  transition: opacity 0.5s;
 }
 .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
   opacity: 0;
 }
 
 .bounce-enter-active {
-  animation: bounce-in .5s;
-  transition: all .3s ease;
+  animation: bounce-in 0.5s;
+  transition: all 0.3s ease;
 }
 .bounce-leave-active {
-  animation: bounce-out .5s reverse;
+  animation: bounce-out 0.5s reverse;
 }
 .bounce-enter {
-  transition: all .3s ease;
+  transition: all 0.3s ease;
   transform: translateY(20%);
 }
 @keyframes bounce-in {
@@ -979,7 +1017,7 @@ display: flex;
     transform: scale(0);
   }
   100% {
-    right:0;
+    right: 0;
     transform: scale(1);
   }
 }
@@ -994,12 +1032,12 @@ display: flex;
 
 .fade-in {
   &-down-enter-active,
-  &-up-enter-active{
-    transition: all .4s cubic-bezier(0.4, 0.0, 0.2, 1);
+  &-up-enter-active {
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   }
   &-down-leave-active,
   &-up-leave-active {
-    transition: all .4s cubic-bezier(0.4, 0.0, 1, 1);
+    transition: all 0.4s cubic-bezier(0.4, 0, 1, 1);
   }
   &-down-enter,
   &-down-leave-to,
@@ -1018,100 +1056,94 @@ display: flex;
 }
 // animation end
 @media only screen and (max-width: 1100px) {
- .type-actions{
-   .button-action{
-     font-size: 14px;
-   }
- }
-.type-actions-v2{
-   .button-action{
-     font-size: 14px;
-   }
- }
- .list-box{
-   padding: 0 10px;
-   .list-title{
-     font-size: 17px;
-   }
-   .list-row{
-     .list-elem{
-       font-size: 14px;
-       img{
-         height: 65px;
-       }
-       .list-button{
-         font-size: 14px;
-         padding: 5px 6px;
-       }
-     }
-   }
- }
- .popup-action{
-   .popup-button{
-     font-size: 11px;
-     padding: 8px 14px;
-   }
- }
+  .type-actions {
+    .button-action {
+      font-size: 14px;
+    }
+  }
+  .type-actions-v2 {
+    .button-action {
+      font-size: 14px;
+    }
+  }
+  .list-box {
+    padding: 0 10px;
+    .list-title {
+      font-size: 17px;
+    }
+    .list-row {
+      .list-elem {
+        font-size: 14px;
+        img {
+          height: 65px;
+        }
+      }
+    }
+  }
 }
 
 @media (max-width: 767px) {
-.modal-position{
+  .modal-position {
     width: 100%;
     bottom: 0;
     z-index: 1001;
-}
-    .list-box{
-      padding: 0;
-      margin-top: 70px;
-      background: #F5F5F5;
-      .scroll-box{
-        height: calc( 100vh - 160px);
-        border: 0;
+  }
+  .list-box {
+    padding: 0;
+    margin-top: 70px;
+    background: #f5f5f5;
+    .scroll-box {
+      height: calc(100vh - 160px);
+      border: 0;
+    }
+    .list-row-modal {
+      background: #ffffff;
+    }
+    .list-row {
+      border-bottom: 1.5px solid #e5e5e5;
+      &:last-child {
+        border-bottom: none;
+        margin-bottom: 15px;
       }
-      .list-row-modal{
-        background: #FFFFFF;
-      }
-      .list-row{
-        border-bottom: 1.5px solid #E5E5E5;
-        justify-content: center;
-        &:last-child{
-          border-bottom: none;
-          margin-bottom: 15px;
+      .list-elem {
+        flex-basis: 50%;
+        max-width: 50%;
+        justify-content: normal;
+        .img-modal {
+          filter: none;
+          height: 65px;
         }
-          .list-elem{
-            flex-basis: 50%;
-            max-width: 50%;
-            justify-content: normal;
-            .img-modal{
-               filter: none;
-               height: 65px;
-            }
-            img{
-              filter: grayscale(1) opacity(0.6);
-              height: 55px;
-              padding-right: 20px;
-            }
-          }
-          .list-elem-address{
-              display: flex;
-              flex-direction: column;
-              justify-content: center;
-              align-items: end;
-              .address-parag{
-                margin: 0;
-                padding-top: 5px;
-              }
-          }
-          .list-elem-img{
-                justify-content: flex-end;
-          }
-          .hours-elem{
-            display: none;
-          }
-          .btn-elem{
-            display: none;
-          }
+        img {
+          filter: grayscale(1) opacity(0.6);
+          height: 55px;
+          padding-right: 20px;
+        }
+      }
+      .list-elem-address {
+        width: 60%;
+        flex-basis: 60%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: end;
+        .address-parag {
+          margin: 0;
+          padding-top: 5px;
+          text-align: left;
+        }
+      }
+      .list-elem-img {
+        justify-content: flex-end;
+        width: 40%;
+        flex-basis: 40%;
+      }
+      .hours-elem {
+        display: none;
+      }
+      .btn-elem {
+        display: none;
       }
     }
+  }
 }
 </style>

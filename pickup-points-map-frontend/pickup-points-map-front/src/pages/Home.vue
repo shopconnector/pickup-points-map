@@ -77,9 +77,10 @@ export default {
   methods: {
     filterApply: function (event) {
       // if (event.data.content && event.data.content.hasOwnProperty('key')) {
-      // this.$forceUpdate()
+      // this.innerFilter = 'In Post'
       // this.innerFilter = event.data.content.filter
       // this.innerAddress = event.data.content.address
+      // this.innerAddress = 'Warszawa, ul.Nowy Świat 4'
       this.$store.dispatch('get_essentials', {
         // key: `${event.data.content.key}`,
         // origin: `${event.origin}`
