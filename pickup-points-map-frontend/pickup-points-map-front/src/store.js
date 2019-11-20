@@ -53,8 +53,9 @@ export default new Vuex.Store({
     }
   },
   mutations: {
-    closeToogleModal (state, payload) {
-      state.toogleModal = payload
+    updateStateGeo (state) {
+      state.geolocation.lat = null
+      state.geolocation.lng = null
     },
     updateLinkToRoad (state, payload) {
       state.linkToRoad.x = payload.x
@@ -139,14 +140,15 @@ export default new Vuex.Store({
       state.status = 'success, pointsById loaded'
     },
     get_points_succ (state, points) {
-      if (state.zoom < 13) {
-        state.pointMarkers = []
-        state.status = 'success, but distance too long'
-      } else {
-        state.closestPunktErrors = ''
-        state.pointMarkers = points
-        state.status = 'success, points loaded'
-      }
+      // if (state.zoom < 13) {
+      //   state.pointMarkers = []
+      //   console.log('hrll')
+      //   state.status = 'success, but distance too long'
+      // } else {
+      state.closestPunktErrors = ''
+      state.pointMarkers = points
+      state.status = 'success, points loaded'
+      // }
     },
     get_closest_points_succ (state, points) {
       state.pointMarkers = points
@@ -160,18 +162,18 @@ export default new Vuex.Store({
       state.status = 'loading list points'
     },
     get_list_points_succ (state, points) {
-      if (state.zoom < 13) {
-        state.listMarkers = []
-        state.status = 'success, but distance too long for list'
+      // if (state.zoom < 13) {
+      //   state.listMarkers = []
+      //   state.status = 'success, but distance too long for list'
+      // } else {
+      if (state.pageNumber === 1) {
+        state.listMarkers = points
+        state.status = 'success, list points loaded'
       } else {
-        if (state.pageNumber === 1) {
-          state.listMarkers = points
-          state.status = 'success, list points loaded'
-        } else {
-          state.listMarkers = state.listMarkers.concat(points)
-          state.status = 'success, more list points loaded'
-        }
+        state.listMarkers = state.listMarkers.concat(points)
+        state.status = 'success, more list points loaded'
       }
+      // }
     },
     get_list_points_err (state) {
       state.status = 'error, list points couldnt be loaded'

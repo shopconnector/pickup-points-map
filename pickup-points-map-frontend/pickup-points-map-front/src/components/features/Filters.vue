@@ -1,5 +1,5 @@
 <template>
-    <div class='filters add-scroll-filters' :class="{ 'filtersV2' : !isWidgetVersion }">
+    <div class='filters add-scroll-filters'>
       <!-- Select suppliers first version -->
       <div class="suppliers" v-if="isWidgetVersion && !isMobile">
         <h2 class="title-supp">Wybierz dostawców</h2>
@@ -12,7 +12,10 @@
       </div>
       <!-- Select suppliers second version -->
       <div v-if="!isWidgetVersion || isMobile">
-        <h2 class="title-dostawcow">Wybierz dostawców</h2>
+        <div class="header">
+          <h2 class="title-dostawcow">Wybierz dostawców</h2><p v-if="filters.checkedSuppliers.length > 0 || filters.features.length > 0" :class="isWidgetVersion ? 'subtitle' : 'subtitleV2'" @click="clearAPIFilter()">
+            Wyczyść filtry<span :class="isWidgetVersion ? 'clear' : 'clearV2'">X</span></p>
+        </div>
         <div class="suppliers-menu-dostawcow">
           <div class="select-suppliers-dostawcow" v-for="(supp, index) in customerSuppliers" :key="index">
             <input class="styled-checkbox-dostawcow" type="checkbox" :id="supp" :value="supp" @click="selectedFilter()" v-model="filters.checkedSuppliers">
@@ -24,8 +27,7 @@
       </div>
       <!-- Filters Menu -->
       <div class="header">
-        <h2 class="title" :class="{'titleV2' : !isWidgetVersion}">Filtry</h2><p :class="isWidgetVersion ? 'subtitle' : 'subtitleV2'" @click="clearAPIFilter()">
-            Wyczyść filtry<span :class="isWidgetVersion ? 'clear' : 'clearV2'">X</span></p>
+        <h2 class="title" :class="{'titleV2' : !isWidgetVersion}">Filtry</h2>
       </div>
       <div class="filters-menu">
         <div class="checkbox-container" v-for="(box, index) in customerFeatures" :key="index">
@@ -62,11 +64,11 @@ export default {
         'Żabka': 'żabka.png',
         'Fresh Market': 'freshmarket.png',
         'In Post': 'inpost.png',
-        'Paczka w Ruchu': 'paczka_w_ruchu.jpg',
+        'Paczka w RUCHu': 'paczka_w_ruchu.jpg',
         'Orlen': 'orlen.png'
       },
       featuresInfo: {
-        'open_late': 'Otwarte do póżna',
+        'open_late': 'Otwarte do późna',
         'open_saturday': 'Otwarte w soboty',
         'open_sunday': 'Otwarte w niedziele',
         'disabled_friendly': 'Ułatwienie dla osób niepełnosprawnych',
@@ -195,7 +197,7 @@ export default {
   background-color: white;
   height: 20px;
   position: absolute;
-  bottom: 16px;
+  bottom: 25px;
   left: 0;
   right: 0;
   display: flex;
@@ -208,20 +210,34 @@ export default {
     width: 50%;
     align-items: center;
     margin: 0;
-    color: #000000;
+    p {
+      width: fit-content;
+      background: rgb(229, 229, 229);
+      color: rgb(74, 74, 74);
+      margin: 0px auto;
+      padding: 5px 10px;
+      border-radius: 9px;
+      cursor: pointer;
+      &:hover{
+        background-color: #DD2C54;
+        color: #FFF;
+      }
+    }
   }
   .zastosuj{
     width: 50%;
     align-items: center;
     margin: 0;
-    color: #E54C69;
+    p {
+      width: fit-content;
+      margin: 0 auto;
+      background: #DD2C54;
+      color: #fff;
+      border-radius: 9px;
+      padding: 5px 10px;
+      cursor: pointer;
+    }
   }
-}
-.filters{
-  margin: 0 20px;
-}
-.filtersV2 {
-  margin: 0 20px 0 0;
 }
 .header{
   display: flex;
@@ -243,20 +259,28 @@ export default {
 .subtitle{
   margin: 0 2% 0 0;
   font-size: 18px;
+  cursor: pointer;
+  background-color: #E5E5E5;
+  padding: 4px 8px;
+  border-radius: 12px;
   &:hover{
-    color: #E5E5E5;
-    cursor: pointer;
+    background-color: #DD2C54;
   }
 }
 .subtitleV2{
+  background-color: #E5E5E5;
+  padding: 0 8px;
+  margin: 5px 0;
+  border-radius: 12px;
   font-size: 16px;
-  color: #000000;
+  color:#4A4A4A;
   display: flex;
   align-items: center;
-  margin: 0;
+  font-size: 13px;
+  cursor: pointer;
   &:hover{
-    color: #989898;
-    cursor: pointer;
+    background-color: #DD2C54;
+    color: #FFF;
   }
 }
 .clear{
@@ -280,6 +304,7 @@ export default {
   opacity: 0;
   position: relative;
   & +.custom-icon{
+    cursor: pointer;
     position: relative;
     padding-left: 30px;
     margin: 12px 0;
@@ -314,6 +339,7 @@ export default {
 
 .custom-checkboxV2{
     & + .custom-icon{
+      cursor: pointer;
         &:after{
           content: '';
           position: absolute;
@@ -372,7 +398,7 @@ export default {
   flex-direction: column;
 }
 .title-supp{
-  font-family: 'Lato', sans-serif;
+  font-family: 'sofia-pro', sans-serif;
   font-size: 22px;
   font-weight: 900;
   text-align: left;
@@ -393,7 +419,7 @@ export default {
   position: absolute;
   display: none;
     & + label {
-      font-family: 'Lato', sans-serif;
+      font-family: 'sofia-pro', sans-serif;
       font-size: 16px;
       position: relative;
       padding: 0;
@@ -403,6 +429,7 @@ export default {
       line-height: 16px;
       align-items: center;
       text-align: left;
+      cursor: pointer;
     }
     & + label:before {
       content: '';
@@ -443,7 +470,8 @@ export default {
   opacity: 0;
     & + label {
       position: relative;
-      padding-left: 45px
+      padding-left: 45px;
+      cursor: pointer;
     }
     & + label:before {
       content: '';
@@ -474,9 +502,6 @@ export default {
  }
  .subtitle{
    font-size: 16px;
- }
- .subtitleV2{
-   font-size: 14px;
  }
  .custom-checkbox{
    & + .custom-icon{
@@ -533,7 +558,7 @@ export default {
   scroll-behavior: smooth;
 }
 .filters{
-   padding: 30px 35px 0 35px;
+   padding: 20px 15px 0 15px;
    margin: 0;
  }
  .title-dostawcow{
@@ -545,8 +570,8 @@ export default {
      padding: 0
    }
    & + label:before {
-     top: -12px;
-     left: 20px;
+     top: 37px;
+     left: -30px;
      border: 2px solid #E4E4E4;
    }
    &:checked + label:before{
@@ -556,7 +581,6 @@ export default {
    }
  }
  .select-suppliers-dostawcow{
-   padding-top: 35px;
    justify-content: center;
  }
  .title{

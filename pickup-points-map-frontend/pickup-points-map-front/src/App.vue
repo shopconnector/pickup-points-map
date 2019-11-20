@@ -11,6 +11,8 @@ export default {
 </script>
 
 <style>
+@import url('https://use.typekit.net/ewq5ack.css');
+
 body{
   margin: 0;
   height: 100%;
@@ -20,7 +22,7 @@ body{
   /* overflow-x:hidden; */
 }
 #app {
-  font-family: 'Lato', sans-serif;
+  font-family: 'sofia-pro', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
