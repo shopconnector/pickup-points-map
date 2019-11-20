@@ -53,6 +53,10 @@ export default new Vuex.Store({
     }
   },
   mutations: {
+    updateStateGeo (state) {
+      state.geolocation.lat = null
+      state.geolocation.lng = null
+    },
     updateLinkToRoad (state, payload) {
       state.linkToRoad.x = payload.x
       state.linkToRoad.y = payload.y

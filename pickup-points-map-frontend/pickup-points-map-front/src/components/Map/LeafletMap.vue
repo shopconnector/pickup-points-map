@@ -1,7 +1,7 @@
 <template>
   <div :class="{ 'list-background-mobile-fix': isMobile }">
     <div :class="isWidgetVersion ? 'map-v2' : 'map'">
-      <div class="type-actions" :class="{ 'type-actions-v2': !isWidgetVersion, 'box-shadow' : !isMobile }">
+      <div class="type-actions" :class="{'box-shadow' : !isMobile }">
         <p class="button-action" :class="{ active: !toogleMap }" @click="toogleMapMethod('show')">Mapa</p>
         <p
           class="button-action"
@@ -18,7 +18,7 @@
           <span class="mt10">Uwaga: Lokalizacja dla tej domeny jest zablokowana. <br />Możesz ponownie włączyć w ustawieniach przeglądarki.</span>
         </p>
       </div>
-      <div v-else-if="$store.state.pointMarkers && !$store.state.pointMarkers.length" class="first-enter-info">
+      <div v-else-if="$store.state.pointMarkers && !$store.state.pointMarkers.length && $store.state.radiusOfVisibily === 1" class="first-enter-info">
         <p>Wybierz adres/lokalizację aby<br />zobaczyć najbliższe punkty odbioru</p>
       </div>
       <div
@@ -63,7 +63,7 @@
               </div>
               <div class="list-elem btn-elem">
                 <p class="list-button" @click="setPoint(listMarker)">Wybierz {{ listMarker.pickup_point_type }} i zamknij</p>
-                <a class="list-link" :href="linkToRoad" target="_blank">Wyznacz trasę dojazdu</a>
+                <a class="list-link" :href="linkToRoadMap(listMarker)" target="_blank">Wyznacz trasę dojazdu</a>
               </div>
               <transition name="fade">
                 <div class="list-modal" v-if="isOpenListModal(index) && isMobile && $store.state.markerDetails">
@@ -164,9 +164,18 @@
                       </div>
                     </template>
                   </div>
-                  <!-- <span class="test"></span> -->
                 </l-popup>
               </transition>
+            </l-marker>
+            <l-marker
+              v-if="$store.state.geolocation.lat"
+              :lat-lng="{ lat: $store.state.geolocation.lat, lng: $store.state.geolocation.lng }"
+              :visible="true"
+              class-name="markertype"
+            >
+              <l-icon :icon-anchor="[ $store.state.geolocation.lat, $store.state.geolocation.lng]" :icon-size="[52, 52]" class-name="someExtraClass">
+                <span  class="myLocationSpan"><img src="../../assets/icons/gps24px.svg" class="myLocationIcon" /></span>
+              </l-icon>
             </l-marker>
           </template>
         </l-map>
@@ -350,7 +359,7 @@ export default {
             id: `id=${this.$store.state.pointId}`,
             key: `&key=${this.$store.state.customer.key}`
           })
-        } else if (!this.isPopupOpen && this.$store.state.radiusOfVisibily !== 0) {
+        } else if (!this.isPopupOpen && this.$store.state.radiusOfVisibily !== 1) {
           this.$store.dispatch('get_points', {
             lat: `lat=${this.$store.state.lat}`,
             lng: `&lon=${this.$store.state.lng}`,
@@ -412,6 +421,47 @@ export default {
     })
   },
   methods: {
+    linkToRoadMap (listMarker) {
+      if (this.$store.state.geolocation.lat && this.$store.state.suggestionTextLocit.length === 0 && this.$store.state.linkToRoad.x === 0) {
+        let url =
+          'https://www.google.pl/maps/dir/' +
+          this.$store.state.geolocation.lat +
+          ',' +
+          this.$store.state.geolocation.lng +
+          '/' +
+          listMarker.lat +
+          ',' +
+          listMarker.lon +
+          '/@52.2502198,21.0280249 + ,16z/data=!4m2!4m1!3e3?hl=pl'
+        return url
+      } else if (this.$store.state.linkToRoad.x > 0 && this.$store.state.suggestionTextLocit.length === 0) {
+        let url =
+          'https://www.google.pl/maps/dir/' +
+          this.$store.state.linkToRoad.x +
+          ',' +
+          this.$store.state.linkToRoad.y +
+          '/' +
+          listMarker.lat +
+          ',' +
+          listMarker.lon +
+          '/@52.2502198,21.0280249 + ,16z/data=!4m2!4m1!3e3?hl=pl'
+        return url
+      } else {
+        let url =
+          'https://www.google.pl/maps/dir/' +
+          this.$store.state.suggestionTextLocit.city +
+          ',' +
+          this.$store.state.suggestionTextLocit.street +
+          ',' +
+          this.$store.state.suggestionTextLocit.building +
+          '/' +
+          listMarker.lat +
+          ',' +
+          listMarker.lon +
+          '/@52.2502198,21.0280249 + ,16z/data=!4m2!4m1!3e3?hl=pl'
+        return url
+      }
+    },
     setPoint (point) {
       this.sendMessage(point)
     },
@@ -447,7 +497,6 @@ export default {
       this.$store.commit('clear_point_details')
     },
     getPointDetails (lat, lng, type) {
-      // LMap.flyTo([lat, lng], 7)
       this.centerUpdated({lat, lng}, 7)
       this.$store.dispatch('get_point_details', {
         lat: lat,
@@ -496,9 +545,6 @@ export default {
       this.toogleMethod('false')
       this.$store.commit('closeListFooter')
     },
-    // flyTo (value) {
-    //   console.log(value)
-    // },
     centerUpdated (center) {
       this.$store.commit('updatePosition', [{ lat: center.lat, lng: center.lng, zoom: null }])
     },
@@ -641,12 +687,20 @@ export default {
 </style>
 
 <style lang="scss" scoped>
-.test {
-  position: absolute;
-  bottom: 20px;
-  left: 0;
-  right: 220px;
-  box-shadow: 6px 10px 10px 2px rgba(0, 0, 0, 0.75);
+.myLocationSpan {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #dd2c54;
+  border-radius: 50%;
+  padding: 5px;
+  width: 30px;
+  height: 30px;
+  .myLocationIcon {
+    width: 40px;
+    height: 40px;
+    filter: brightness(0) invert(1);
+  }
 }
 .closest-error {
   width: 55%;
@@ -874,15 +928,15 @@ export default {
   }
   position: absolute;
   z-index: 999;
-  left: 20px;
-  top: 25px;
+  right: 20px;
+  top: 20px;
   background-color: white;
   display: flex;
   border-radius: 15px;
   overflow: hidden;
   @media (max-width: 767px) {
     position: fixed;
-    right: 12px;
+    right: 20px;
     left: auto;
     top: 15px;
   }
@@ -890,17 +944,6 @@ export default {
 .box-shadow {
   box-shadow: 5px 6px 9px 4px rgba(0, 0, 0, 0.4);
 }
-.type-actions-v2 {
-  left: auto;
-  right: 20px;
-  top: 20px;
-  @media (max-width: 767px) {
-    right: 20px;
-    left: auto;
-    top: 15px;
-  }
-}
-
 .list-box {
   .list-title {
     h1 {

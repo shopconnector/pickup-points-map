@@ -31,7 +31,7 @@
         </div>
       </div>
       <div class="features-div" :class="{ 'first' : !isWidgetVersion }">
-        <div :class="{ 'features-box-ver2' : !isWidgetVersion }">
+        <div :class="[ !isWidgetVersion ? 'features-box-ver2' : 'features-box' ]">
           <select-location v-if="!isWidgetVersion" :innerAddress="innerAddress"/>
           <Filters :innerFilter="innerFilter" v-if="!isMobile"/>
         </div>
@@ -68,26 +68,21 @@ export default {
     }
   },
   created () {
-    // window.addEventListener('message', this.filterApply)
-    this.filterApply()
+    window.addEventListener('message', this.filterApply)
   },
   destroyed () {
     window.removeEventListener('message', this.filterApply)
   },
   methods: {
     filterApply: function (event) {
-      // if (event.data.content && event.data.content.hasOwnProperty('key')) {
-      // this.innerFilter = 'In Post'
-      // this.innerFilter = event.data.content.filter
-      // this.innerAddress = event.data.content.address
-      // this.innerAddress = 'Warszawa, ul.Nowy Świat 4'
-      this.$store.dispatch('get_essentials', {
-        // key: `${event.data.content.key}`,
-        // origin: `${event.origin}`
-        key: '5DFC0961AB6BEF40736BA3099EE27492',
-        origin: 'localhost'
-      })
-      // }
+      if (event.data.content && event.data.content.hasOwnProperty('key')) {
+        this.innerFilter = event.data.content.filter
+        this.innerAddress = event.data.content.address
+        this.$store.dispatch('get_essentials', {
+          key: `${event.data.content.key}`,
+          origin: `${event.origin}`
+        })
+      }
     },
     openFooterModal () {
       this.$store.commit('openFooterModal')
@@ -215,6 +210,9 @@ export default {
     padding: 0;
   }
 }
+.features-box {
+  padding: 0 15px;
+}
 .features-box-ver2 {
   margin: 20px 25px 0 25px;
   @media (max-width: 767px) {
@@ -257,7 +255,7 @@ export default {
     display: flex;
     width: 23px;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start;
     height: 23px;
   }
 }

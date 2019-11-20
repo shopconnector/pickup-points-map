@@ -76,9 +76,6 @@ export default {
     selectedPoint () {
       return this.$store.state.selectedPoint
     },
-    isWidgetVersion () {
-      return this.$store.state.customer.theme
-    },
     linkToRoad () {
       if (this.$store.state.geolocation.lat && this.$store.state.suggestionTextLocit.length === 0 && this.$store.state.linkToRoad.x === 0) {
         let url = 'https://www.google.pl/maps/dir/' + this.$store.state.geolocation.lat + ',' + this.$store.state.geolocation.lng + '/' + this.parentData.lat + ',' + this.parentData.lon + '/@52.2502198,21.0280249 + ,16z/data=!4m2!4m1!3e3?hl=pl'
