@@ -1,72 +1,5 @@
 <template>
   <div>
-    <div :class="!isWidgetVersion ? 'modal' : 'modalV2'" v-if="!isMobile">
-       <div class="content" v-if="setUniqPoint">
-          <div class="title"><h3>Wybrany sposób dostawy</h3></div>
-          <div class="selected-supplier">
-            <div class="col-1">
-              <div class="address">
-                <h4>{{ setUniqPoint.street }}</h4>
-                <p>{{ setUniqPoint.zip }} {{ setUniqPoint.city }}</p>
-                <p v-if="setUniqPoint.points && setUniqPoint.points.length > 0 && setUniqPoint.points[0].id.length > 0" >{{ setUniqPoint.points[0].id }}</p>
-              </div>
-              <div class="shop paddbott">
-                <p>{{ setUniqPoint.pickup_type }}</p>
-                <p v-if="setUniqPoint.point && setUniqPoint.points[0].phones.length" >
-                  <template v-for="phone in setUniqPoint.points[0].phones">
-                    {{ phone }}
-                  </template>
-                </p>
-              </div>
-              <div class="shop additional" v-if="setUniqPoint.points">
-                <p v-if="setUniqPoint.points && setUniqPoint.points.length > 0 && setUniqPoint.points[0].features.open_late"> Otwarte do pózna</p>
-                <p v-if="setUniqPoint.points && setUniqPoint.points.length > 0 && setUniqPoint.points[0].features.open_saturday"> Otwarte w soboty</p>
-                <p v-if="setUniqPoint.points && setUniqPoint.points.length > 0 && setUniqPoint.points[0].features.open_sunday"> Otwarte w niedziele</p>
-                <p v-if="setUniqPoint.points && setUniqPoint.points.length > 0 && setUniqPoint.points[0].features.parking"> Parking</p>
-                <p v-if="setUniqPoint.points && setUniqPoint.points.length > 0 && setUniqPoint.points[0].features.disabled_friendly"> Ułatwienie dla osób niepełnosprawnych</p>
-                <p v-if="setUniqPoint.points && setUniqPoint.points.length > 0 && setUniqPoint.points[0].features.cash_on_delivery" > Odbiór za pobraniem</p>
-              </div>
-            </div>
-            <div class="col-2">
-              <div class="info-box">
-                <div class="logo">
-                  <img :src="logosUrl[setUniqPoint.pickup_type]" class="img">
-                </div>
-                <div class="road">
-                  <a :href="linkToRoad" target="_blank">Wyznacz trasę dojazdu <i class="play_arrow"/></a>
-                </div>
-              </div>
-              <div class="col-3">
-                <div class="open-hours" v-if="setUniqPoint.points && setUniqPoint.points.length > 0 && typeof setUniqPoint.points[0].working_hours !== 'undefined' && setUniqPoint.points[0].working_hours.length > 0">
-                  <div class="hours-title">
-                    <p>Godziny otwarcia</p>
-                  </div>
-                  <div class="week">
-                    <div class="hourse-info">
-                      <template v-for="(day, index) in setUniqPoint.points[0].working_hours">
-                        <p :key="index">{{ day }}</p>
-                      </template>
-                    </div>
-                  </div>
-                </div>
-                <!-- <div class="price" v-if="parentData.points && parentData.points[selectedPoint].prices">
-                  <div class="price-title">
-                    <p>Cennik</p>
-                  </div>
-                  <div class="price-info">
-                    <p v-if="parentData.points[selectedPoint].prices.cod">Odbiór za pobraniem: {{ parentData.points[selectedPoint].prices.cod }} zł</p>
-                    <p v-if="parentData.points[selectedPoint].prices.pp">PrePaid: {{ parentData.points[selectedPoint].prices.pp }} zł</p>
-                  </div>
-                </div> -->
-              </div>
-            </div>
-          </div>
-       </div>
-       <div class="footer">
-         <p class="powrot" @click="closeModal()"><i class="arrow_left"/>POWRÓT</p>
-         <p class="zamknij" id="set-point" @click="setPoint(setUniqPoint)">Wybierz {{ parentData.pickup_type }} i zamknij</p>
-       </div>
-    </div>
     <!-- Modal DIV for mobile map -->
     <div class="mobile-map-modal" v-if="isMobile">
       <div class="mobile-map-header">
@@ -81,7 +14,7 @@
         <div class="mobile-map-address">
           <h4 class="mobile-map-title">{{ parentData && parentData.street }}</h4>
           <p class="mobile-map-street">{{ parentData && parentData.zip }} {{ parentData && parentData.city }}</p>
-          <p v-if="parentData.points && point.id.length" class="mobile-map-street">{{ parentData.points && point.id }}</p>
+          <p v-if="parentData.points && point.id.length" class="mobile-map-street"><img class="popup-icon" :src="popupIcons[parentData.pickup_type]" />{{ parentData.points && point.id }}</p>
         </div>
       </div>
       <div class="mobile-map-hours" v-if="point && point.working_hours.length > 0 && point.working_hours[0] !== ''" :key="'hours-' + index">
@@ -94,15 +27,6 @@
             </template>
         </div>
       </div>
-      <!-- <div class="mobile-price" v-if="point && point.prices" :key="'price-' + index">
-        <div class="mobile-price-title">
-          <b>Cennik: </b>
-        </div>
-        <div class="mobile-price-info">
-          <p v-if="point.prices.cod">Odbiór za pobraniem: {{ point.prices.cod }} zł</p>
-          <p v-if="point.prices.pp">PrePaid: {{ point.prices.pp }} zł</p>
-        </div>
-      </div> -->
       <div class="mobile-map-additional" :key="'add-' + index">
         <p v-if="parentData.points && point.features.open_late" class="additional-info"><span class="mobile-map-icon-padding"><i class="icon hours"/></span> - otwarte do pózna</p>
         <p v-if="parentData.points && point.features.open_saturday" class="additional-info"><span class="mobile-map-icon-padding"><i class="icon sobota"/></span> - otwarte w soboty</p>
@@ -112,8 +36,7 @@
         <p v-if="parentData.points && point.features.cash_on_delivery" class="additional-info"><span class="mobile-map-icon-padding"><i class="icon pobraniem"/></span> - odbiór za pobraniem</p>
       </div>
       <div class="mobile-map-footer" :key="'btn-' + index">
-        <p class="mobile-map-btn-close" @click="closeModal(); setPoint(setMobileUniqPoint(point.id))">Wybierz "{{ parentData.pickup_type }}" i zamknij</p>
-        <!-- setPoint(parentData); -->
+        <p class="mobile-map-btn-close" @click="closeModal(); setPoint(parentData);">Wybierz "{{ parentData.pickup_type }}" i zamknij</p>
       </div>
       </template>
     </div>
@@ -129,13 +52,19 @@ export default {
   mixins: [MobileDetected],
   data () {
     return {
+      popupIcons: {
+        'DPD Pickup': require('../../assets/popup-icons/dpd16x16.png'),
+        'In Post': require('../../assets/popup-icons/paczkomaty-16x16.png'),
+        'Poczta Polska': require('../../assets/popup-icons/poczta-16x16.png'),
+        'Paczka w RUCHu': require('../../assets/popup-icons/ruch16x16.png')
+      },
       logosUrl: {
         'Żabka': require('../../assets/logos/żabka.png'),
         'DPD Pickup': require('../../assets/logos/dpd-pickup.png'),
         'Fresh Market': require('../../assets/logos/freshmarket.png'),
         'In Post': require('../../assets/logos/inpost.png'),
         'Poczta Polska': require('../../assets/logos/pocztapolska.png'),
-        'Paczka w Ruchu': require('../../assets/logos/paczka_w_ruchu.jpg'),
+        'Paczka w RUCHu': require('../../assets/logos/paczka_w_ruchu.jpg'),
         'Orlen': require('../../assets/logos/orlen.png')
       }
     }
@@ -146,20 +75,6 @@ export default {
     },
     selectedPoint () {
       return this.$store.state.selectedPoint
-    },
-    setUniqPoint () {
-      if (this.parentData.points && this.selectedPoint) {
-        if (this.selectedPoint !== null) {
-          let newData = {...this.parentData}
-          newData.points = newData.points.filter((item, index) => this.selectedPoint === item.id)
-          return newData
-        } else {
-          return this.parentData
-        }
-      }
-    },
-    isWidgetVersion () {
-      return this.$store.state.customer.theme
     },
     linkToRoad () {
       if (this.$store.state.geolocation.lat && this.$store.state.suggestionTextLocit.length === 0 && this.$store.state.linkToRoad.x === 0) {
@@ -175,11 +90,6 @@ export default {
     }
   },
   methods: {
-    setMobileUniqPoint (i) {
-      let newData1 = {...this.parentData}
-      newData1.points = newData1.points.filter((item, index) => i === item.id)
-      return newData1
-    },
     setPoint (point) {
       this.sendMessage(point)
     },
@@ -194,38 +104,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.col-3 {
-  display: flex;
-  justify-content: space-between;
-}
-.hourse-info {
-  font-size: 14px;
-  display: flex;
-  flex-direction: column;
-  text-align: left;
-  @media only screen and (max-width: 1000px) {
-    font-size: 12px;
-  }
-}
 .day-p {
   padding-left: 3px;
-}
-.arrow_left{
-  width: 35px;
-  height: 35px;
-  display: flex;
-  cursor: pointer;
-  filter: grayscale(0.5) opacity(0.3);
-  background: url('../../assets/icons/arrow_left.png') 0 0 no-repeat;
-  background-size: cover;
-}
-.play_arrow{
-  width: 22px;
-  height: 22px;
-  display: flex;
-  cursor: pointer;
-  background: url('../../assets/icons/play_arrow.png') 0 0 no-repeat;
-  background-size: cover;
 }
 .mobile-map-modal{
   scroll-snap-type: y mandatory;
@@ -270,6 +150,11 @@ export default {
       }
       .mobile-map-street{
         font-size: 14px;
+        display: flex;
+        align-items: center;
+        .popup-icon {
+          margin-right: 5px;
+        }
       }
     }
   }
@@ -371,251 +256,9 @@ p {
 }
 .img{
   width: 85px;
-}
-.content{
-  background: #F5F5F5;
-  padding-bottom: 10px;
-}
-.modal{
-  width: 100%;
-  margin-top: 25px;
-  display: flex;
-  flex-direction: column;
-  border-radius: 9px;
-}
-.modalV2{
-  display: flex;
-  flex-direction: column;
-  margin: 20px;
-  border: 1px solid #E54C69;
-  background-color: white;
-  .content{
-    background: none;
-    padding: 0;
-  }
-  .title{
-    padding-left: 30px;
-    h3{
-        text-align: left;
-        font-size: 22px;
-        margin: 10px 0;
-        padding: 0;
-        @media (max-width: 1000px) {
-          font-size: 18px;
-        }
-    }
-  }
-  .selected-supplier {
-    justify-content: space-between;
-    padding-bottom: 10px;
-    border-bottom: 1px solid #E5E5E5;
-    margin: 0 30px;
-  }
-  .col2 {
-    flex: 0 0 50%;
-  }
-  .powrot {
-    padding-left: 10px;
-  }
-  .zamknij {
-    margin-right: 25px;
+  @media (max-width: 1000px) {
+    width: 70px;
   }
 }
-.footer{
-  display: flex;
-  justify-content: space-between;
-  padding: 6px 0;
-  align-items: center;
-  background: white;
-}
-.title{
-  padding-left: 20px;
-  h3 {
-    margin: 0;
-    text-align: left;
-    padding-top: 10px;
-    font-size: 22px;
-    color: #000000;
-  }
-}
-.selected-supplier{
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-}
-.col-1{
-  display: flex;
-  flex-direction: column;
-  align-items: end;
-  flex: 0 0 40%;
-}
-.col-2{
-  display: flex;
-  flex-wrap: wrap;
-  flex-direction: column;
-  justify-content: space-between;
-  flex: 0 0 45%;
-}
-.info-box {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
-  .logo{
-    display: flex;
-  }
-  .road{
-    display: flex;
-    justify-content: center;
-    width: 50%;
-    a {
-      display: flex;
-      font-size: 16px;
-      color: #000000;
-      align-items: center;
-      text-decoration: none;
-    }
-  }
-}
-.open-hours{
-  display: flex;
-  flex-wrap: wrap;
-  flex-direction: column;
-}
-.price {
-  display: flex;
-  flex-wrap: wrap;
-  flex-direction: column;
-  .price-title {
-    width: 100%;
-    display: flex;
-    p {
-      text-align: left;
-      font-size: 16px;
-      color: #000000;
-      font-weight: 600;
-      padding: 6px 0 ;
-      @media only screen and (max-width: 1000px) {
-        font-size: 13px;
-      }
-    }
-  }
-  .price-info {
-    color: #000000;
-    font-size: 14px;
-    display: flex;
-    flex-direction: column;
-    text-align: left;
-    @media only screen and (max-width: 1000px){
-      font-size: 12px;
-    }
-  }
-}
-.hours-title{
-  width: 100%;
-  display: flex;
-  p {
-    text-align: left;
-    font-size: 16px;
-    color: #000000;
-    font-weight: 600;
-    padding: 6px 0;
-  }
-}
-.week{
-  display: flex;
-  color: #000000;
-}
-.address{
-  display: flex;
-  flex-direction: column;
-  align-items: end;
-  padding: 10px 0;
-  color: #000000;
-  font-size: 16px;
-  h4{
-    margin: 0;
-    font-weight: 900;
-  }
-}
-.shop {
-  display: flex;
-  flex-direction: column;
-  align-items: end;
-  font-size: 14px;
-  color: #000000;
-  text-align: left;
-}
-.additional{
-  opacity: 0.8;
-}
-.paddbott{
-  padding-bottom: 7px;
-}
-.powrot{
-  display: flex;
-  height: fit-content;
-  font-size: 17px;
-  color: #ADADAD;
-  align-items: center;
-  cursor: pointer;
-}
-.zamknij{
-  background: #E4405F;
-  height: 45px;
-  display: flex;
-  align-items: center;
-  border-radius: 9px;
-  justify-content: center;
-  font-size: 16px;
-  color: #FFFFFF;
-  padding: 0 15px;
-  z-index: 999;
-  cursor: pointer;
-  margin-right: 10px;
-}
-@media only screen and (max-width: 1000px) {
- .title h3{
-   font-size: 18px;
- }
- .address{
-    h4, p {
-      font-size: 14px;
-    }
- }
- .shop{
-   p {
-     font-size: 12px;
-   }
- }
- .hours-title{
-   p {
-     font-size: 13px;
-   }
- }
- .info-box{
-  .road{
-    a{
-      font-size: 12px;
-      i {
-        height: 16px;
-        width: 16px;
-      }
-    }
-  }
- }
- .img{
-   width: 70px;
- }
- .powrot{
-   font-size: 15px;
-   i {
-     font-size: 40px;
-   }
- }
- .zamknij{
-   font-size: 14px;
-   height: 40px;
- }
-}
+
 </style>

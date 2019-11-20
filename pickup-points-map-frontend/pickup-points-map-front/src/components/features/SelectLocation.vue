@@ -3,14 +3,13 @@
     <div :class="isWidgetVersion ? 'location-header' : 'location-headerV2'" v-if="!isMobile">
       <h2 class="title">Wybierz lokalizację</h2>
     </div>
-    <div class="choose-location" v-if="!isMobile">
-        <h3 :class="[ isWidgetVersion ? 'my-location' : 'my-locationV2', $store.state.geolocation.lat ? 'active' : '']" @click="currentPos()">Moja lokalizacja</h3>
-        <p class="lub">lub</p>
-        <div class="suggest-box">
-          <!-- :class="{ 'active-input' : isInputAddress}" -->
+    <div class="choose-location"  :class="{'choose-locationV2' : !isWidgetVersion}" v-if="!isMobile">
+        <h3 :class="[ isWidgetVersion ? 'my-location' : 'my-locationV2', isCenterOnMap() ? 'active' : '']" @click="currentPos()">Użyj mojej lokalizacji</h3>
+        <p v-if="isWidgetVersion" class="lub">lub</p>
+        <div class="suggest-box" :class="{'suggest-boxV2' : !isWidgetVersion}">
         <vue-autosuggest
             class='input-tag'
-            :class="{'input-tagV2' : !isWidgetVersion}"
+            :class="{'input-tagV2' : !isWidgetVersion, 'active-address-input' : isCenterAddress()}"
             :limit="10"
             v-model="locitAddress"
             @input="locitAdres()"
@@ -26,7 +25,8 @@
             <small>({{ suggestion.item.voiv + ' ' + suggestion.item.pov + ' ' + suggestion.item.mun }})</small>
           </template>
         </vue-autosuggest>
-        <span class="span-location" :class="{'span-locationV2' : isWidgetVersion}" @click="locitAddress = ''"><i class="clear-input"/></span>
+        <span class="span-location" :class="{'span-locationV2' : isWidgetVersion}" @click="clearInput()"><i class="clear-input"/></span>
+        <span class="select-icon-location" :class="{'span-locationV2' : isWidgetVersion}" @click="selectedLocation(selectedSuggestion)"><i class="lupa-icon"/></span>
         </div>
         <!--Wpisz kod odbioru -->
         <!-- <p class="lub">lub</p>
@@ -56,7 +56,7 @@
           <template v-if="suggestionText">{{ suggestionText.city + ', ' + suggestionText.prefix + ' ' + suggestionText.street + ' ' + suggestionText.building }}</template>
           <template v-else>Zacznij wpisywać adres</template>
         </div>
-        <div class='input-modal-button'>Wpisz kod odbioru</div>
+        <!-- <div class='input-modal-button'>Wpisz kod odbioru</div> -->
       </div>
     </vue-over-body>
     <vue-over-body :dim="false" :open="IsLocitModalOpen" before="beforeLocitModal" after="afterLocitModal" :transition="0.3">
@@ -77,7 +77,7 @@
             <small>({{ suggestion.item.voiv + ' ' + suggestion.item.pov + ' ' + suggestion.item.mun }})</small>
           </template>
         </vue-autosuggest>
-        <span class="span-location" @click="locitAddress = ''"><i class="clear-input"/></span>
+        <span class="span-location" @click="clearInput()"><i class="szczotka-clear-input"/></span>
       </div>
     </vue-over-body>
   </div>
@@ -107,7 +107,12 @@ export default {
       locitSuggestions: [],
       placeHolder: 'Wpisz adres',
       placeHolderCode: 'Podaj kod odboiru',
-      filterApplyCount: 0
+      filterApplyCount: 0,
+      selectedSuggestion: null,
+      forAnimation: {
+        lat: 0,
+        lng: 0
+      }
     }
   },
   computed: {
@@ -149,6 +154,8 @@ export default {
             this.filterApplyCount += 1
             return this.$http.post('https://api.locit.dev.beecommerce.pl/address_hygiene_single_string', { address: this.locitAddress, format: 'json', charset: 'UTF-8' }).then(res => {
               const locitOnce = JSON.parse(res.bodyText)
+              this.forAnimation.lat = locitOnce.data.y
+              this.forAnimation.lng = locitOnce.data.x
               this.$store.commit('updateLinkToRoad', { x: locitOnce.data.y, y: locitOnce.data.x })
               this.$store.commit('updatePosition', [{ lat: locitOnce.data.y, lng: locitOnce.data.x, zoom: 16 }])
             }).catch(err => {
@@ -160,6 +167,46 @@ export default {
     }
   },
   methods: {
+    clearInput () {
+      this.locitAddress = ''
+      this.selectedSuggestion = null
+    },
+    isCenterAddress () {
+      if (this.forAnimation.lat && this.forAnimation.lng) {
+        let lat1 = this.$store.state.lat
+        let lat2 = Number(this.forAnimation.lat)
+        let lng1 = this.$store.state.lng
+        let lng2 = Number(this.forAnimation.lng)
+        if (lat1 !== null && lat2 !== null && lng1 !== null && lng2 !== null) {
+          if ((lat1.toFixed(3) === lat2.toFixed(3)) && (lng1.toFixed(3) === lng2.toFixed(3))) {
+            return true
+          } else {
+            return false
+          }
+        }
+      }
+    },
+    isCenterOnMap () {
+      let lat1 = this.$store.state.lat
+      let lat2 = this.$store.state.geolocation.lat
+      let lng1 = this.$store.state.lng
+      let lng2 = this.$store.state.geolocation.lng
+      if (lat1 !== null && lat2 !== null && lng1 !== null && lng2 !== null) {
+        if ((lat1.toFixed(3) === lat2.toFixed(3)) && (lng1.toFixed(3) === lng2.toFixed(3))) {
+          return true
+        } else {
+          return false
+        }
+      }
+    },
+    selectedLocation (value) {
+      if (value) {
+        this.$store.commit('updatePosition', [{ lat: Number(value.y), lng: Number(value.x), zoom: 16 }])
+        this.$store.commit('updateLinkToRoad', { x: value.y, y: value.x })
+        this.$store.commit('updateStateGeo')
+        // this.$store.commit('updateLocitAddress', '')
+      }
+    },
     emitMethod () {
       EventBus.$emit('popupClose')
     },
@@ -186,9 +233,13 @@ export default {
     },
     getSuggestionValue (suggestion) {
       if (suggestion) {
+        this.selectedSuggestion = suggestion.item
         this.suggestionText = suggestion.item
+        this.forAnimation.lat = suggestion.item.y
+        this.forAnimation.lng = suggestion.item.x
         this.$store.commit('updatePosition', [{ lat: Number(suggestion.item.y), lng: Number(suggestion.item.x), zoom: 16 }])
         this.$store.commit('updateLocitAddress', this.suggestionText)
+        this.$store.commit('updateStateGeo')
         this.$store.commit('updateLinkToRoad', {x: 0, y: 0})
         return this.suggestionText.city + ', ' + this.suggestionText.prefix + ' ' + this.suggestionText.street + ' ' + this.suggestionText.building
       } else {
@@ -276,8 +327,8 @@ export default {
 .beforeFooterModal {
   bottom: -100vh;
   width: 100%;
-  height: 165px;
-  margin-top: calc( 100vh - 165px );
+  height: 120px;
+  margin-top: calc( 100vh - 120px );
   background-color: white;
   position:absolute;
 }
@@ -296,11 +347,17 @@ export default {
 .input-tag ul li {
   padding: 5px 0;
   text-overflow: ellipsis;
-  white-space: nowrap;
   overflow: hidden;
   @media (max-width: 767px) {
     padding: 10px 0;
   }
+}
+.active-address-input {
+  background-color: #3F87F5 !important;
+  border: 1px solid #3F87F5 !important;
+}
+.active-address-input input {
+  color: white !important;
 }
 .input-tag {
  input {
@@ -312,7 +369,7 @@ export default {
     border: 0;
     color: black;
     font-size: 16px;
-    font-family: 'Lato', sans-serif;
+    font-family: 'sofia-pro', sans-serif;
     @media (max-width: 767px) {
       font-weight: bold;
       border-radius: 5px;
@@ -321,8 +378,6 @@ export default {
 }
 .input-tagV2 input{
  padding-right: 25px;
- height: 29px;
- border: none;
  font-size: 14px;
  background-color: transparent;
 }
@@ -352,14 +407,13 @@ export default {
 </style>
 
 <style lang="scss" scoped>
-.active-input {
-  flex-basis: 60% !important;
-}
 .suggest-box {
   position: relative;
   display: block;
-  // flex-basis: 40%;
-  width: 75%;
+  width: 50%;
+}
+.suggest-boxV2 {
+  width: 100%;
 }
 .suggest-box-punkt{
   position: relative;
@@ -369,6 +423,11 @@ export default {
 .span-location{
   position: absolute;
   right: 5px;
+  top: 20px;
+}
+.select-icon-location {
+  position: absolute;
+  left: 5px;
   top: 20px;
 }
 .span-locationV2{
@@ -420,6 +479,16 @@ export default {
 .location-headerV2{
   display: block;
 }
+.szczotka-clear-input {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  cursor: pointer;
+  filter: grayscale(0.5) opacity(0.5);
+  background: url('../../assets/icons/szczotka.svg') 0 0 no-repeat;
+  background-size: cover;
+}
 .clear-input{
   width: 22px;
   height: 22px;
@@ -429,8 +498,17 @@ export default {
   background: url('../../assets/icons/clear.png') 0 0 no-repeat;
   background-size: cover;
 }
+.lupa-icon {
+  width: 22px;
+  height: 22px;
+  display: flex;
+  cursor: pointer;
+  filter: grayscale(0.5) opacity(0.5);
+  background: url('../../assets/icons/search.svg') 0 0 no-repeat;
+  background-size: cover;
+}
 .title{
-  font-family: 'Lato', sans-serif;
+  font-family: 'sofia-pro', sans-serif;
   font-size: 22px;
   font-weight: 900;
   text-align: left;
@@ -438,15 +516,21 @@ export default {
 }
 .choose-location{
   display: flex;
-  align-items: center;
+  // flex-direction: column;
   width: 100%;
-  justify-content: center;
+  flex-wrap: wrap;
+}
+.choose-locationV2 {
+  flex-direction: column;
+}
+.lub {
+  width: 10%;
 }
 .my-location{
-  flex: 0 0 25%;
+  width: 30%;
   color: #000000;
   font-size: 18px;
-  font-family: 'Lato', sans-serif;
+  font-family: 'sofia-pro', sans-serif;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -476,13 +560,10 @@ export default {
 }
 .my-locationV2{
   cursor: pointer;
-  // padding-left: 5px;
   padding-left: 25px;
-  // flex-basis: 25%;
-  flex-basis: 30%;
   color: #989898;
   font-size: 14px;
-  font-family: 'Lato', sans-serif;
+  font-family: 'sofia-pro', sans-serif;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -508,14 +589,6 @@ export default {
     cursor: pointer;
   }
 }
-.lub{
-  flex-basis: 5%;
-  font-size: 14px;
-  font-family: 'Lato', sans-serif;
-  color: #AAAAAA;
-  margin: 0;
-  padding: 0 5px;
-}
 .input-tag{
   position: relative;
   display: flex;
@@ -524,7 +597,7 @@ export default {
   border-radius: 3px;
   margin: 9px 0;
   padding: 0px;
-  font-family: 'Lato', sans-serif;
+  font-family: 'sofia-pro', sans-serif;
   color: #303030;
   @media (max-width: 767px) {
     width: auto;
@@ -547,7 +620,7 @@ export default {
   border-radius: 5px;
   background-color: #e5e5e5;
   color: #AAAAAA;
-  font-family: 'Lato', sans-serif;
+  font-family: 'sofia-pro', sans-serif;
   @media (max-width: 767px) {
   }
 }
@@ -567,7 +640,7 @@ export default {
 input::placeholder{
  color: #AAAAAA;
  font-size: 16px;
- font-family: 'Lato', sans-serif;
+ font-family: 'sofia-pro', sans-serif;
 }
 
 @media only screen and (max-width: 1000px) {
@@ -576,9 +649,6 @@ input::placeholder{
  }
  .my-location{
    font-size: 16px;
- }
- .lub{
-   font-size: 12px;
  }
 }
 </style>
