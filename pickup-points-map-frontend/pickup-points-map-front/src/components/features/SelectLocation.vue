@@ -156,6 +156,7 @@ export default {
               const locitOnce = JSON.parse(res.bodyText)
               this.forAnimation.lat = locitOnce.data.y
               this.forAnimation.lng = locitOnce.data.x
+              this.selectedSuggestion = { x: locitOnce.data.x, y: locitOnce.data.y }
               this.$store.commit('updateLinkToRoad', { x: locitOnce.data.y, y: locitOnce.data.x })
               this.$store.commit('updatePosition', [{ lat: locitOnce.data.y, lng: locitOnce.data.x, zoom: 16 }])
             }).catch(err => {
