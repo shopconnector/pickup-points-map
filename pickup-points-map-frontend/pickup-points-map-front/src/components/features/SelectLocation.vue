@@ -173,9 +173,9 @@ export default {
     },
     isCenterAddress () {
       if (this.forAnimation.lat && this.forAnimation.lng) {
-        let lat1 = this.$store.state.lat
+        let lat1 = Number(this.$store.state.lat)
         let lat2 = Number(this.forAnimation.lat)
-        let lng1 = this.$store.state.lng
+        let lng1 = Number(this.$store.state.lng)
         let lng2 = Number(this.forAnimation.lng)
         if (lat1 !== null && lat2 !== null && lng1 !== null && lng2 !== null) {
           if ((lat1.toFixed(3) === lat2.toFixed(3)) && (lng1.toFixed(3) === lng2.toFixed(3))) {

@@ -63,26 +63,36 @@ export default {
   mixins: [MobileDetected],
   data () {
     return {
+      dataToSend: {
+        pickup_type: '',
+        points: {},
+        street: '',
+        city: '',
+        zip: ''
+      },
       innerAddress: '',
       innerFilter: null
     }
   },
   created () {
-    window.addEventListener('message', this.filterApply)
+    // window.addEventListener('message', this.filterApply)
+    this.filterApply()
   },
   destroyed () {
     window.removeEventListener('message', this.filterApply)
   },
   methods: {
     filterApply: function (event) {
-      if (event.data.content && event.data.content.hasOwnProperty('key')) {
-        this.innerFilter = event.data.content.filter
-        this.innerAddress = event.data.content.address
-        this.$store.dispatch('get_essentials', {
-          key: `${event.data.content.key}`,
-          origin: `${event.origin}`
-        })
-      }
+      // if (event.data.content && event.data.content.hasOwnProperty('key')) {
+      //   this.innerFilter = event.data.content.filter
+      //   this.innerAddress = event.data.content.address
+      this.$store.dispatch('get_essentials', {
+        // key: `${event.data.content.key}`,
+        key: '5DFC0961AB6BEF40736BA3099EE27492',
+        // origin: `${event.origin}`
+        origin: 'localhost'
+      })
+      // }
     },
     openFooterModal () {
       this.$store.commit('openFooterModal')
@@ -95,7 +105,12 @@ export default {
       this.$store.commit('closeListFooter')
     },
     setPoint (point) {
-      this.sendMessage(point)
+      this.dataToSend.pickup_type = point.pickup_type
+      this.dataToSend.street = point.street
+      this.dataToSend.city = point.city
+      this.dataToSend.zip = point.zip
+      this.dataToSend.points = point.points[0]
+      this.sendMessage(this.dataToSend)
     },
     sendMessage (point) {
       window.parent.postMessage(point, '*')
