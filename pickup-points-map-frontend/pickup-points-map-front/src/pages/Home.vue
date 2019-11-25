@@ -63,6 +63,13 @@ export default {
   mixins: [MobileDetected],
   data () {
     return {
+      dataToSend: {
+        pickup_type: '',
+        points: {},
+        street: '',
+        city: '',
+        zip: ''
+      },
       innerAddress: '',
       innerFilter: null
     }
@@ -95,7 +102,12 @@ export default {
       this.$store.commit('closeListFooter')
     },
     setPoint (point) {
-      this.sendMessage(point)
+      this.dataToSend.pickup_type = point.pickup_type
+      this.dataToSend.street = point.street
+      this.dataToSend.city = point.city
+      this.dataToSend.zip = point.zip
+      this.dataToSend.points = point.points[0]
+      this.sendMessage(this.dataToSend)
     },
     sendMessage (point) {
       window.parent.postMessage(point, '*')

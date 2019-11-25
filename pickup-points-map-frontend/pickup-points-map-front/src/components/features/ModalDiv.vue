@@ -36,7 +36,7 @@
         <p v-if="parentData.points && point.features.cash_on_delivery" class="additional-info"><span class="mobile-map-icon-padding"><i class="icon pobraniem"/></span> - odbiór za pobraniem</p>
       </div>
       <div class="mobile-map-footer" :key="'btn-' + index">
-        <p class="mobile-map-btn-close" @click="closeModal(); setPoint(parentData);">Wybierz "{{ parentData.pickup_type }}" i zamknij</p>
+        <p class="mobile-map-btn-close" @click="closeModal(); setPoint(parentData, point);">Wybierz "{{ parentData.pickup_type }}" i zamknij</p>
       </div>
       </template>
     </div>
@@ -52,6 +52,13 @@ export default {
   mixins: [MobileDetected],
   data () {
     return {
+      dataToSend: {
+        pickup_type: '',
+        points: {},
+        street: '',
+        city: '',
+        zip: ''
+      },
       popupIcons: {
         'DPD Pickup': require('../../assets/popup-icons/dpd16x16.png'),
         'In Post': require('../../assets/popup-icons/paczkomaty-16x16.png'),
@@ -90,8 +97,13 @@ export default {
     }
   },
   methods: {
-    setPoint (point) {
-      this.sendMessage(point)
+    setPoint (points, selected) {
+      this.dataToSend.pickup_type = points.pickup_type
+      this.dataToSend.street = points.street
+      this.dataToSend.city = points.city
+      this.dataToSend.zip = points.zip
+      this.dataToSend.points = selected
+      this.sendMessage(this.dataToSend)
     },
     sendMessage (point) {
       window.parent.postMessage(point, '*')

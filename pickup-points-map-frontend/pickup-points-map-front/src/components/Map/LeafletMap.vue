@@ -2,7 +2,7 @@
   <div :class="{ 'list-background-mobile-fix': isMobile }">
     <div :class="isWidgetVersion ? 'map-v2' : 'map'">
       <div class="type-actions" :class="{'box-shadow' : !isMobile }">
-        <p class="button-action" :class="{ active: !toogleMap }" @click="toogleMapMethod('show')">Mapa</p>
+        <p class="button-action" :class="{ active: !toogleMap }" @click="toogleMapMethod('show'), openListModal(9999)">Mapa</p>
         <p
           class="button-action"
           :class="{ active: toogleMap }"
@@ -48,7 +48,7 @@
               v-for="(listMarker, index) in listMarkers"
               :key="index"
               @click="openListModal(index)"
-              v-on="isMobile ? { click: () => getPointDetails(listMarker.lat, listMarker.lon, listMarker.pickup_point_type) } : {}"
+              v-on="isMobile ? { click: () => getPointMobileListDetails(listMarker.lat, listMarker.lon, listMarker.pickup_point_type, listMarker.id) } : {}"
             >
               <div class="list-elem list-elem-img">
                 <img :class="{ 'img-modal': isOpenListModal(index) }" :src="logosUrl[listMarker.pickup_point_type]" width="auto" height="70px" />
@@ -62,7 +62,7 @@
                 {{ listMarker.working_hours.join(', ') }}
               </div>
               <div class="list-elem btn-elem">
-                <p class="list-button" @click="setPoint(listMarker)">Wybierz {{ listMarker.pickup_point_type }} i zamknij</p>
+                <p class="list-button" @click="getPointListDetails(listMarker.lat, listMarker.lon, listMarker.pickup_point_type, listMarker.id)">Wybierz {{ listMarker.pickup_point_type }} i zamknij</p>
                 <a class="list-link" :href="linkToRoadMap(listMarker)" target="_blank">Wyznacz trasę dojazdu</a>
               </div>
               <transition name="fade">
@@ -158,7 +158,7 @@
                         <div class="road">
                           <a :href="linkToRoad" target="_blank">Wyznacz trasę dojazdu</a>
                         </div>
-                        <p id="btn-wybierz" class="popup-button" @click="setPoint($store.state.markerDetails)">
+                        <p id="btn-wybierz" class="popup-button" @click="setPoint($store.state.markerDetails, point)">
                           Wybierz {{ $store.state.markerDetails.pickup_type }} i zamknij
                         </p>
                       </div>
@@ -213,6 +213,13 @@ export default {
   mixins: [MobileDetected],
   data () {
     return {
+      dataToSend: {
+        pickup_type: '',
+        points: {},
+        street: '',
+        city: '',
+        zip: ''
+      },
       isPopupOpen: false,
       selectedPoint: Number,
       toogleMap: false,
@@ -462,8 +469,22 @@ export default {
         return url
       }
     },
-    setPoint (point) {
-      this.sendMessage(point)
+    setListPoint () {
+      let listData = this.$store.state.markerDetails
+      this.dataToSend.pickup_type = listData.pickup_type
+      this.dataToSend.street = listData.street
+      this.dataToSend.city = listData.city
+      this.dataToSend.zip = listData.zip
+      this.dataToSend.points = listData.points[0]
+      this.sendMessage(this.dataToSend)
+    },
+    setPoint (points, selectedPoint) {
+      this.dataToSend.pickup_type = points.pickup_type
+      this.dataToSend.street = points.street
+      this.dataToSend.city = points.city
+      this.dataToSend.zip = points.zip
+      this.dataToSend.points = selectedPoint
+      this.sendMessage(this.dataToSend)
     },
     sendMessage (point) {
       window.parent.postMessage(point, '*')
@@ -499,10 +520,33 @@ export default {
     getPointDetails (lat, lng, type) {
       this.centerUpdated({lat, lng}, 7)
       this.$store.dispatch('get_point_details', {
-        lat: lat,
-        lng: lng,
-        key: this.$store.state.customer.key,
-        type: type
+        lat: `lat=${lat}`,
+        lng: `&lon=${lng}`,
+        key: `&key=${this.$store.state.customer.key}`,
+        type: `&pickup_type=${type}`,
+        id: ''
+      })
+    },
+    getPointMobileListDetails (lat, lng, type, id) {
+      this.centerUpdated({lat, lng}, 7)
+      this.$store.dispatch('get_point_details', {
+        lat: `lat=${lat}`,
+        lng: `&lon=${lng}`,
+        key: `&key=${this.$store.state.customer.key}`,
+        type: `&pickup_type=${type}`,
+        id: `&id=${id}`
+      })
+    },
+    getPointListDetails (lat, lng, type, id) {
+      this.centerUpdated({lat, lng}, 7)
+      this.$store.dispatch('get_point_details', {
+        lat: `lat=${lat}`,
+        lng: `&lon=${lng}`,
+        key: `&key=${this.$store.state.customer.key}`,
+        type: `&pickup_type=${type}`,
+        id: `&id=${id}`
+      }).then(() => {
+        this.setListPoint()
       })
     },
     loadMorePoints () {

@@ -21,29 +21,13 @@ export default {
   },
   get_points (query) {
     return axios({
-      // url: `${API_URL}/pickup-points-map?lat=${query.lat}&lon=${query.lng}&dist=${query.dist}${query.filtered}`
-
-      // `${API_URL}/pickup-points-map?`, {
-      //   params: {
-      //     lat: query.lat,
-      //     lon: query.lng,
-      //     dist: query.dist,
-      //     '' : query.filtered
-      //   }
-
       url: `${API_URL}/pickup-points-map?${query.lat}${query.lng}${query.id}${query.key}${query.dist}${query.filtered}`
-
     })
   },
   get_point_details (query) {
-    if (query.id) {
-      return axios({
-        url: `${API_URL}/address-details?lat=${query.lat}&lon=${query.lng}&key=${query.key}&pickup_type=${query.type}&id=${query.id}`
-      })
-    } else {
-      return axios({
-        url: `${API_URL}/address-details?lat=${query.lat}&lon=${query.lng}&key=${query.key}&pickup_type=${query.type}`
-      })
-    }
+    return axios({
+      // url: `${API_URL}/address-details?lat=${query.lat}&lon=${query.lng}&key=${query.key}&pickup_type=${query.type}`
+      url: `${API_URL}/address-details?${query.lat}${query.lng}${query.key}${query.type}${query.id}`
+    })
   }
 }
