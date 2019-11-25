@@ -59,7 +59,6 @@
               </div>
               <div class="list-elem hours-elem">
                 <b>Godziny otwarcia:</b>
-                {{ listMarker }}
                 {{ listMarker.working_hours.join(', ') }}
               </div>
               <div class="list-elem btn-elem">

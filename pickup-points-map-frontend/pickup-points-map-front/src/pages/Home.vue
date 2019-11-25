@@ -75,24 +75,21 @@ export default {
     }
   },
   created () {
-    // window.addEventListener('message', this.filterApply)
-    this.filterApply()
+    window.addEventListener('message', this.filterApply)
   },
   destroyed () {
     window.removeEventListener('message', this.filterApply)
   },
   methods: {
     filterApply: function (event) {
-      // if (event.data.content && event.data.content.hasOwnProperty('key')) {
-      //   this.innerFilter = event.data.content.filter
-      //   this.innerAddress = event.data.content.address
-      this.$store.dispatch('get_essentials', {
-        // key: `${event.data.content.key}`,
-        key: '5DFC0961AB6BEF40736BA3099EE27492',
-        // origin: `${event.origin}`
-        origin: 'localhost'
-      })
-      // }
+      if (event.data.content && event.data.content.hasOwnProperty('key')) {
+        this.innerFilter = event.data.content.filter
+        this.innerAddress = event.data.content.address
+        this.$store.dispatch('get_essentials', {
+          key: `${event.data.content.key}`,
+          origin: `${event.origin}`
+        })
+      }
     },
     openFooterModal () {
       this.$store.commit('openFooterModal')
