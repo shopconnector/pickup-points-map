@@ -2,38 +2,37 @@
   <div :class="{ 'list-background-mobile-fix': isMobile }">
     <div :class="isWidgetVersion ? 'map-v2' : 'map'">
       <div class="type-actions" :class="{'box-shadow' : !isMobile }">
-        <p class="button-action" :class="{ active: !toogleMap }" @click="toogleMapMethod('show'), openListModal(9999)">Mapa</p>
+        <p class="button-action" :class="{ 'active': !toogleMap }" :style="{ backgroundColor: !toogleMap ? getActive : '' }" @click="toogleMapMethod('show'), openListModal(9999)">Mapa</p>
         <p
           class="button-action"
-          :class="{ active: toogleMap }"
+          :class="{ 'active': toogleMap }"
+          :style="{ backgroundColor: toogleMap ? getActive : '' }"
           v-on="$store.state.pointMarkers && $store.state.pointMarkers.length > 100 ? {} : { click: () => toogleMapMethod('hide') }"
         >
           Lista
         </p>
       </div>
       <div v-if="this.$store.state.geolocation.error.code === 1 && $store.state.pointMarkers && !$store.state.pointMarkers.length" class="first-enter-info">
-        <p class="error-text">
+        <p class="error-text" :style="getColor">
           Wybierz adres/lokalizację aby
           <br />zobaczyć najbliższe punkty odbioru
           <span class="mt10">Uwaga: Lokalizacja dla tej domeny jest zablokowana. <br />Możesz ponownie włączyć w ustawieniach przeglądarki.</span>
         </p>
       </div>
       <div v-else-if="$store.state.pointMarkers && !$store.state.pointMarkers.length && $store.state.radiusOfVisibily === 1" class="first-enter-info">
-        <p>Wybierz adres/lokalizację aby<br />zobaczyć najbliższe punkty odbioru</p>
+        <p :style="getColor">Wybierz adres/lokalizację aby<br />zobaczyć najbliższe punkty odbioru</p>
       </div>
       <div
         v-else-if="$store.state.status === 'error, points couldnt be loaded' || $store.state.status === 'error, list points couldnt be loaded'"
         class="first-enter-info"
       >
-        <p>Nie znaleziono żadnego punktu. Zmień kryteria wyboru.</p>
+        <p :style="getColor">Nie znaleziono żadnego punktu. Zmień kryteria wyboru.</p>
       </div>
       <div v-else-if="$store.state.pointMarkers && $store.state.pointMarkers.length > 100 && !toogleMap" class="error-info">
-        <p>Powiększ zoom żeby zobaczyć punkty</p>
+        <p :style="getColor">Powiększ zoom żeby zobaczyć punkty</p>
       </div>
       <div v-else-if="$store.state.closestPunktErrors.length > 0 && $store.state.pointMarkers.length === 10 && !toogleMap" class="error-info">
-        <p class="closest-error">Nie znaleziono żadnego punktu. Zmniejsz zoom żeby zobaczyć punkty.</p>
-        <!-- <br><br> -->
-        <!-- <span @click="zoomClosest()">Closest</span> -->
+        <p class="closest-error" :style="getColor">Nie znaleziono żadnego punktu. Zmniejsz zoom żeby zobaczyć punkty.</p>
       </div>
       <transition name="fade">
         <div v-if="toogleMap" class="list-box" :class="{ 'listbox-margin-top': isWidgetVersion }">
@@ -62,8 +61,8 @@
                 {{ listMarker.working_hours.join(', ') }}
               </div>
               <div class="list-elem btn-elem">
-                <p class="list-button" @click="getPointListDetails(listMarker.lat, listMarker.lon, listMarker.pickup_point_type, listMarker.id)">Wybierz {{ listMarker.pickup_point_type }} i zamknij</p>
-                <a class="list-link" :href="linkToRoadMap(listMarker)" target="_blank">Wyznacz trasę dojazdu</a>
+                <p class="list-button" :style="getBackgroundColor" @click="getPointListDetails(listMarker.lat, listMarker.lon, listMarker.pickup_point_type, listMarker.id)">Wybierz {{ listMarker.pickup_point_type }} i zamknij</p>
+                <a class="list-link" :style="getDecorationColor" :href="linkToRoadMap(listMarker)" target="_blank">Wyznacz trasę dojazdu</a>
               </div>
               <transition name="fade">
                 <div class="list-modal" v-if="isOpenListModal(index) && isMobile && $store.state.markerDetails">
@@ -88,7 +87,7 @@
                 </div>
               </transition>
             </div>
-            <div v-if="$store.state.listMarkers.length !== 0" class="load-box" @click="loadMorePoints()"><p class="load-button">Załaduj więcej</p></div>
+            <div v-if="$store.state.listMarkers.length !== 0" class="load-box" @click="loadMorePoints()"><p class="load-button" :style="getBackgroundColor">Załaduj więcej</p></div>
           </div>
         </div>
       </transition>
@@ -158,7 +157,7 @@
                         <div class="road">
                           <a :href="linkToRoad" target="_blank">Wyznacz trasę dojazdu</a>
                         </div>
-                        <p id="btn-wybierz" class="popup-button" @click="setPoint($store.state.markerDetails, point)">
+                        <p id="btn-wybierz" class="popup-button" :style="getBackgroundColor" @click="setPoint($store.state.markerDetails, point)">
                           Wybierz {{ $store.state.markerDetails.pickup_type }} i zamknij
                         </p>
                       </div>
@@ -174,7 +173,7 @@
               class-name="markertype"
             >
               <l-icon :icon-anchor="[ $store.state.geolocation.lat, $store.state.geolocation.lng]" :icon-size="[52, 52]" class-name="someExtraClass">
-                <span  class="myLocationSpan"><img src="../../assets/icons/gps24px.svg" class="myLocationIcon" /></span>
+                <span  class="myLocationSpan" :style="getBackgroundColor"><img src="../../assets/icons/gps24px.svg" class="myLocationIcon" /></span>
               </l-icon>
             </l-marker>
           </template>
@@ -253,6 +252,31 @@ export default {
     }
   },
   computed: {
+    getDecorationColor () {
+      if (this.$store.state.customer.options) {
+        return 'text-decoration-color:' + this.$store.state.customer.options.primary_color
+      }
+    },
+    getBorderColor () {
+      if (this.$store.state.customer.options) {
+        return 'background-color:' + this.$store.state.customer.options.primary_color
+      }
+    },
+    getColor () {
+      if (this.$store.state.customer.options) {
+        return 'color:' + this.$store.state.customer.options.primary_color
+      }
+    },
+    getActive () {
+      if (this.$store.state.customer.options) {
+        return this.$store.state.customer.options.primary_color
+      }
+    },
+    getBackgroundColor () {
+      if (this.$store.state.customer.options) {
+        return 'background:' + this.$store.state.customer.options.primary_color
+      }
+    },
     points () {
       if (this.$store.state.markerDetails && this.$store.state.markerDetails.points) {
         return this.$store.state.markerDetails.points
@@ -728,7 +752,7 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  background: $red;
+  background: $main-color; // over
   border-radius: 50%;
   padding: 5px;
   width: 30px;
@@ -757,7 +781,7 @@ export default {
   justify-content: center;
   .load-button {
     margin: 40px 0;
-    background-color: $red;
+    background-color: $main-color; // over
     padding: 10px 15px;
     border-radius: 50px;
     color: $white;
@@ -851,7 +875,7 @@ export default {
     margin: 0;
     padding: 15px;
     border-radius: 5px;
-    color: $red;
+    color: $main-color; // over
     font-weight: 700;
     text-transform: uppercase;
     background-color: $white;
@@ -877,22 +901,11 @@ export default {
     margin: 0;
     padding: 15px;
     border-radius: 5px;
-    color: $red;
+    color: $main-color; // over
     font-weight: 700;
     text-transform: uppercase;
     background-color: $white;
     box-shadow: 5px 6px 9px 4px rgba(0, 0, 0, 0.4);
-  }
-  span {
-    cursor: pointer;
-    margin: 0;
-    border: 2px solid $red;
-    padding: 10px;
-    border-radius: 5px;
-    color: $red;
-    font-weight: 700;
-    text-transform: uppercase;
-    background-color: $white;
   }
 }
 .popup-info {
@@ -933,7 +946,7 @@ export default {
 .popup-action {
   .popup-button {
     margin: 7px 0;
-    background-color: $red;
+    background-color: $main-color; // over
     padding: 6px 8px;
     border-radius: 9px;
     text-transform: uppercase;
@@ -955,7 +968,7 @@ export default {
   .button-action {
     &.active {
       color: $white;
-      background-color: $red;
+      background-color: $main-color; // over
     }
     color: $second-grey;
     background-color: $light-grey;
@@ -995,7 +1008,7 @@ export default {
       .list-button {
         font-size: 14px;
         margin: 5px 0;
-        background-color: $red;
+        background-color: $main-color; // over
         padding: 5px 10px;
         border-radius: 15px;
         color: $white;
@@ -1033,7 +1046,7 @@ export default {
       flex-direction: column;
       .list-link {
         color: $second-grey;
-        text-decoration: underline $red;
+        text-decoration: underline $main-color; // over
       }
     }
     padding: 20px 0;
