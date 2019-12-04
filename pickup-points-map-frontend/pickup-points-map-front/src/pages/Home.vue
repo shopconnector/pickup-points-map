@@ -128,11 +128,13 @@ export default {
 </script>
 
 <style lang="scss" >
+@import '@/assets/_variables.scss';
+
 .beforeFilters{
   top: -100%;
   width: 100%;
   height: 100%;
-  background-color: #FFFFFF;
+  background-color: $white;
 }
 .afterFilters{
   top: 0;
@@ -155,6 +157,8 @@ export default {
 </style>
 
 <style lang="scss" scoped>
+@import '@/assets/_variables.scss';
+
 .main-enter-info {
   position: absolute;
   z-index: 1001;
@@ -174,9 +178,9 @@ export default {
     margin: 0;
     padding: 15px;
     border-radius: 5px;
-    color: #e4405f;
+    color: $red;
     font-weight: 700;
-    background-color: #ffffff;
+    background-color: $white;
     display: flex;
     flex-direction: column;
   }
@@ -261,7 +265,7 @@ export default {
     bottom: -10px;
     right: -11px;
     background-color: #E54C69;
-    color: #FFFFFF;
+    color: $white;
     border-radius: 50%;
     font-size: 14px;
     display: flex;
@@ -274,7 +278,7 @@ export default {
 .mobile-footer {
   .button-footer {
     cursor: pointer;
-    background-color: white;
+    background-color: $white;
     width: 40px;
     height: 40px;
     bottom: 20px;
@@ -293,7 +297,7 @@ export default {
     }
   }
   position: fixed;
-  background-color: white;
+  background-color: $white;
   z-index: 1000;
   left: 0;
   right: 0;
@@ -308,13 +312,12 @@ export default {
 }
 .list-modal-footer{
   position: fixed;
-  background-color: white;
+  background-color: $white;
   z-index: 999;
   left: 0;
   right: 0;
   bottom: 0;
   height: 90px;
-  // box-shadow: 1px -3px 10px 0px #b5b5b5;
   text-align: center;
   background: url('../assets/footer.png');
   background-size: contain;
@@ -324,8 +327,8 @@ export default {
   .footer-btn{
     position: absolute;
     font-size: 14px;
-    color: #FFFFFF;
-    background-color: #E4405F;
+    color: $white;
+    background-color: $red;
     border-radius: 9px;
     margin: 0;
     bottom: 20px;

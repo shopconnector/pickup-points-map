@@ -114,7 +114,7 @@
               @click="getPointDetails(marker.lat, marker.lon, marker.pickup_type)"
               v-on="isMobile ? { click: () => toogleMethod('true') } : {}"
             >
-              <l-icon :icon-anchor="[iconsUrl[marker.pickup_type]]" :icon-size="[52, 52]" class-name="someExtraClass">
+              <l-icon :icon-anchor="[logosUrl[marker.pickup_type]]" :icon-size="[52, 52]" class-name="someExtraClass">
                 <img :src="pinsUrl[marker.pickup_type]" width="52" height="52" />
               </l-icon>
               <transition name="bounce">
@@ -231,15 +231,6 @@ export default {
         'In Post': require('../../assets/popup-icons/paczkomaty-16x16.png'),
         'Poczta Polska': require('../../assets/popup-icons/poczta-16x16.png'),
         'Paczka w RUCHu': require('../../assets/popup-icons/ruch16x16.png')
-      },
-      iconsUrl: {
-        Żabka: require('../../assets/logos/żabka.png'),
-        'DPD Pickup': require('../../assets/logos/dpd-pickup.png'),
-        'Fresh Market': require('../../assets/logos/freshmarket.png'),
-        'In Post': require('../../assets/logos/inpost.png'),
-        'Poczta Polska': require('../../assets/logos/pocztapolska.png'),
-        'Paczka w RUCHu': require('../../assets/logos/paczka_w_ruchu.jpg'),
-        Orlen: require('../../assets/logos/orlen.png')
       },
       logosUrl: {
         Żabka: require('../../assets/logos/żabka.png'),
@@ -731,11 +722,13 @@ export default {
 </style>
 
 <style lang="scss" scoped>
+@import '@/assets/_variables.scss';
+
 .myLocationSpan {
   display: flex;
   justify-content: center;
   align-items: center;
-  background: #dd2c54;
+  background: $red;
   border-radius: 50%;
   padding: 5px;
   width: 30px;
@@ -764,10 +757,10 @@ export default {
   justify-content: center;
   .load-button {
     margin: 40px 0;
-    background-color: #e4405f;
+    background-color: $red;
     padding: 10px 15px;
     border-radius: 50px;
-    color: white;
+    color: $white;
     display: inline;
     text-align: center;
     cursor: pointer;
@@ -858,10 +851,10 @@ export default {
     margin: 0;
     padding: 15px;
     border-radius: 5px;
-    color: #e4405f;
+    color: $red;
     font-weight: 700;
     text-transform: uppercase;
-    background-color: #ffffff;
+    background-color: $white;
     display: flex;
     flex-direction: column;
     span {
@@ -884,22 +877,22 @@ export default {
     margin: 0;
     padding: 15px;
     border-radius: 5px;
-    color: #e4405f;
+    color: $red;
     font-weight: 700;
     text-transform: uppercase;
-    background-color: #ffffff;
+    background-color: $white;
     box-shadow: 5px 6px 9px 4px rgba(0, 0, 0, 0.4);
   }
   span {
     cursor: pointer;
     margin: 0;
-    border: 2px solid #e4405f;
+    border: 2px solid $red;
     padding: 10px;
     border-radius: 5px;
-    color: #e4405f;
+    color: $red;
     font-weight: 700;
     text-transform: uppercase;
-    background-color: #ffffff;
+    background-color: $white;
   }
 }
 .popup-info {
@@ -940,11 +933,11 @@ export default {
 .popup-action {
   .popup-button {
     margin: 7px 0;
-    background-color: #e4405f;
+    background-color: $red;
     padding: 6px 8px;
     border-radius: 9px;
     text-transform: uppercase;
-    color: white;
+    color: $white;
     display: inline;
     text-align: center;
     font-weight: 700;
@@ -961,11 +954,11 @@ export default {
 .type-actions {
   .button-action {
     &.active {
-      color: white;
-      background-color: #dd2c54;
+      color: $white;
+      background-color: $red;
     }
-    color: #4a4a4a;
-    background-color: #e5e5e5;
+    color: $second-grey;
+    background-color: $light-grey;
     padding: 8px 40px 10px 40px;
     margin: 0;
     cursor: pointer;
@@ -1002,10 +995,10 @@ export default {
       .list-button {
         font-size: 14px;
         margin: 5px 0;
-        background-color: #e4405f;
+        background-color: $red;
         padding: 5px 10px;
         border-radius: 15px;
-        color: white;
+        color: $white;
         display: inline;
         text-align: center;
         cursor: pointer;
@@ -1039,8 +1032,8 @@ export default {
       display: flex;
       flex-direction: column;
       .list-link {
-        color: #4a4a4a;
-        text-decoration: underline #e4405f;
+        color: $second-grey;
+        text-decoration: underline $red;
       }
     }
     padding: 20px 0;
@@ -1184,10 +1177,10 @@ export default {
       border: 0;
     }
     .list-row-modal {
-      background: #ffffff;
+      background: $white;
     }
     .list-row {
-      border-bottom: 1.5px solid #e5e5e5;
+      border-bottom: 1.5px solid $light-grey;
       &:last-child {
         border-bottom: none;
         margin-bottom: 15px;

@@ -10,8 +10,9 @@ export default {
 }
 </script>
 
-<style>
+<style lang='scss'>
 @import url('https://use.typekit.net/ewq5ack.css');
+@import '@/assets/_variables.scss';
 
 body{
   margin: 0;
@@ -22,11 +23,11 @@ body{
   /* overflow-x:hidden; */
 }
 #app {
-  font-family: 'sofia-pro', sans-serif;
+  font-family: $main-font;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  color: #303030;
+  color: $color-black;
 }
 input {
   outline:none;
@@ -36,18 +37,13 @@ input {
   width: 4px;
   height: 3px;
 }
-/* Track */
-::-webkit-scrollbar-track {
-  /* background: #ffffff; */
-  /* background: #e0e0e0; */
-}
 /* Handle */
 ::-webkit-scrollbar-thumb {
-  background: #E54C69;
+  background: $red;
 }
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
-  background: #E54C69;
+  background: $red;
 }
 .visible-xs {
   display: none;

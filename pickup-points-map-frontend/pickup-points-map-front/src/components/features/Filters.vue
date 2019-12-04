@@ -187,6 +187,8 @@ export default {
 </script>
 
 <style lang='scss' scoped>
+@import '@/assets/_variables.scss';
+
 .test-vh {
   height: 100%;
 }
@@ -194,7 +196,7 @@ export default {
   margin: 0;
 }
 .mobile-filters-footer{
-  background-color: white;
+  background-color: $white;
   height: 20px;
   position: absolute;
   bottom: 25px;
@@ -212,15 +214,15 @@ export default {
     margin: 0;
     p {
       width: fit-content;
-      background: rgb(229, 229, 229);
-      color: rgb(74, 74, 74);
+      background: $light-grey;
+      color: $color-black;
       margin: 0px auto;
       padding: 5px 10px;
       border-radius: 9px;
       cursor: pointer;
       &:hover{
-        background-color: #DD2C54;
-        color: #FFF;
+        background-color: $red;
+        color: $white;
       }
     }
   }
@@ -231,8 +233,8 @@ export default {
     p {
       width: fit-content;
       margin: 0 auto;
-      background: #DD2C54;
-      color: #fff;
+      background: $red;
+      color: $white;
       border-radius: 9px;
       padding: 5px 10px;
       cursor: pointer;
@@ -253,34 +255,33 @@ export default {
   font-weight: 900;
 }
 .titleV2{
-  color: #000000;
   margin: 0;
 }
 .subtitle{
   margin: 0 2% 0 0;
   font-size: 18px;
   cursor: pointer;
-  background-color: #E5E5E5;
+  background-color: $light-grey;
   padding: 4px 8px;
   border-radius: 12px;
   &:hover{
-    background-color: #DD2C54;
+    background-color: $red;
   }
 }
 .subtitleV2{
-  background-color: #E5E5E5;
+  background-color: $light-grey;
   padding: 0 8px;
   margin: 5px 0;
   border-radius: 12px;
   font-size: 16px;
-  color:#4A4A4A;
+  color: $second-grey;
   display: flex;
   align-items: center;
   font-size: 13px;
   cursor: pointer;
   &:hover{
-    background-color: #DD2C54;
-    color: #FFF;
+    background-color: $active-blue;
+    color: $white;
   }
 }
 .clear{
@@ -327,13 +328,13 @@ export default {
       position: absolute;
       width: 30px;
       height: 30px;
-      background-color:#E5E5E5;
+      background-color: $light-grey;
       border-radius: 3px;
       right: 10px;
    }
  }
   &:checked +.custom-icon:after{
-    background-color: #E54C69;
+    background-color: $red;
   }
 }
 
@@ -346,15 +347,15 @@ export default {
           width: 17px;
           height: 17px;
           right: 15px;
-          border: 3px solid #E4E4E4;
+          border: 3px solid $light-grey;
           border-radius: 50%;
           background-color: transparent;
         }
     }
     &:checked + .custom-icon:after{
-      background-color: #3F87F5;
-      box-shadow: inset 0 0px 3px #FFFFFF, inset 0 0 0 2px #FFFFFF;
-      border-color:  #3F87F5;
+      background-color: $active-blue;
+      box-shadow: inset 0 0px 3px $white, inset 0 0 0 2px $white;
+      border-color: $active-blue;
     }
 }
 .custom-checkbox + .open_late:before{
@@ -398,7 +399,7 @@ export default {
   flex-direction: column;
 }
 .title-supp{
-  font-family: 'sofia-pro', sans-serif;
+  font-family: $main-font;
   font-size: 22px;
   font-weight: 900;
   text-align: left;
@@ -419,7 +420,7 @@ export default {
   position: absolute;
   display: none;
     & + label {
-      font-family: 'sofia-pro', sans-serif;
+      font-family: $main-font;
       font-size: 16px;
       position: relative;
       padding: 0;
@@ -440,16 +441,15 @@ export default {
       width: 30px;
       height: 30px;
       margin: -15px 0 0;
-      box-shadow: inset 0 0px 3px #FFFFFF, inset 0 0  0 7px #E5E5E5;
+      box-shadow: inset 0 0px 3px $white, inset 0 0  0 7px $light-grey;
     }
     &:checked + label:before {
-      box-shadow: inset 0 0 0 #FFFFFF, inset 0 0  0 7px #E54C69;
+      box-shadow: inset 0 0 0 $white, inset 0 0  0 7px #E54C69;
   }
 }
 .title-dostawcow{
   text-align: left;
   font-size: 22px;
-  color: #000000;
   font-weight: 900;
   margin: 5px 0;
 }
@@ -482,12 +482,12 @@ export default {
       width: 17px;
       height: 17px;
       margin: -15px 0 0;
-      border: 3px solid #E4E4E4;
+      border: 3px solid $light-grey;
     }
     &:checked + label:before {
-      background-color: #3F87F5;
-      box-shadow: inset 0 0px 3px #FFFFFF, inset 0 0 0 2px #FFFFFF;
-      border-color: #3F87F5;
+      background-color: $active-blue;
+      box-shadow: inset 0 0px 3px $white, inset 0 0 0 2px $white;
+      border-color: $active-blue;
     }
 }
 @media only screen and (max-width: 1000px) {
@@ -529,10 +529,10 @@ export default {
       width: 25px;
       height: 25px;
       top: 60%;
-      box-shadow: inset 0 0px 3px #FFFFFF, inset 0 0  0 6px #E5E5E5;
+      box-shadow: inset 0 0px 3px $white, inset 0 0  0 6px $light-grey;
     }
      &:checked + label:before {
-      box-shadow: inset 0 0 0 #FFFFFF, inset 0 0  0 6px #E54C69;
+      box-shadow: inset 0 0 0 $white, inset 0 0  0 6px #E54C69;
    }
   }
   .title-dostawcow{
@@ -572,12 +572,12 @@ export default {
    & + label:before {
      top: 37px;
      left: -30px;
-     border: 2px solid #E4E4E4;
+     border: 2px solid $light-grey;
    }
    &:checked + label:before{
-     background-color: #E54C69;
-     box-shadow: inset 0 0px 3px #FFFFFF, inset 0 0 0 3px #FFFFFF;
-     border-color: #E54C69;
+     background-color: $red;
+     box-shadow: inset 0 0px 3px $white, inset 0 0 0 3px $white;
+     border-color: $red;
    }
  }
  .select-suppliers-dostawcow{
@@ -599,39 +599,19 @@ export default {
  .custom-checkbox{
    & + .custom-icon{
      width: 100%;
-     color: #000000;
    }
  }
  .custom-checkboxV2{
    & + .custom-icon:after{
-     border: 2px solid #E4E4E4;
+     border: 2px solid $light-grey;
      width: 17px;
      height: 17px;
    }
    &:checked + .custom-icon:after{
-    background-color: #E54C69;
-    box-shadow: inset 0 0px 3px #FFFFFF, inset 0 0 0 3px #FFFFFF;
-    border-color: #E54C69;
+    background-color: $red;
+    box-shadow: inset 0 0px 3px $white, inset 0 0 0 3px $white;
+    border-color: $red;
    }
- }
- .custom-checkbox{
-    & + .custom-icon{
-        &:after{
-          content: '';
-          position: absolute;
-          width: 17px;
-          height: 17px;
-          right: 15px;
-          border: 2px solid #E4E4E4;
-          border-radius: 50%;
-          background-color: transparent;
-        }
-    }
-    &:checked + .custom-icon:after{
-        background-color: #E54C69;
-        box-shadow: inset 0 0px 3px #FFFFFF, inset 0 0 0 3px #FFFFFF;
-        border-color: #E54C69;
-    }
  }
 }
 </style>

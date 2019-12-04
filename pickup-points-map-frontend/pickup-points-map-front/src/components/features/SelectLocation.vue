@@ -313,6 +313,8 @@ export default {
 </script>
 
 <style lang="scss">
+@import '@/assets/_variables.scss';
+
 .beforeLocitModal {
   top: 0;
   opacity: 0;
@@ -330,7 +332,7 @@ export default {
   width: 100%;
   height: 120px;
   margin-top: calc( 100vh - 120px );
-  background-color: white;
+  background-color: $white;
   position:absolute;
 }
 .afterFooterModal {
@@ -354,23 +356,23 @@ export default {
   }
 }
 .active-address-input {
-  background-color: #3F87F5 !important;
-  border: 1px solid #3F87F5 !important;
+  background-color: $active-blue !important;
+  border: 1px solid $active-blue !important;
 }
 .active-address-input input {
-  color: white !important;
+  color: $white !important;
 }
 .input-tag {
  input {
     height: 29px;
     text-align: center;
-    background-color: #E5E5E5;
+    background-color: $light-grey;
     width: 100%;
     padding: 0 35px 0 0;
     border: 0;
     color: black;
     font-size: 16px;
-    font-family: 'sofia-pro', sans-serif;
+    font-family: $main-font;
     @media (max-width: 767px) {
       font-weight: bold;
       border-radius: 5px;
@@ -384,7 +386,7 @@ export default {
 }
 .autosuggest__results-container {
   position: absolute;
-  background-color: white;
+  background-color: $white;
   z-index: 999;
   margin-top: 32px;
   left: 0;
@@ -402,12 +404,14 @@ export default {
   }
 }
 .autosuggest__results-item--highlighted{
-    background-color: #DD2C54;
+    background-color: $red;
 }
 
 </style>
 
 <style lang="scss" scoped>
+@import '@/assets/_variables.scss';
+
 .suggest-box {
   position: relative;
   display: block;
@@ -438,7 +442,7 @@ export default {
   .close-button {
     margin: 0 auto;
     cursor: pointer;
-    background-color: white;
+    background-color: $white;
     width: 40px;
     height: 40px;
     right: 10px;
@@ -509,7 +513,7 @@ export default {
   background-size: cover;
 }
 .title{
-  font-family: 'sofia-pro', sans-serif;
+  font-family: $main-font;
   font-size: 22px;
   font-weight: 900;
   text-align: left;
@@ -531,7 +535,7 @@ export default {
   width: 30%;
   color: #000000;
   font-size: 18px;
-  font-family: 'sofia-pro', sans-serif;
+  font-family: $main-font;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -539,7 +543,7 @@ export default {
   margin: 10px 0;
   cursor: pointer;
   &.active{
-    background-color: #E5E5E5;
+    background-color: $light-grey;
     border-radius: 3px;
   }
   &:before{
@@ -562,13 +566,13 @@ export default {
 .my-locationV2{
   cursor: pointer;
   padding-left: 25px;
-  color: #989898;
+  color: $placeholder-grey;
   font-size: 14px;
-  font-family: 'sofia-pro', sans-serif;
+  font-family: $main-font;
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #E4E4E4;
+  background-color: $light-grey;
   height: 35px;
   border-radius: 9px;
   white-space: nowrap;
@@ -585,20 +589,20 @@ export default {
     filter: opacity(0.4)
   }
   &.active{
-    background-color: #3F87F5;
-    color:#FFFFFF;
+    background-color: $active-blue;
+    color: $white;
     cursor: pointer;
   }
 }
 .input-tag{
   position: relative;
   display: flex;
-  background-color: #E5E5E5;
-  border: 3px solid #E5E5E5;
+  background-color: $light-grey;
+  border: 3px solid $light-grey;
   border-radius: 3px;
   margin: 9px 0;
   padding: 0px;
-  font-family: 'sofia-pro', sans-serif;
+  font-family: $main-font;
   color: #303030;
   @media (max-width: 767px) {
     width: auto;
@@ -609,7 +613,7 @@ export default {
 .input-modal-button {
   &.active {
     background-color: #e54c69;
-    color: white;
+    color: $white;
   }
   margin: 10px 0 0 0;
   padding: 10px 0;
@@ -619,16 +623,16 @@ export default {
   font-size: 16px;
   font-weight: bold;
   border-radius: 5px;
-  background-color: #e5e5e5;
+  background-color: $light-grey;
   color: #AAAAAA;
-  font-family: 'sofia-pro', sans-serif;
+  font-family: $main-font;
   @media (max-width: 767px) {
   }
 }
 .input-tagV2{
   display: flex;
   flex: 0 0 65%;
-  border: 3px solid #E5E5E5;
+  border: 3px solid $light-grey;
   background-color: transparent;
   border-radius: 9px;
   margin: 14px 0;
@@ -641,7 +645,7 @@ export default {
 input::placeholder{
  color: #AAAAAA;
  font-size: 16px;
- font-family: 'sofia-pro', sans-serif;
+ font-family: $main-font;
 }
 
 @media only screen and (max-width: 1000px) {
