@@ -116,6 +116,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import '@/assets/_variables.scss';
+
 .day-p {
   padding-left: 3px;
 }
@@ -123,7 +125,7 @@ export default {
   scroll-snap-type: y mandatory;
   overflow-y: scroll;
   max-height: 345px;
-  background: white;
+  background: $white;
   .mobile-map-header{
     display: flex;
     justify-content: center;
@@ -250,8 +252,8 @@ export default {
    justify-content: center;
    padding-bottom: 15px;
    .mobile-map-btn-close{
-    color: white;
-    background: #E4405F;
+    color: $white;
+    background: $red;
     display: flex;
     width: fit-content;
     height: 40px;
