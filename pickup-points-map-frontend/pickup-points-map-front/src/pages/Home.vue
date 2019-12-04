@@ -79,8 +79,7 @@ export default {
     }
   },
   created () {
-    // window.addEventListener('message', this.filterApply)
-    this.filterApply()
+    window.addEventListener('message', this.filterApply)
   },
   destroyed () {
     window.removeEventListener('message', this.filterApply)
