@@ -52,7 +52,7 @@
     <vue-over-body v-if="isMobile" :dim="false" :open="IsFooterModalOpen" before="beforeFooterModal" after="afterFooterModal" :transition="0.3">
       <div class="footer-box">
         <h3 class="my-location" @click="currentPos()">Użyj mojej lokalizacji</h3>
-        <div class='input-modal-button' :class="{ 'active' : suggestionText }" @click="openLocitModal()">
+        <div class='input-modal-button' :class="{ 'active' : suggestionText }" :style="{ backgroundColor: suggestionText ? getActive : '' }" @click="openLocitModal()">
           <template v-if="suggestionText">{{ suggestionText.city + ', ' + suggestionText.prefix + ' ' + suggestionText.street + ' ' + suggestionText.building }}</template>
           <template v-else>Zacznij wpisywać adres</template>
         </div>
@@ -116,6 +116,11 @@ export default {
     }
   },
   computed: {
+    getActive () {
+      if (this.$store.state.customer.options) {
+        return this.$store.state.customer.options.primary_color
+      }
+    },
     isWidgetVersion () {
       return this.$store.state.customer.theme
     },
@@ -404,7 +409,8 @@ export default {
   }
 }
 .autosuggest__results-item--highlighted{
-    background-color: $red;
+    background-color: $active-blue;
+    color: $white;
 }
 
 </style>
@@ -513,7 +519,6 @@ export default {
   background-size: cover;
 }
 .title{
-  font-family: $main-font;
   font-size: 22px;
   font-weight: 900;
   text-align: left;
@@ -535,7 +540,6 @@ export default {
   width: 30%;
   color: #000000;
   font-size: 18px;
-  font-family: $main-font;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -568,7 +572,6 @@ export default {
   padding-left: 25px;
   color: $placeholder-grey;
   font-size: 14px;
-  font-family: $main-font;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -602,7 +605,6 @@ export default {
   border-radius: 3px;
   margin: 9px 0;
   padding: 0px;
-  font-family: $main-font;
   color: #303030;
   @media (max-width: 767px) {
     width: auto;
@@ -625,7 +627,6 @@ export default {
   border-radius: 5px;
   background-color: $light-grey;
   color: #AAAAAA;
-  font-family: $main-font;
   @media (max-width: 767px) {
   }
 }
@@ -645,7 +646,6 @@ export default {
 input::placeholder{
  color: #AAAAAA;
  font-size: 16px;
- font-family: $main-font;
 }
 
 @media only screen and (max-width: 1000px) {

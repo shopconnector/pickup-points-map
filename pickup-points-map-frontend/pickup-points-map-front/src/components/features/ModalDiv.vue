@@ -36,7 +36,7 @@
         <p v-if="parentData.points && point.features.cash_on_delivery" class="additional-info"><span class="mobile-map-icon-padding"><i class="icon pobraniem"/></span> - odbiór za pobraniem</p>
       </div>
       <div class="mobile-map-footer" :key="'btn-' + index">
-        <p class="mobile-map-btn-close" @click="closeModal(); setPoint(parentData, point);">Wybierz "{{ parentData.pickup_type }}" i zamknij</p>
+        <p class="mobile-map-btn-close" :style="getBackgroundColor" @click="closeModal(); setPoint(parentData, point);">Wybierz "{{ parentData.pickup_type }}" i zamknij</p>
       </div>
       </template>
     </div>
@@ -77,6 +77,11 @@ export default {
     }
   },
   computed: {
+    getBackgroundColor () {
+      if (this.$store.state.customer.options) {
+        return 'background:' + this.$store.state.customer.options.primary_color
+      }
+    },
     parentData () {
       return this.$store.state.markerDetails
     },
@@ -253,7 +258,7 @@ export default {
    padding-bottom: 15px;
    .mobile-map-btn-close{
     color: $white;
-    background: $red;
+    background: $main-color; // over
     display: flex;
     width: fit-content;
     height: 40px;

@@ -39,11 +39,11 @@ input {
 }
 /* Handle */
 ::-webkit-scrollbar-thumb {
-  background: $red;
+  background: $placeholder-grey;
 }
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
-  background: $red;
+  background: $placeholder-grey;
 }
 .visible-xs {
   display: none;

@@ -40,7 +40,7 @@
           <p class="m0" @click="clearAPIFilter()" v-show="filters.features.length || filters.checkedSuppliers.length" >Wyczyść filtry</p>
         </div>
         <div class="zastosuj">
-          <p class="m0" @click="closeFilterMobile">Zastosuj filtry</p>
+          <p class="m0" @click="closeFilterMobile" :style="getBackgroundColor">Zastosuj filtry</p>
         </div>
       </div>
     </div>
@@ -84,6 +84,16 @@ export default {
     }
   },
   computed: {
+    getColor () {
+      if (this.$store.state.customer.options) {
+        return 'color:' + this.$store.state.customer.options.primary_color
+      }
+    },
+    getBackgroundColor () {
+      if (this.$store.state.customer.options) {
+        return 'background:' + this.$store.state.customer.options.primary_color
+      }
+    },
     customerFeatures () {
       if (this.$store.state.customer.providers) {
         let finalFeatures = Array.from(new Set(Object.values(this.$store.state.customer.providers)
@@ -220,10 +230,6 @@ export default {
       padding: 5px 10px;
       border-radius: 9px;
       cursor: pointer;
-      &:hover{
-        background-color: $red;
-        color: $white;
-      }
     }
   }
   .zastosuj{
@@ -233,7 +239,7 @@ export default {
     p {
       width: fit-content;
       margin: 0 auto;
-      background: $red;
+      background: $main-color; // over
       color: $white;
       border-radius: 9px;
       padding: 5px 10px;
@@ -265,7 +271,7 @@ export default {
   padding: 4px 8px;
   border-radius: 12px;
   &:hover{
-    background-color: $red;
+    background-color: $active-blue;
   }
 }
 .subtitleV2{
@@ -334,7 +340,7 @@ export default {
    }
  }
   &:checked +.custom-icon:after{
-    background-color: $red;
+    background-color: $active-blue;
   }
 }
 
@@ -399,7 +405,6 @@ export default {
   flex-direction: column;
 }
 .title-supp{
-  font-family: $main-font;
   font-size: 22px;
   font-weight: 900;
   text-align: left;
@@ -420,7 +425,6 @@ export default {
   position: absolute;
   display: none;
     & + label {
-      font-family: $main-font;
       font-size: 16px;
       position: relative;
       padding: 0;
@@ -575,9 +579,9 @@ export default {
      border: 2px solid $light-grey;
    }
    &:checked + label:before{
-     background-color: $red;
+     background-color: $active-blue;
      box-shadow: inset 0 0px 3px $white, inset 0 0 0 3px $white;
-     border-color: $red;
+     border-color: $active-blue;
    }
  }
  .select-suppliers-dostawcow{
@@ -608,9 +612,9 @@ export default {
      height: 17px;
    }
    &:checked + .custom-icon:after{
-    background-color: $red;
+    background-color: $active-blue;
     box-shadow: inset 0 0px 3px $white, inset 0 0 0 3px $white;
-    border-color: $red;
+    border-color: $active-blue;
    }
  }
 }

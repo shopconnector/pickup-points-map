@@ -1,11 +1,14 @@
 <template>
   <div>
     <div v-if="!$store.state.keyError" class="main-enter-info">
-      <p class="error-text">
+      <p :style="getColor" class="error-text">
         Dostęp zablokowany dla niezautoryzowanych użytkowników.
         <br>Jeśli interesuje cię użycie narzędzia PickupPoints, odwiedź
         <a href="https://www.punktyodbiorupaczek.pl" target="_blank">punktyodbiorupaczek.pl</a>
       </p>
+    </div>
+    <div v-if="loader" class="main-loader">
+      <img src="../assets/loader.gif" alt="loader" />
     </div>
     <div v-else class="widget-view">
       <div class="header-view" v-if="isWidgetVersion">
@@ -27,7 +30,7 @@
           <i class="button-footer" @click="openFooterModal"/>
         </div>
         <div class="list-modal-footer" v-if="showListFooter && isMobile">
-          <p class="footer-btn" @click="setPoint($store.state.markerDetails)">WYBIERZ TEN PUNKT</p>
+          <p class="footer-btn" :style="getBackgroundColor" @click="setPoint($store.state.markerDetails)">WYBIERZ TEN PUNKT</p>
         </div>
       </div>
       <div class="features-div" :class="{ 'first' : !isWidgetVersion }">
@@ -71,16 +74,26 @@ export default {
         zip: ''
       },
       innerAddress: '',
-      innerFilter: null
+      innerFilter: null,
+      loader: true
     }
   },
   created () {
-    window.addEventListener('message', this.filterApply)
+    // window.addEventListener('message', this.filterApply)
+    this.filterApply()
   },
   destroyed () {
     window.removeEventListener('message', this.filterApply)
   },
+  mounted () {
+    this.killLoader()
+  },
   methods: {
+    killLoader () {
+      setTimeout(() => {
+        this.loader = false
+      }, 1500)
+    },
     filterApply: function (event) {
       if (event.data.content && event.data.content.hasOwnProperty('key')) {
         this.innerFilter = event.data.content.filter
@@ -114,6 +127,16 @@ export default {
     }
   },
   computed: {
+    getColor () {
+      if (this.$store.state.customer.options) {
+        return 'color:' + this.$store.state.customer.options.primary_color
+      }
+    },
+    getBackgroundColor () {
+      if (this.$store.state.customer.options) {
+        return 'background:' + this.$store.state.customer.options.primary_color
+      }
+    },
     filtersCount () {
       return this.$store.state.filtersCount
     },
@@ -130,6 +153,17 @@ export default {
 <style lang="scss" >
 @import '@/assets/_variables.scss';
 
+.main-loader {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  top: 0;
+  z-index: 2000;
+  justify-content: center;
+  display: flex;
+  align-items: center;
+}
 .beforeFilters{
   top: -100%;
   width: 100%;
@@ -178,7 +212,7 @@ export default {
     margin: 0;
     padding: 15px;
     border-radius: 5px;
-    color: $red;
+    color: $main-color; // over
     font-weight: 700;
     background-color: $white;
     display: flex;
@@ -264,7 +298,7 @@ export default {
     position: absolute;
     bottom: -10px;
     right: -11px;
-    background-color: #E54C69;
+    background-color: $placeholder-grey;
     color: $white;
     border-radius: 50%;
     font-size: 14px;
@@ -284,6 +318,7 @@ export default {
     bottom: 20px;
     left: calc( 50% - 20px);
     position: absolute;
+    filter: grayscale(70%);
     background: url('../assets/icons/Group-12.png') 0 0 no-repeat;
     background-size: cover;
     @media (max-width: 414px ) {
@@ -328,7 +363,7 @@ export default {
     position: absolute;
     font-size: 14px;
     color: $white;
-    background-color: $red;
+    background-color: $main-color; // over
     border-radius: 9px;
     margin: 0;
     bottom: 20px;
