@@ -56,6 +56,7 @@
           <template v-if="suggestionText">{{ suggestionText.city + ', ' + suggestionText.prefix + ' ' + suggestionText.street + ' ' + suggestionText.building }}</template>
           <template v-else>Zacznij wpisywać adres</template>
         </div>
+        <p :style="getBtnStyle" class='toAppBtn' @click="closeWidget()">Wróc do sklepu</p>
         <!-- <div class='input-modal-button'>Wpisz kod odbioru</div> -->
       </div>
     </vue-over-body>
@@ -118,6 +119,12 @@ export default {
     getActive () {
       if (this.$store.state.customer.options) {
         return this.$store.state.customer.options.primary_color
+      }
+    },
+    getBtnStyle () {
+      if (this.$store.state.customer.options) {
+        let style = 'border-color:' + this.$store.state.customer.options.primary_color + ';' + 'color:' + this.$store.state.customer.options.primary_color
+        return style
       }
     },
     isWidgetVersion () {
@@ -286,6 +293,12 @@ export default {
         })
       }
     },
+    closeWidget () {
+      this.sendMessage({})
+    },
+    sendMessage (point) {
+      window.parent.postMessage(point, '*')
+    },
     logKodResult (item) {
       this.closeLocitModal()
       if (item) {
@@ -330,8 +343,15 @@ export default {
 <style lang="scss">
 @import '@/assets/_variables.scss';
 
+.toAppBtn {
+  margin: 10px 0;
+  color: $main-color;
+  border: 1px solid $main-color;
+  padding: 5px 12px;
+  border-radius: 5px;
+}
 .active-modal-footer {
-  top: calc(100% - 120px);
+  top: calc(100% - 150px);
 }
 .beforeLocitModal {
   top: 0;
@@ -348,8 +368,8 @@ export default {
 .beforeFooterModal {
   bottom: -100vh;
   width: 100%;
-  height: 120px;
-  margin-top: calc( 100vh - 120px );
+  height: 150px;
+  margin-top: calc( 100vh - 150px );
   background-color: $white;
   position:absolute;
 }
@@ -359,7 +379,6 @@ export default {
 .over_body_mask {
  z-index: 1001 !important;
  overflow-y: hidden !important;
- // top: calc(100% - 120px);
 }
 .input-tag ul {
   list-style-type: none;

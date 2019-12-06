@@ -263,11 +263,6 @@ export default {
         return 'text-decoration-color:' + this.$store.state.customer.options.primary_color
       }
     },
-    getBorderColor () {
-      if (this.$store.state.customer.options) {
-        return 'background-color:' + this.$store.state.customer.options.primary_color
-      }
-    },
     getColor () {
       if (this.$store.state.customer.options) {
         return 'color:' + this.$store.state.customer.options.primary_color
