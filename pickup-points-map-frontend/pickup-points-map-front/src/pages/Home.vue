@@ -150,6 +150,8 @@ export default {
     getFill () {
       if (this.$store.state.customer.options) {
         return this.$store.state.customer.options.primary_color
+      } else {
+        return '#FFFFFF'
       }
     },
     getColor () {
