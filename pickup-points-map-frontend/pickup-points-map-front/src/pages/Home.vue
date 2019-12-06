@@ -1,14 +1,14 @@
 <template>
   <div>
+    <div v-show="isLoader" class="main-loader">
+      <img src="../assets/loader.gif" alt="loader" />
+    </div>
     <div v-if="!$store.state.keyError" class="main-enter-info">
       <p :style="getColor" class="error-text">
         Dostęp zablokowany dla niezautoryzowanych użytkowników.
         <br>Jeśli interesuje cię użycie narzędzia PickupPoints, odwiedź
         <a href="https://www.punktyodbiorupaczek.pl" target="_blank">punktyodbiorupaczek.pl</a>
       </p>
-    </div>
-    <div v-if="isLoader" class="main-loader">
-      <img src="../assets/loader.gif" alt="loader" />
     </div>
     <div v-else class="widget-view">
       <div class="header-view" v-if="isWidgetVersion">
@@ -155,10 +155,11 @@ export default {
   right: 0;
   bottom: 0;
   top: 0;
-  z-index: 2000;
+  z-index: 3000;
   justify-content: center;
   display: flex;
   align-items: center;
+  background-color: $white;
 }
 .beforeFilters{
   top: -100%;
