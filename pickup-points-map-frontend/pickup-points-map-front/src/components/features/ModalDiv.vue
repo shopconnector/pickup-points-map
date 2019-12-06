@@ -143,13 +143,13 @@ export default {
       top: 10px;
     }
     .close-icon{
-      width: 22px;
-      height: 22px;
       display: flex;
-      cursor: pointer;
-      filter: grayscale(0.5) opacity(0.8);
-      background: url('../../assets/icons/clear.png') 0 0 no-repeat;
+      filter: contrast(30%);
+      margin: 0;
       background-size: cover;
+      background: url('../../assets/icons/clear.png') 0 0 no-repeat;
+      width: 30px;
+      height: 30px;
     }
   }
   .mobile-map-row{
