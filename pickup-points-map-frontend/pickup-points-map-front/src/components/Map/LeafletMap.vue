@@ -22,9 +22,9 @@
           <span class="mt10">Uwaga: Lokalizacja dla tej domeny jest zablokowana. <br />Możesz ponownie włączyć w ustawieniach przeglądarki.</span>
         </p>
       </div>
-      <div v-else-if="$store.state.pointMarkers && !$store.state.pointMarkers.length && $store.state.radiusOfVisibily === 1" class="first-enter-info">
+      <!-- <div v-else-if="$store.state.pointMarkers && !$store.state.pointMarkers.length && $store.state.radiusOfVisibily === 1" class="first-enter-info">
         <p :style="getColor">Wybierz adres/lokalizację aby<br />zobaczyć najbliższe punkty odbioru</p>
-      </div>
+      </div> -->
       <div
         v-else-if="$store.state.status === 'error, points couldnt be loaded' || $store.state.status === 'error, list points couldnt be loaded'"
         class="first-enter-info"
