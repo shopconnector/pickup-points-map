@@ -346,9 +346,10 @@ export default {
 .toAppBtn {
   margin: 10px 0;
   color: $main-color;
-  border: 1px solid $main-color;
-  padding: 5px 12px;
+  border: 2px solid $main-color;
+  padding: 5px 0;
   border-radius: 5px;
+  width: calc(100% - 4px)
 }
 .active-modal-footer {
   top: calc(100% - 150px);
