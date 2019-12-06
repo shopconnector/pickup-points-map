@@ -49,7 +49,7 @@
         <span class="span-location" :class="{'span-locationV2' : isWidgetVersion}" @click="clearKodObioru()"><i class="clear-input"/></span>
         </div> -->
     </div>
-    <vue-over-body v-if="isMobile" :dim="false" :open="IsFooterModalOpen" before="beforeFooterModal" after="afterFooterModal" :transition="0.3">
+    <vue-over-body v-if="isMobile" :dim="false" class="active-modal-footer" :open="IsFooterModalOpen" before="beforeFooterModal" after="afterFooterModal" :transition="0.3">
       <div class="footer-box">
         <h3 class="my-location" @click="currentPos()">Użyj mojej lokalizacji</h3>
         <div class='input-modal-button' :class="{ 'active' : suggestionText }" :style="{ backgroundColor: suggestionText ? getActive : '' }" @click="openLocitModal()">
@@ -107,7 +107,6 @@ export default {
       locitSuggestions: [],
       placeHolder: 'Wpisz adres',
       placeHolderCode: 'Podaj kod odboiru',
-      filterApplyCount: 0,
       selectedSuggestion: null,
       forAnimation: {
         lat: 0,
@@ -138,16 +137,28 @@ export default {
     },
     autocompleteList () {
       return this.$store.state.autocompleteList
+    },
+    zoomOrCenterUpdate () {
+      return [
+        this.$store.state.zoom,
+        this.$store.state.lat,
+        this.$store.state.lng
+      ].join()
     }
   },
   watch: {
     geoSet: {
       handler () {
         if (this.$store.state.geolocation.error.code !== 1) {
-          this.$store.commit('updatePosition', [{ lat: this.$store.state.geolocation.lat, lng: this.$store.state.geolocation.lng, zoom: 16 }])
+          this.$store.commit('updatePosition', [{ lat: this.$store.state.geolocation.lat, lng: this.$store.state.geolocation.lng, zoom: 15 }])
         }
       },
       deep: true
+    },
+    zoomOrCenterUpdate: {
+      handler () {
+        this.closeFooterModal()
+      }
     },
     innerAddress: {
       deep: true,
@@ -155,19 +166,18 @@ export default {
       handler () {
         if (this.innerAddress) {
           this.locitAddress = this.innerAddress
-          if (this.filterApplyCount === 0) {
-            this.filterApplyCount += 1
-            return this.$http.post('https://api.locit.dev.beecommerce.pl/address_hygiene_single_string', { address: this.locitAddress, format: 'json', charset: 'UTF-8' }).then(res => {
-              const locitOnce = JSON.parse(res.bodyText)
-              this.forAnimation.lat = locitOnce.data.y
-              this.forAnimation.lng = locitOnce.data.x
-              this.selectedSuggestion = { x: locitOnce.data.x, y: locitOnce.data.y }
-              this.$store.commit('updateLinkToRoad', { x: locitOnce.data.y, y: locitOnce.data.x })
-              this.$store.commit('updatePosition', [{ lat: locitOnce.data.y, lng: locitOnce.data.x, zoom: 16 }])
-            }).catch(err => {
-              console.log(err)
-            })
-          }
+          return this.$http.post('https://api.locit.dev.beecommerce.pl/address_hygiene_single_string', { address: this.locitAddress, format: 'json', charset: 'UTF-8' }).then(res => {
+            const locitOnce = JSON.parse(res.bodyText)
+            this.forAnimation.lat = locitOnce.data.y
+            this.forAnimation.lng = locitOnce.data.x
+            this.selectedSuggestion = { x: locitOnce.data.x, y: locitOnce.data.y }
+            this.$store.commit('updateLinkToRoad', { x: locitOnce.data.y, y: locitOnce.data.x })
+            this.$store.commit('updatePosition', [{ lat: locitOnce.data.y, lng: locitOnce.data.x, zoom: 15 }])
+            this.$store.commit('destroyLoader')
+          }).catch(err => {
+            this.$store.commit('destroyLoader')
+            console.log(err)
+          })
         }
       }
     }
@@ -207,7 +217,7 @@ export default {
     },
     selectedLocation (value) {
       if (value) {
-        this.$store.commit('updatePosition', [{ lat: Number(value.y), lng: Number(value.x), zoom: 16 }])
+        this.$store.commit('updatePosition', [{ lat: Number(value.y), lng: Number(value.x), zoom: 15 }])
         this.$store.commit('updateLinkToRoad', { x: value.y, y: value.x })
         this.$store.commit('updateStateGeo')
         // this.$store.commit('updateLocitAddress', '')
@@ -243,7 +253,7 @@ export default {
         this.suggestionText = suggestion.item
         this.forAnimation.lat = suggestion.item.y
         this.forAnimation.lng = suggestion.item.x
-        this.$store.commit('updatePosition', [{ lat: Number(suggestion.item.y), lng: Number(suggestion.item.x), zoom: 16 }])
+        this.$store.commit('updatePosition', [{ lat: Number(suggestion.item.y), lng: Number(suggestion.item.x), zoom: 15 }])
         this.$store.commit('updateLocitAddress', this.suggestionText)
         this.$store.commit('updateStateGeo')
         this.$store.commit('updateLinkToRoad', {x: 0, y: 0})
@@ -320,6 +330,9 @@ export default {
 <style lang="scss">
 @import '@/assets/_variables.scss';
 
+.active-modal-footer {
+  top: calc(100% - 120px);
+}
 .beforeLocitModal {
   top: 0;
   opacity: 0;
@@ -346,6 +359,7 @@ export default {
 .over_body_mask {
  z-index: 1001 !important;
  overflow-y: hidden !important;
+ // top: calc(100% - 120px);
 }
 .input-tag ul {
   list-style-type: none;

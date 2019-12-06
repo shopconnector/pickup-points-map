@@ -7,7 +7,7 @@
         <a href="https://www.punktyodbiorupaczek.pl" target="_blank">punktyodbiorupaczek.pl</a>
       </p>
     </div>
-    <div v-if="loader" class="main-loader">
+    <div v-if="isLoader" class="main-loader">
       <img src="../assets/loader.gif" alt="loader" />
     </div>
     <div v-else class="widget-view">
@@ -80,19 +80,12 @@ export default {
   },
   created () {
     window.addEventListener('message', this.filterApply)
+    this.$store.commit('createLoader')
   },
   destroyed () {
     window.removeEventListener('message', this.filterApply)
   },
-  mounted () {
-    this.killLoader()
-  },
   methods: {
-    killLoader () {
-      setTimeout(() => {
-        this.loader = false
-      }, 1500)
-    },
     filterApply: function (event) {
       if (event.data.content && event.data.content.hasOwnProperty('key')) {
         this.innerFilter = event.data.content.filter
@@ -110,6 +103,7 @@ export default {
       if (this.$store.state.toogleModal === true) {
         EventBus.$emit('toogleMethodBus', false)
       }
+      this.$store.commit('closeFooterModal')
       this.$store.commit('openFilterMobile')
       this.$store.commit('closeListFooter')
     },
@@ -126,6 +120,9 @@ export default {
     }
   },
   computed: {
+    isLoader () {
+      return this.$store.state.appLoader
+    },
     getColor () {
       if (this.$store.state.customer.options) {
         return 'color:' + this.$store.state.customer.options.primary_color
@@ -278,17 +275,17 @@ export default {
   left: 0;
   right: 0;
   top: 0;
-  height: 70px;
+  height: 60px;
   box-shadow: -1px 3px 10px 0px #b5b5b5;
 }
 .mobile-container{
   display: flex;
   align-items: center;
-  height: 70px;
+  height: 60px;
 }
 .lejek-icon {
   position: relative;
-  margin-left: 20px;
+  margin-left: 10px;
   width: 35px;
   height: 30px;
   background: url(../assets/icons/lejek.png) 0 0 no-repeat;

@@ -15,6 +15,7 @@
         <div class="header">
           <h2 class="title-dostawcow">Wybierz dostawców</h2><p v-if="filters.checkedSuppliers.length > 0 || filters.features.length > 0" :class="isWidgetVersion ? 'subtitle' : 'subtitleV2'" @click="clearAPIFilter()">
             Wyczyść filtry<span :class="isWidgetVersion ? 'clear' : 'clearV2'">X</span></p>
+          <i class="closeFiltersMobile"  @click="closeFilterModal()" v-if="isMobile"/>
         </div>
         <div class="suppliers-menu-dostawcow">
           <div class="select-suppliers-dostawcow" v-for="(supp, index) in customerSuppliers" :key="index">
@@ -173,6 +174,9 @@ export default {
     }
   },
   methods: {
+    closeFilterModal () {
+      this.$store.commit('closeFilterMobile')
+    },
     selectedFilter () {
       this.$store.commit('newStoreFilters', this.filters)
     },
@@ -199,6 +203,18 @@ export default {
 <style lang='scss' scoped>
 @import '@/assets/_variables.scss';
 
+.closeFiltersMobile {
+  margin: 0 auto;
+  cursor: pointer;
+  background-color: $white;
+  width: 40px;
+  height: 40px;
+  right: 10px;
+  top: 10px;
+  position: absolute;
+  background: url('../../assets/icons/clear.png') 0 0 no-repeat;
+  background-size: cover;
+}
 .test-vh {
   height: 100%;
 }
@@ -227,7 +243,7 @@ export default {
       background: $light-grey;
       color: $color-black;
       margin: 0px auto;
-      padding: 5px 10px;
+      padding: 5px 18px;
       border-radius: 9px;
       cursor: pointer;
     }
@@ -242,7 +258,7 @@ export default {
       background: $main-color; // over
       color: $white;
       border-radius: 9px;
-      padding: 5px 10px;
+      padding: 5px 18px;
       cursor: pointer;
     }
   }

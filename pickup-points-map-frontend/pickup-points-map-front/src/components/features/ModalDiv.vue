@@ -3,7 +3,7 @@
     <!-- Modal DIV for mobile map -->
     <div class="mobile-map-modal" v-if="isMobile">
       <div class="mobile-map-header">
-        <p>Wybrany punky</p>
+        <p>Wybrany punkt</p>
         <i class="close-icon close-mobile-map-modal" @click="closeModal()"/>
       </div>
       <template v-for="(point, index) in parentData.points">

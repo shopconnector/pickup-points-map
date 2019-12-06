@@ -20,6 +20,7 @@ export default new Vuex.Store({
     radiusOfVisibily: 1,
     markerDetails: [],
     pointMarkers: [],
+    appLoader: false,
     closestPunktErrors: '',
     // closestPointMarkers: [],
     pageNumber: 1,
@@ -53,6 +54,12 @@ export default new Vuex.Store({
     }
   },
   mutations: {
+    createLoader (state) {
+      state.appLoader = true
+    },
+    destroyLoader (state) {
+      state.appLoader = false
+    },
     updateStateGeo (state) {
       state.geolocation.lat = null
       state.geolocation.lng = null
