@@ -12,6 +12,9 @@
           Lista
         </p>
       </div>
+      <div class="closeWidget">
+        <p class="closeBtn" @click="closeWidget()"></p>
+      </div>
       <div v-if="this.$store.state.geolocation.error.code === 1 && $store.state.pointMarkers && !$store.state.pointMarkers.length" class="first-enter-info">
         <p class="error-text" :style="getColor">
           Wybierz adres/lokalizację aby
@@ -32,7 +35,7 @@
         <p :style="getColor">Powiększ zoom żeby zobaczyć punkty</p>
       </div>
       <div v-else-if="$store.state.closestPunktErrors.length > 0 && $store.state.pointMarkers.length === 10 && !toogleMap" class="error-info">
-        <p class="closest-error" :style="getColor">Nie znaleziono żadnego punktu. Zmniejsz zoom żeby zobaczyć punkty.</p>
+        <p class="closest-error" :style="getColor">ODDAL MAPĘ, ŻEBY POKAZAĆ PUNKTY ODBIORU.</p>
       </div>
       <transition name="fade">
         <div v-if="toogleMap" class="list-box" :class="{ 'listbox-margin-top': isWidgetVersion }">
@@ -104,6 +107,9 @@
         >
           <l-tile-layer :url="url" :attribution="attribution" />
           <template>
+          <div v-if="isMobile" class="locationIconMapBox" @click="currentPos()">
+            <img src="../../assets/icons/gps24px.svg" alt="Select my localization" class="locationIconMap"/>
+          </div>
             <l-marker
               v-for="marker in pointMarkers"
               :key="marker.id"
@@ -181,7 +187,7 @@
       </transition>
     </div>
     <div>
-      <transition :name="isMobile ? 'fade-in-up' : 'bounce'">
+      <transition :name="'fade-in-up'">
         <div class="modal-position" :class="{ 'modal-positionV2': !isWidgetVersion }" v-if="$store.state.toogleModal">
           <ModalDiv @closed="onCloseChild" />
         </div>
@@ -484,6 +490,9 @@ export default {
         return url
       }
     },
+    closeWidget () {
+      this.sendMessage({})
+    },
     setListPoint () {
       let listData = this.$store.state.markerDetails
       this.dataToSend.pickup_type = listData.pickup_type
@@ -577,6 +586,7 @@ export default {
       })
     },
     toogleMapMethod (text) {
+      this.$store.commit('closeFooterModal')
       if (text === 'show') {
         this.toogleMap = false
       } else if (text === 'hide') {
@@ -639,6 +649,14 @@ export default {
     //   }, 100)
     //   console.log('hello', zoom)
     // },
+    currentPos () {
+      this.$vuexGeolocation.getCurrentPosition()
+      this.$store.commit('updateLocitAddress', '')
+      this.$store.commit('updateLinkToRoad', {x: 0, y: 0})
+      if (this.IsFooterModalOpen) {
+        this.closeFooterModal()
+      }
+    },
     toogleMethod (bool, num) {
       this.$store.commit('changeSelectedPoint', num)
       if (bool === 'true') {
@@ -678,10 +696,13 @@ export default {
 .leaflet-popup-content>div {
   padding-right: 10px;
 }
+.leaflet-top {
+  z-index: 999;
+}
 .leaflet-touch .leaflet-bar a {
-  width: 24px;
-  height: 24px;
-  line-height: 25px;
+  width: 35px;
+  height: 35px;
+  line-height: 36px;
 }
 .leaflet-touch .leaflet-control-zoom-in,
 .leaflet-touch .leaflet-control-zoom-out {
@@ -740,7 +761,7 @@ export default {
 }
 @media (max-width: 767px) {
   .leaflet-touch .leaflet-bar {
-    display: none;
+    margin-top: 70px;
   }
 }
 </style>
@@ -748,6 +769,52 @@ export default {
 <style lang="scss" scoped>
 @import '@/assets/_variables.scss';
 
+.locationIconMapBox {
+  position: absolute;
+  z-index: 999;
+  left: 8px;
+  top: 160px;
+  height: 40px;
+  width: 40px;
+  background: white;
+  border: 2px solid rgba(0,0,0,0.2);
+  background-clip: padding-box;
+  box-shadow: 5px 6px 9px 4px rgba(0, 0, 0, 0.4);
+  border-radius: 20px;
+  .locationIconMap {
+    width: 70%;
+    padding: 15%;
+    height: 70%;
+  }
+}
+.closeWidget {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 999;
+  width: 35px;
+  height: 35px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: $white;
+  @media (max-width: 767px) {
+    font-weight: bold;
+    border-radius: 5px;
+    background: transparent;
+    top: 12px;
+    width: 38px;
+  }
+  .closeBtn {
+    filter: contrast(30%);
+    margin: 0;
+    cursor: pointer;
+    background-size: cover;
+    background: url('../../assets/icons/clear.png') 0 0 no-repeat;
+    width: 100%;
+    height: 100%;
+  }
+}
 .myLocationSpan {
   display: flex;
   justify-content: center;
@@ -975,20 +1042,23 @@ export default {
     padding: 8px 40px 10px 40px;
     margin: 0;
     cursor: pointer;
+    @media (max-width: 767px) {
+      padding: 8px 32px 8px 32px;
+    }
   }
   position: absolute;
   z-index: 999;
-  right: 20px;
-  top: 20px;
+  right: 75px;
+  top: 10px;
   background-color: white;
   display: flex;
   border-radius: 15px;
   overflow: hidden;
   @media (max-width: 767px) {
     position: fixed;
-    right: 20px;
+    right: 45px;
     left: auto;
-    top: 15px;
+    top: 12px;
   }
 }
 .box-shadow {
@@ -1150,11 +1220,6 @@ export default {
 // animation end
 @media only screen and (max-width: 1100px) {
   .type-actions {
-    .button-action {
-      font-size: 14px;
-    }
-  }
-  .type-actions-v2 {
     .button-action {
       font-size: 14px;
     }
