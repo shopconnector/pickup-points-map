@@ -64,7 +64,8 @@
                 {{ listMarker.working_hours.join(', ') }}
               </div>
               <div class="list-elem btn-elem">
-                <p class="list-button" :style="getBackgroundColor" @click="getPointListDetails(listMarker.lat, listMarker.lon, listMarker.pickup_point_type, listMarker.id)">Wybierz {{ listMarker.pickup_point_type }} i zamknij</p>
+                <p class="list-button" :style="getBackgroundColor" @click="getPointListDetails(listMarker.lat, listMarker.lon, listMarker.pickup_point_type, listMarker.id)">Wybierz i wróć do zamówienia</p>
+                <!-- Wybierz {{ listMarker.pickup_point_type }} i zamknij -->
                 <a class="list-link" :style="getDecorationColor" :href="linkToRoadMap(listMarker)" target="_blank">Wyznacz trasę dojazdu</a>
               </div>
               <transition name="fade">
@@ -164,7 +165,8 @@
                           <a :href="linkToRoad" target="_blank">Wyznacz trasę dojazdu</a>
                         </div>
                         <p id="btn-wybierz" class="popup-button" :style="getBackgroundColor" @click="setPoint($store.state.markerDetails, point)">
-                          Wybierz {{ $store.state.markerDetails.pickup_type }} i zamknij
+                          <!-- Wybierz {{ $store.state.markerDetails.pickup_type }} i zamknij -->
+                          Wybierz i wróć do zamówienia
                         </p>
                       </div>
                     </template>
