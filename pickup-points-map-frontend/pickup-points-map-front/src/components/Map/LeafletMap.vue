@@ -755,8 +755,8 @@ export default {
   }
 }
 @media (max-width: 767px) {
-  .leaflet-touch .leaflet-bar {
-    margin-top: 70px;
+  .leaflet-touch .leaflet-control-layers, .leaflet-touch .leaflet-bar {
+    margin-top: 70px !important;
   }
 }
 </style>
