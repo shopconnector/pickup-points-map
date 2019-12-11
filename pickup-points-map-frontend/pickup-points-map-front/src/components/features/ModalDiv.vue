@@ -36,7 +36,8 @@
         <p v-if="parentData.points && point.features.cash_on_delivery" class="additional-info"><span class="mobile-map-icon-padding"><i class="icon pobraniem"/></span> - odbiór za pobraniem</p>
       </div>
       <div class="mobile-map-footer" :key="'btn-' + index">
-        <p class="mobile-map-btn-close" :style="getBackgroundColor" @click="closeModal(); setPoint(parentData, point);">Wybierz "{{ parentData.pickup_type }}" i zamknij</p>
+        <p class="mobile-map-btn-close" :style="getBackgroundColor" @click="closeModal(); setPoint(parentData, point);">Wybierz i wróć do zamówienia</p>
+        <!-- Wybierz "{{ parentData.pickup_type }}" i zamknij -->
       </div>
       </template>
     </div>
