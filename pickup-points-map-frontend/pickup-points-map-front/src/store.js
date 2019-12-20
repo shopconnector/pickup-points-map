@@ -293,10 +293,12 @@ export default new Vuex.Store({
               commit('get_essentials_succ', customer)
             } else {
               commit('get_essentials_err')
+              commit('destroyLoader')
             }
             resolve(res)
           }).catch(err => {
             commit('get_essentials_err')
+            commit('destroyLoader')
             reject(err)
           })
       })
