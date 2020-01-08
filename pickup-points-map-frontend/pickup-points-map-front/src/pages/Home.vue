@@ -51,7 +51,13 @@
         </vue-over-body>
         <Map/>
         <div class="mobile-footer" v-if="!showListFooter && isMobile">
-          <i class="button-footer" @click="openFooterModal"/>
+          <svg class="button-footer" @click="openFooterModal" version="1.1" id="Warstwa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+            viewBox="0 0 50 50" style="enable-background:new 0 0 50 50;" xml:space="preserve">
+          <g id="Warstwa_2_1_">
+            <path :fill="getFill" d="M25,0C11.2,0,0,11.2,0,25s11.2,25,25,25s25-11.2,25-25S38.8,0,25,0z M27.4,45.1V30.6h-4.8V45C13.4,44,6,36.6,4.9,27.4h14.4
+              v-4.8H4.9C6,13.4,13.4,6,22.6,4.9v14.4h4.8V4.9C36.6,6,44,13.4,45.1,22.6H30.6v4.8H45C44,36.6,36.6,44,27.4,45.1z"/>
+          </g>
+          </svg>
         </div>
         <div class="list-modal-footer" v-if="showListFooter && isMobile">
           <p class="footer-btn" :style="getBackgroundColor" @click="setPoint($store.state.markerDetails)">WYBIERZ TEN PUNKT</p>
@@ -345,15 +351,11 @@ export default {
 .mobile-footer {
   .button-footer {
     cursor: pointer;
-    background-color: $white;
     width: 40px;
     height: 40px;
     bottom: 20px;
     left: calc( 50% - 20px);
     position: absolute;
-    filter: grayscale(70%);
-    background: url('../assets/icons/Group-12.png') 0 0 no-repeat;
-    background-size: cover;
     @media (max-width: 414px ) {
       bottom: 26px;
     }
