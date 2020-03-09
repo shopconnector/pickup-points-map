@@ -9,7 +9,7 @@
       <template v-for="(point, index) in parentData.points">
       <div class="mobile-map-row" :key="'logo-' + index">
         <div class="mobile-map-logo">
-          <img :src="logosUrl[parentData.pickup_type]" class="img">
+          <img :src="getImgUrl(logosUrl[parentData.pickup_type])" class="img">
         </div>
         <div class="mobile-map-address">
           <h4 class="mobile-map-title">{{ parentData && parentData.street }}</h4>
@@ -67,13 +67,16 @@ export default {
         'Paczka w RUCHu': require('../../assets/popup-icons/ruch16x16.png')
       },
       logosUrl: {
-        'Żabka': require('../../assets/logos/żabka.png'),
-        'DPD Pickup': require('../../assets/logos/dpd-pickup.png'),
-        'Fresh Market': require('../../assets/logos/freshmarket.png'),
-        'In Post': require('../../assets/logos/inpost.png'),
-        'Poczta Polska': require('../../assets/logos/pocztapolska.png'),
-        'Paczka w RUCHu': require('../../assets/logos/paczka_w_ruchu.jpg'),
-        'Orlen': require('../../assets/logos/orlen.png')
+        'Żabka': 'żabka.png',
+        'DPD Pickup': 'dpd-pickup.png',
+        'Fresh Market': 'freshmarket.png',
+        'In Post': 'inpost.png',
+        'Poczta Polska': 'pocztapolska.png',
+        'Paczka w RUCHu': 'paczka_w_ruchu.jpg',
+        'Orlen': 'orlen.png',
+        'AUTOMAT SPOLEM': 'spolem.png',
+        'AUTOMAT BIEDRONKA': 'biedronka.png',
+        'AUTOMAT CARREFOUR': 'carrefour.png'
       }
     }
   },
@@ -103,6 +106,13 @@ export default {
     }
   },
   methods: {
+    getImgUrl (pic) {
+      if (pic) {
+        return require('../../assets/logos/' + pic)
+      } else {
+        return require('../../assets/logos/404.png')
+      }
+    },
     setPoint (points, selected) {
       this.dataToSend.pickup_type = points.pickup_type
       this.dataToSend.street = points.street

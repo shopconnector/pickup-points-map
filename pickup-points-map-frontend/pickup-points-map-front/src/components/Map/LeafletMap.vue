@@ -53,7 +53,7 @@
               v-on="isMobile ? { click: () => getPointMobileListDetails(listMarker.lat, listMarker.lon, listMarker.pickup_point_type, listMarker.id) } : {}"
             >
               <div class="list-elem list-elem-img">
-                <img :class="{ 'img-modal': isOpenListModal(index) }" :src="logosUrl[listMarker.pickup_point_type]" width="auto" height="70px" />
+                <img :class="{ 'img-modal': isOpenListModal(index) }" :src="getImgUrl(logosUrl[listMarker.pickup_point_type])" width="auto" height="70px" />
               </div>
               <div class="list-elem list-elem-address">
                 <b>{{ listMarker.id }}</b>
@@ -120,8 +120,8 @@
               @click="getPointDetails(marker.lat, marker.lon, marker.pickup_type)"
               v-on="isMobile ? { click: () => toogleMethod('true') } : {}"
             >
-              <l-icon :icon-anchor="[logosUrl[marker.pickup_type]]" :icon-size="[52, 52]" class-name="someExtraClass">
-                <img :src="pinsUrl[marker.pickup_type]" width="52" height="52" />
+              <l-icon :icon-anchor="[getImgUrl(logosUrl[marker.pickup_type])]" :icon-size="[52, 52]" class-name="someExtraClass">
+                <img :src="getPinsUrl(pinsUrl[marker.pickup_type])" width="52" height="52" />
               </l-icon>
               <transition name="bounce">
                 <l-popup v-if="!isMobile && $store.state.markerDetails">
@@ -141,7 +141,7 @@
                           </template>
                         </div>
                         <div class="popup-img">
-                          <img :src="logosUrl[marker.pickup_type]" width="100%" height="auto" />
+                          <img :src="getImgUrl(logosUrl[marker.pickup_type])" width="100%" height="auto" />
                         </div>
                         <template v-if="typeof point !== 'undefined' && $store.state.markerDetails.length !== 0">
                           <div class="popup-add">
@@ -240,22 +240,28 @@ export default {
         'Paczka w RUCHu': require('../../assets/popup-icons/ruch16x16.png')
       },
       logosUrl: {
-        Żabka: require('../../assets/logos/żabka.png'),
-        'DPD Pickup': require('../../assets/logos/dpd-pickup.png'),
-        'Fresh Market': require('../../assets/logos/freshmarket.png'),
-        'In Post': require('../../assets/logos/inpost.png'),
-        'Poczta Polska': require('../../assets/logos/pocztapolska.png'),
-        'Paczka w RUCHu': require('../../assets/logos/paczka_w_ruchu.jpg'),
-        Orlen: require('../../assets/logos/orlen.png')
+        'Żabka': 'żabka.png',
+        'DPD Pickup': 'dpd-pickup.png',
+        'Fresh Market': 'freshmarket.png',
+        'In Post': 'inpost.png',
+        'Poczta Polska': 'pocztapolska.png',
+        'Paczka w RUCHu': 'paczka_w_ruchu.jpg',
+        'Orlen': 'orlen.png',
+        'AUTOMAT SPOLEM': 'spolem.png',
+        'AUTOMAT BIEDRONKA': 'biedronka.png',
+        'AUTOMAT CARREFOUR': 'carrefour.png'
       },
       pinsUrl: {
-        Żabka: require('../../assets/zabka.png'),
-        'DPD Pickup': require('../../assets/dpdpickup.png'),
-        'Fresh Market': require('../../assets/fresh.png'),
-        'In Post': require('../../assets/inpost.png'),
-        'Poczta Polska': require('../../assets/poczta-polska.png'),
-        'Paczka w RUCHu': require('../../assets/paczka-w-ruchu.png'),
-        Orlen: require('../../assets/orlen.png')
+        'Żabka': 'zabka.png',
+        'DPD Pickup': 'dpdpickup.png',
+        'Fresh Market': 'fresh.png',
+        'In Post': 'inpost.png',
+        'Poczta Polska': 'poczta-polska.png',
+        'Paczka w RUCHu': 'paczka-w-ruchu.png',
+        'Orlen': 'orlen.png',
+        'AUTOMAT SPOLEM': 'spolem.png',
+        'AUTOMAT BIEDRONKA': 'biedronka.png',
+        'AUTOMAT CARREFOUR': 'carrefour.png'
       }
     }
   },
@@ -446,6 +452,20 @@ export default {
     })
   },
   methods: {
+    getImgUrl (pic) {
+      if (pic) {
+        return require('../../assets/logos/' + pic)
+      } else {
+        return require('../../assets/logos/404.png')
+      }
+    },
+    getPinsUrl (pic) {
+      if (pic) {
+        return require('../../assets/' + pic)
+      } else {
+        return require('../../assets/404.png')
+      }
+    },
     linkToRoadMap (listMarker) {
       if (this.$store.state.geolocation.lat && this.$store.state.suggestionTextLocit.length === 0 && this.$store.state.linkToRoad.x === 0) {
         let url =

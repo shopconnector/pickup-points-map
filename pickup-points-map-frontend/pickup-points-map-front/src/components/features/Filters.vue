@@ -66,7 +66,10 @@ export default {
         'Fresh Market': 'freshmarket.png',
         'In Post': 'inpost.png',
         'Paczka w RUCHu': 'paczka_w_ruchu.jpg',
-        'Orlen': 'orlen.png'
+        'Orlen': 'orlen.png',
+        'AUTOMAT SPOLEM': 'spolem.png',
+        'AUTOMAT BIEDRONKA': 'biedronka.png',
+        'AUTOMAT CARREFOUR': 'carrefour.png'
       },
       featuresInfo: {
         'open_late': 'Otwarte do późna',
@@ -186,7 +189,11 @@ export default {
       return this.$store.getters.clearAPIFilter
     },
     getImgUrl (pic) {
-      return require('../../assets/logos/' + pic)
+      if (pic) {
+        return require('../../assets/logos/' + pic)
+      } else {
+        return require('../../assets/logos/404.png')
+      }
     },
     closeFilterMobile () {
       this.$store.commit('closeFilterMobile')
