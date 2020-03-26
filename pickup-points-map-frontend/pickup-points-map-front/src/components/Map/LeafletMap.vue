@@ -230,7 +230,7 @@ export default {
       isPopupOpen: false,
       selectedPoint: Number,
       toogleMap: false,
-      url: 'https://pyrene.openstreetmap.org/{z}/{x}/{y}.png',
+      url: 'https://atileosmorg-luldmjs.stackpathdns.com/{z}/{x}/{y}.png',
       attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
       closeButton: false,
       popupIcons: {
