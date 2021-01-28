@@ -76,7 +76,8 @@ export default {
         'Orlen': 'orlen.png',
         'AUTOMAT SPOLEM': 'spolem.png',
         'AUTOMAT BIEDRONKA': 'biedronka.png',
-        'AUTOMAT CARREFOUR': 'carrefour.png'
+        'AUTOMAT CARREFOUR': 'carrefour.png',
+        'AUTOMAT LEWIATAN': 'lewiatan.png'
       }
     }
   },
