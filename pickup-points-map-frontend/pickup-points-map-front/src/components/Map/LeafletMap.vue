@@ -353,31 +353,18 @@ export default {
         this.$store.state.lng,
         this.$store.state.storeFilters.features,
         this.$store.state.storeFilters.checkedSuppliers,
-        this.$store.state.pointId,
         this.isPopupOpen
       ].join()
     },
     filtersUpdate () {
       return [this.$store.state.storeFilters.features, this.$store.state.storeFilters.checkedSuppliers].join()
-    },
-    pointIdUpdate () {
-      return [this.$store.state.pointId].join()
     }
   },
   watch: {
     zoomOrCenterUpdateOrFiltersUpdate: {
       handler () {
         this.$store.commit('changePageNumber', 1)
-        if (this.$store.state.pointId) {
-          this.$store.dispatch('get_points', {
-            lat: '',
-            lng: '',
-            dist: '',
-            filtered: '',
-            id: `id=${this.$store.state.pointId}`,
-            key: `&key=${this.$store.state.customer.key}`
-          })
-        } else if (!this.isPopupOpen && this.$store.state.radiusOfVisibily !== 1) {
+        if (!this.isPopupOpen && this.$store.state.radiusOfVisibily !== 1) {
           this.$store.dispatch('get_points', {
             lat: `lat=${this.$store.state.lat}`,
             lng: `&lon=${this.$store.state.lng}`,
@@ -389,34 +376,16 @@ export default {
         }
       }
     },
-    pointIdUpdate: {
-      handler () {
-        setTimeout(() => {
-          this.$store.commit('updatePosition', [{ lat: this.$store.state.pointMarkers[0].lat, lng: this.$store.state.pointMarkers[0].lon, zoom: 16 }])
-        }, 100)
-      }
-    },
     filtersUpdate: {
       handler () {
-        if (this.$store.state.pointId) {
-          this.$store.dispatch('get_list_points', {
-            lat: '',
-            lng: '',
-            page: '',
-            filtered: '',
-            id: `id=${this.$store.state.pointId}`,
-            key: `&key=${this.$store.state.customer.key}`
-          })
-        } else {
-          this.$store.dispatch('get_list_points', {
-            lat: `lat=${this.$store.state.lat}`,
-            lng: `&lon=${this.$store.state.lng}`,
-            key: `&key=${this.$store.state.customer.key}`,
-            page: `&page=${this.$store.state.pageNumber}`,
-            filtered: this.filteredPoints(),
-            id: ''
-          })
-        }
+        this.$store.dispatch('get_list_points', {
+          lat: `lat=${this.$store.state.lat}`,
+          lng: `&lon=${this.$store.state.lng}`,
+          key: `&key=${this.$store.state.customer.key}`,
+          page: `&page=${this.$store.state.pageNumber}`,
+          filtered: this.filteredPoints(),
+          id: ''
+        })
       }
     }
   },
@@ -596,28 +565,17 @@ export default {
         id: ''
       })
     },
-    toogleMapMethod (text) {
+    toogleMapMethod () {
       this.$store.commit('closeFooterModal')
       this.toogleMap = !this.toogleMap
-      if (this.$store.state.pointId) {
-        this.$store.dispatch('get_list_points', {
-          lat: '',
-          lng: '',
-          page: '',
-          filtered: '',
-          id: `id=${this.$store.state.pointId}`,
-          key: `&key=${this.$store.state.customer.key}`
-        })
-      } else {
-        this.$store.dispatch('get_list_points', {
-          lat: `lat=${this.$store.state.lat}`,
-          lng: `&lon=${this.$store.state.lng}`,
-          key: `&key=${this.$store.state.customer.key}`,
-          page: `&page=${this.$store.state.pageNumber}`,
-          filtered: this.filteredPoints(),
-          id: ''
-        })
-      }
+      this.$store.dispatch('get_list_points', {
+        lat: `lat=${this.$store.state.lat}`,
+        lng: `&lon=${this.$store.state.lng}`,
+        key: `&key=${this.$store.state.customer.key}`,
+        page: `&page=${this.$store.state.pageNumber}`,
+        filtered: this.filteredPoints(),
+        id: ''
+      })
       this.toogleMethod('false')
       this.$store.commit('closeListFooter')
     },

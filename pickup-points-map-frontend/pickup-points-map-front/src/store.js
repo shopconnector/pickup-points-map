@@ -27,7 +27,6 @@ export default new Vuex.Store({
     listMarkers: [],
     storeFilters: [],
     autocompleteList: [],
-    pointId: '',
     keyError: false,
     suggestionTextLocit: '',
     linkToRoad: {
@@ -53,12 +52,6 @@ export default new Vuex.Store({
     },
     updateLocitAddress (state, payload) {
       state.suggestionTextLocit = payload
-    },
-    clearPointId (state) {
-      state.pointId = ''
-    },
-    changePointId (state, payload) {
-      state.pointId = payload
     },
     changeSelectedPoint (state, payload) {
       state.selectedPoint = payload
