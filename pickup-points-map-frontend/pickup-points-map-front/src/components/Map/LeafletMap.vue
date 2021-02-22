@@ -1,19 +1,14 @@
 <template>
   <div :class="{ 'list-background-mobile-fix': isMobile }">
     <div :class="isWidgetVersion ? 'map-v2' : 'map'">
-      <div class="type-actions" :class="{'box-shadow' : !isMobile }">
-        <p class="button-action" :class="{ 'active': !toogleMap }" :style="{ backgroundColor: !toogleMap ? getActive : '' }" @click="toogleMapMethod('show'), openListModal(9999)">Mapa</p>
-        <p
-          class="button-action"
-          :class="{ 'active': toogleMap }"
-          :style="{ backgroundColor: toogleMap ? getActive : '' }"
-          v-on="$store.state.pointMarkers && $store.state.pointMarkers.length > 100 ? {} : { click: () => toogleMapMethod('hide') }"
-        >
+      <div class="type-actions">
+        <p class="button-action" :class="{ 'active': !toogleMap }" :style="{ backgroundColor: !toogleMap ? getActive : '' }" @click="toogleMapMethod(), openListModal(9999)">Mapa</p>
+        <p class="button-action" :class="{ 'active': toogleMap }" :style="{ backgroundColor: toogleMap ? getActive : '' }" @click="toogleMapMethod()">
           Lista
         </p>
       </div>
       <div class="closeWidget">
-        <p class="closeBtn" @click="closeWidget()"></p>
+        <p class="closeBtn" @click="closeWidget()" />
       </div>
       <div v-if="this.$store.state.geolocation.error.code === 1 && $store.state.pointMarkers && !$store.state.pointMarkers.length" class="first-enter-info">
         <p class="error-text" :style="getColor">
@@ -22,17 +17,11 @@
           <span class="mt10">Uwaga: Lokalizacja dla tej domeny jest zablokowana. <br />Możesz ponownie włączyć w ustawieniach przeglądarki.</span>
         </p>
       </div>
-      <!-- <div v-else-if="$store.state.pointMarkers && !$store.state.pointMarkers.length && $store.state.radiusOfVisibily === 1" class="first-enter-info">
-        <p :style="getColor">Wybierz adres/lokalizację aby<br />zobaczyć najbliższe punkty odbioru</p>
-      </div> -->
       <div
         v-else-if="$store.state.status === 'error, points couldnt be loaded' || $store.state.status === 'error, list points couldnt be loaded'"
         class="first-enter-info"
       >
         <p :style="getColor">Nie znaleziono żadnego punktu. Zmień kryteria wyboru.</p>
-      </div>
-      <div v-else-if="$store.state.pointMarkers && $store.state.pointMarkers.length > 100 && !toogleMap" class="error-info">
-        <p :style="getColor">Powiększ zoom żeby zobaczyć punkty</p>
       </div>
       <div v-else-if="$store.state.closestPunktErrors.length > 0 && $store.state.pointMarkers.length === 10 && !toogleMap" class="error-info">
         <p class="closest-error" :style="getColor">ODDAL MAPĘ, ŻEBY POKAZAĆ PUNKTY ODBIORU.</p>
@@ -65,18 +54,15 @@
               </div>
               <div class="list-elem btn-elem">
                 <p class="list-button" :style="getBackgroundColor" @click="getPointListDetails(listMarker.lat, listMarker.lon, listMarker.pickup_point_type, listMarker.id)">Wybierz i wróć do zamówienia</p>
-                <!-- Wybierz {{ listMarker.pickup_point_type }} i zamknij -->
                 <a class="list-link" :style="getDecorationColor" :href="linkToRoadMap(listMarker)" target="_blank">Wyznacz trasę dojazdu</a>
               </div>
               <transition name="fade">
                 <div class="list-modal" v-if="isOpenListModal(index) && isMobile && $store.state.markerDetails">
-                  <template v-if="typeof $store.state.markerDetails.points !== 'undefined'">
+                  <template v-if="$store.state.markerDetails.points">
                     <div class="list-modal-hours" v-if="$store.state.markerDetails.points[0].working_hours.length > 0">
                       <b>Godziny otwarcia:</b>
-                      <div>
-                        <template v-for="(day, index) in $store.state.markerDetails.points[0].working_hours">
-                          <p class="day-mobile" :key="index">{{ day }}</p>
-                        </template>
+                      <div v-for="(day, index) in $store.state.markerDetails.points[0].working_hours" :key="index">
+                        <p class="day-mobile">{{ day }}</p>
                       </div>
                     </div>
                     <div class="list-modal-additional">
@@ -111,69 +97,68 @@
           <div v-if="isMobile" class="locationIconMapBox" @click="currentPos()">
             <img src="../../assets/icons/gps24px.svg" alt="Select my localization" class="locationIconMap"/>
           </div>
-            <l-marker
-              v-for="marker in pointMarkers"
-              :key="marker.id"
-              :visible="true"
-              :lat-lng="{ lat: marker.lat, lng: marker.lon }"
-              class-name="markertype"
-              @click="getPointDetails(marker.lat, marker.lon, marker.pickup_type)"
-              v-on="isMobile ? { click: () => toogleMethod('true') } : {}"
-            >
-              <l-icon :icon-anchor="[getImgUrl(logosUrl[marker.pickup_type])]" :icon-size="[52, 52]" class-name="someExtraClass">
-                <img :src="getPinsUrl(pinsUrl[marker.pickup_type])" width="52" height="52" />
-              </l-icon>
-              <transition name="bounce">
-                <l-popup v-if="!isMobile && $store.state.markerDetails">
-                  <div class="popup-box">
-                    <template v-for="(point, index) in points">
-                      <div class="popup-info" :key="'info-' + index">
-                        <div class="popup-text-box">
-                          <template v-if="typeof point !== 'undefined'">
-                            <p class="popup-text" v-if="$store.state.markerDetails.length !== 0">
-                              <b><img class="popup-icon" :src="popupIcons[marker.pickup_type]" />{{ point.name }}</b
-                              ><br />
-                              <b>{{ $store.state.markerDetails.street }}</b
-                              ><br />
-                              {{ $store.state.markerDetails.zip }} {{ $store.state.markerDetails.city }}, <br />
-                              {{ point.id }}
-                            </p>
+            <l-marker-cluster :options="clusterOptions" @clusterclick="click()" @ready="ready">
+              <l-marker
+                v-for="marker in pointMarkers"
+                :key="marker.id"
+                :visible="true"
+                :lat-lng="{ lat: marker.lat, lng: marker.lon }"
+                class-name="markertype"
+                @click="getPointDetails(marker.lat, marker.lon, marker.pickup_type)"
+                v-on="isMobile ? { click: () => toogleMethod('true') } : {}"
+              >
+                <l-icon :icon-anchor="[getImgUrl(logosUrl[marker.pickup_type])]" :icon-size="[52, 52]" class-name="someExtraClass">
+                  <img :src="getPinsUrl(pinsUrl[marker.pickup_type])" width="52" height="52" />
+                </l-icon>
+                <transition name="bounce">
+                  <l-popup v-if="!isMobile && $store.state.markerDetails">
+                    <div class="popup-box">
+                      <div v-for="(point, index) in points" :key="'info-' + index">
+                        <div class="popup-info">
+                          <div class="popup-text-box">
+                            <template v-if="point">
+                              <p class="popup-text" v-if="$store.state.markerDetails.length !== 0">
+                                <b><img class="popup-icon" :src="popupIcons[marker.pickup_type]" />{{ point.name }}</b><br />
+                                <b>{{ $store.state.markerDetails.street }}</b><br />
+                                {{ $store.state.markerDetails.zip }} {{ $store.state.markerDetails.city }}, <br />
+                                {{ point.id }}
+                              </p>
+                            </template>
+                          </div>
+                          <div class="popup-img">
+                            <img :src="getImgUrl(logosUrl[marker.pickup_type])" width="100%" height="auto" />
+                          </div>
+                          <template v-if="point && $store.state.markerDetails.length !== 0">
+                            <div class="popup-add">
+                              <p class="popup-time" v-if="point && point.working_hours.length > 0">
+                                Godziny otwarcia: <br />
+                                {{ point.working_hours.join(' ') }}
+                              </p>
+                              <div class="popup-features">
+                                <p class="features-item" v-if="point.features.open_late">Otwarte do pózna</p>
+                                <p class="features-item" v-if="point.features.open_saturday">Otwarte w soboty</p>
+                                <p class="features-item" v-if="point.features.open_sunday">Otwarte w niedziele</p>
+                                <p class="features-item" v-if="point.features.parking">Parking</p>
+                                <p class="features-item" v-if="point.features.disabled_friendly">Ułatwienie dla osób niepełnosprawnych</p>
+                                <p class="features-item" v-if="point.features.cash_on_delivery">Odbiór za pobraniem</p>
+                              </div>
+                            </div>
                           </template>
                         </div>
-                        <div class="popup-img">
-                          <img :src="getImgUrl(logosUrl[marker.pickup_type])" width="100%" height="auto" />
-                        </div>
-                        <template v-if="typeof point !== 'undefined' && $store.state.markerDetails.length !== 0">
-                          <div class="popup-add">
-                            <p class="popup-time" v-if="point && point.working_hours.length > 0">
-                              Godziny otwarcia: <br />
-                              {{ point.working_hours.join(' ') }}
-                            </p>
-                            <div class="popup-features">
-                              <p class="features-item" v-if="point.features.open_late">Otwarte do pózna</p>
-                              <p class="features-item" v-if="point.features.open_saturday">Otwarte w soboty</p>
-                              <p class="features-item" v-if="point.features.open_sunday">Otwarte w niedziele</p>
-                              <p class="features-item" v-if="point.features.parking">Parking</p>
-                              <p class="features-item" v-if="point.features.disabled_friendly">Ułatwienie dla osób niepełnosprawnych</p>
-                              <p class="features-item" v-if="point.features.cash_on_delivery">Odbiór za pobraniem</p>
-                            </div>
+                        <div class="popup-action" :key="'btn-' + index">
+                          <div class="road">
+                            <a :href="linkToRoad" target="_blank">Wyznacz trasę dojazdu</a>
                           </div>
-                        </template>
-                      </div>
-                      <div class="popup-action" :key="'btn-' + index">
-                        <div class="road">
-                          <a :href="linkToRoad" target="_blank">Wyznacz trasę dojazdu</a>
+                          <p id="btn-wybierz" class="popup-button" :style="getBackgroundColor" @click="setPoint($store.state.markerDetails, point)">
+                            Wybierz i wróć do zamówienia
+                          </p>
                         </div>
-                        <p id="btn-wybierz" class="popup-button" :style="getBackgroundColor" @click="setPoint($store.state.markerDetails, point)">
-                          <!-- Wybierz {{ $store.state.markerDetails.pickup_type }} i zamknij -->
-                          Wybierz i wróć do zamówienia
-                        </p>
                       </div>
-                    </template>
-                  </div>
-                </l-popup>
-              </transition>
-            </l-marker>
+                    </div>
+                  </l-popup>
+                </transition>
+              </l-marker>
+            </l-marker-cluster>
             <l-marker
               v-if="$store.state.geolocation.lat"
               :lat-lng="{ lat: $store.state.geolocation.lat, lng: $store.state.geolocation.lng }"
@@ -202,9 +187,13 @@
 import { LMap, LTileLayer, LMarker, LPopup, LTooltip, LControlZoom, LIcon } from 'vue2-leaflet'
 import { latLng } from 'leaflet'
 import 'leaflet/dist/leaflet.css'
+import 'leaflet.markercluster/dist/MarkerCluster.css'
+import 'leaflet.markercluster/dist/MarkerCluster.Default.css'
 import ModalDiv from '../features/ModalDiv.vue'
 import { MobileDetected } from '../mobileDetected.ts'
 import EventBus from '../../event-bus'
+import Vue2LeafletMarkercluster from './Vue2LeafletMarkercluster'
+
 export default {
   name: 'Home',
   components: {
@@ -215,7 +204,8 @@ export default {
     LPopup,
     LTooltip,
     LControlZoom,
-    LIcon
+    LIcon,
+    'l-marker-cluster': Vue2LeafletMarkercluster
   },
   mixins: [MobileDetected],
   data () {
@@ -227,6 +217,7 @@ export default {
         city: '',
         zip: ''
       },
+      clusterOptions: {},
       isPopupOpen: false,
       selectedPoint: Number,
       toogleMap: false,
@@ -279,9 +270,7 @@ export default {
       }
     },
     getActive () {
-      if (this.$store.state.customer.options) {
-        return this.$store.state.customer.options.primary_color
-      }
+      return this.$store.state.customer.options.primary_color
     },
     getBackgroundColor () {
       if (this.$store.state.customer.options) {
@@ -349,11 +338,7 @@ export default {
       return latLng(this.$store.state.lat, this.$store.state.lng)
     },
     pointMarkers () {
-      if (this.$store.state.pointMarkers && this.$store.state.pointMarkers.length > 100) {
-        return []
-      } else {
-        return this.$store.state.pointMarkers
-      }
+      return this.$store.state.pointMarkers
     },
     listMarkers () {
       return this.$store.state.listMarkers
@@ -436,6 +421,11 @@ export default {
     }
   },
   mounted () {
+    setTimeout(() => {
+      this.$nextTick(() => {
+        this.clusterOptions = { disableClusteringAtZoom: 11 }
+      })
+    }, 5000)
     EventBus.$on('popupClose', () => {
       this.popupClose()
       var closePopup = document.getElementsByClassName('leaflet-popup-close-button')[0]
@@ -454,6 +444,8 @@ export default {
     })
   },
   methods: {
+    click: (e) => console.log('clusterclick', e),
+    ready: (e) => console.log('ready', e),
     getImgUrl (pic) {
       if (pic) {
         return require('../../assets/logos/' + pic)
@@ -606,11 +598,7 @@ export default {
     },
     toogleMapMethod (text) {
       this.$store.commit('closeFooterModal')
-      if (text === 'show') {
-        this.toogleMap = false
-      } else if (text === 'hide') {
-        this.toogleMap = true
-      }
+      this.toogleMap = !this.toogleMap
       if (this.$store.state.pointId) {
         this.$store.dispatch('get_list_points', {
           lat: '',
@@ -648,26 +636,6 @@ export default {
       var rad = Math.round(dist / 2)
       this.$store.commit('changeRadiusOfVisibility', rad)
     },
-    // zoomClosest () {
-    //   let pins = this.$store.state.pointMarkers
-    //   var dist = Math.max.apply(Math, pins.map((pin) => {
-    //     var fromLng = this.$store.state.lng / 180.0 * Math.PI
-    //     var fromLat = this.$store.state.lat / 180.0 * Math.PI
-    //     var pointLng = pin.lon / 180.0 * Math.PI
-    //     var pointLat = pin.lat / 180.0 * Math.PI
-    //     var dist = Math.acos(Math.sin(fromLat) * Math.sin(pointLat) + (Math.cos(fromLat) * Math.cos(pointLat) * Math.cos(pointLng - fromLng))) * 6371000
-    //     return dist
-    //   }))
-    //   var x = Math.pow(dist, 2)
-    //   var C = 2 * Math.PI * 6378137.000
-    //   var temp = Math.abs((C * Math.cos(53.06616)) / x)
-    //   var zoom = Math.round(Math.log2(temp) + 10)
-    //   this.$store.commit('changeZoomClosest', zoom)
-    //   setTimeout(() => {
-    //     this.$store.commit('changeZoomClosest', zoom)
-    //   }, 100)
-    //   console.log('hello', zoom)
-    // },
     currentPos () {
       this.$vuexGeolocation.getCurrentPosition()
       this.$store.commit('updateLocitAddress', '')
@@ -1073,15 +1041,14 @@ export default {
   display: flex;
   border-radius: 15px;
   overflow: hidden;
+  box-shadow: 5px 6px 9px 4px rgba(0, 0, 0, 0.4);
   @media (max-width: 767px) {
+    box-shadow: none;
     position: fixed;
     right: 45px;
     left: auto;
     top: 12px;
   }
-}
-.box-shadow {
-  box-shadow: 5px 6px 9px 4px rgba(0, 0, 0, 0.4);
 }
 .list-box {
   .list-title {

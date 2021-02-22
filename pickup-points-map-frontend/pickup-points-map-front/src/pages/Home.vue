@@ -109,22 +109,23 @@ export default {
     }
   },
   created () {
-    window.addEventListener('message', this.filterApply)
-    this.$store.commit('createLoader')
+    this.filterApply()
+    // window.addEventListener('message', this.filterApply)
+    // this.$store.commit('createLoader')
   },
   destroyed () {
     window.removeEventListener('message', this.filterApply)
   },
   methods: {
     filterApply: function (event) {
-      if (event.data.content && event.data.content.hasOwnProperty('key')) {
-        this.innerFilter = event.data.content.filter
-        this.innerAddress = event.data.content.address
-        this.$store.dispatch('get_essentials', {
-          key: `${event.data.content.key}`,
-          origin: `${event.origin}`
-        })
-      }
+      // if (event.data.content && event.data.content.hasOwnProperty('key')) {
+      // this.innerFilter = event.data.content.filter
+      // this.innerAddress = event.data.content.address
+      this.$store.dispatch('get_essentials', {
+        key: `06C1BBAF776B8609EC9699E0F73B29BB`,
+        origin: `localhost`
+      })
+      // }
     },
     openFooterModal () {
       this.$store.commit('openFooterModal')

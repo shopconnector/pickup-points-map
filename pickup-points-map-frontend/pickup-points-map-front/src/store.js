@@ -22,11 +22,7 @@ export default new Vuex.Store({
     pointMarkers: [],
     appLoader: false,
     closestPunktErrors: '',
-    // closestPointMarkers: [],
     pageNumber: 1,
-    // zoomClosest: null,
-    // innerFilter: '',
-    // innerAddress: '',
     selectedPoint: null,
     listMarkers: [],
     storeFilters: [],
@@ -38,20 +34,7 @@ export default new Vuex.Store({
       x: 0,
       y: 0
     },
-    // providerToPickupTypeMapping: {
-    //   'In Post': ['In Post'],
-    //   'Poczta Polska': ['Fresh Market', 'Paczka w Ruchu', 'Poczta Polska', 'Żabka', 'Orlen'],
-    //   'DPD Pickup': ['DPD Pickup'],
-    //   'Paczka w Ruchu': ['Paczka w Ruchu']
-    // },
-    customer: {
-      // key: '5DFC0961AB6BEF40736BA3099EE27491',
-      // id: '123123',
-      // name: 'bardotti',
-      // theme: 0,
-      // providers: ['Poczta Polska', 'In Post', 'DPD Pickup'],
-      // url: 'https://dev.bardotti.pl'
-    }
+    customer: {}
   },
   mutations: {
     createLoader (state) {
@@ -92,10 +75,6 @@ export default new Vuex.Store({
     openFilterMobile (state) {
       state.isFilterMobileOpen = 1
     },
-    // changeZoomClosest (state, payload) {
-    //   state.zoom = payload
-    //   state.closestPointMarkers = []
-    // },
     changeRadiusOfVisibility (state, newRadius) {
       if (newRadius) state.radiusOfVisibily = newRadius
     },
@@ -139,23 +118,10 @@ export default new Vuex.Store({
       }
     },
     // API CALLS
-    get_points (state) {
-      state.status = 'loading points'
-    },
-    get_pointsById_succ (state, points) {
-      state.pointMarkers = points
-      state.status = 'success, pointsById loaded'
-    },
     get_points_succ (state, points) {
-      // if (state.zoom < 13) {
-      //   state.pointMarkers = []
-      //   console.log('hrll')
-      //   state.status = 'success, but distance too long'
-      // } else {
       state.closestPunktErrors = ''
       state.pointMarkers = points
       state.status = 'success, points loaded'
-      // }
     },
     get_closest_points_succ (state, points) {
       state.pointMarkers = points
@@ -169,10 +135,6 @@ export default new Vuex.Store({
       state.status = 'loading list points'
     },
     get_list_points_succ (state, points) {
-      // if (state.zoom < 13) {
-      //   state.listMarkers = []
-      //   state.status = 'success, but distance too long for list'
-      // } else {
       if (state.pageNumber === 1) {
         state.listMarkers = points
         state.status = 'success, list points loaded'
@@ -180,7 +142,6 @@ export default new Vuex.Store({
         state.listMarkers = state.listMarkers.concat(points)
         state.status = 'success, more list points loaded'
       }
-      // }
     },
     get_list_points_err (state) {
       state.status = 'error, list points couldnt be loaded'
@@ -223,13 +184,10 @@ export default new Vuex.Store({
   actions: {
     get_points ({commit}, query) {
       return new Promise((resolve, reject) => {
-        commit('get_points')
         APIService.get_points(query)
           .then(res => {
             const points = res.data.response.pickupPoints
-            if (res.data.response_type === 'id') {
-              commit('get_pointsById_succ', points)
-            } else if (res.data.response_type === '10 closest') {
+            if (res.data.response_type === '10 closest') {
               commit('get_closest_points_succ', points)
             } else {
               commit('get_points_succ', points)
