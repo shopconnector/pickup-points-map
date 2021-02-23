@@ -10,7 +10,7 @@
       <div class="closeWidget">
         <p class="closeBtn" @click="closeWidget()" />
       </div>
-      <div v-if="this.$store.state.geolocation.error.code === 1 && $store.state.pointMarkers && !$store.state.pointMarkers.length" class="first-enter-info">
+      <div v-if="this.$store.state.geolocation.error.code === 1 && !Object.keys(pointMarkers).length" class="first-enter-info">
         <p class="error-text" :style="getColor">
           Wybierz adres/lokalizację aby
           <br />zobaczyć najbliższe punkty odbioru
@@ -23,7 +23,7 @@
       >
         <p :style="getColor">Nie znaleziono żadnego punktu. Zmień kryteria wyboru.</p>
       </div>
-      <div v-else-if="$store.state.closestPunktErrors.length > 0 && $store.state.pointMarkers.length === 10 && !toogleMap" class="error-info">
+      <div v-else-if="$store.state.closestPunktErrors.length > 0 && Object.keys(pointMarkers).length === 10 && !toogleMap" class="error-info">
         <p class="closest-error" :style="getColor">ODDAL MAPĘ, ŻEBY POKAZAĆ PUNKTY ODBIORU.</p>
       </div>
       <transition name="fade">
@@ -99,8 +99,8 @@
           </div>
             <l-marker-cluster :options="clusterOptions" @clusterclick="click()" @ready="ready">
               <l-marker
-                v-for="marker in pointMarkers"
-                :key="marker.id"
+                v-for="(marker, name) in pointMarkers"
+                :key="name"
                 :visible="true"
                 :lat-lng="{ lat: marker.lat, lng: marker.lon }"
                 class-name="markertype"
@@ -110,7 +110,6 @@
                 <l-icon :icon-anchor="[getImgUrl(logosUrl[marker.pickup_type])]" :icon-size="[52, 52]" class-name="someExtraClass">
                   <img :src="getPinsUrl(pinsUrl[marker.pickup_type])" width="52" height="52" />
                 </l-icon>
-                <transition name="bounce">
                   <l-popup v-if="!isMobile && $store.state.markerDetails">
                     <div class="popup-box">
                       <div v-for="(point, index) in points" :key="'info-' + index">
@@ -156,7 +155,6 @@
                       </div>
                     </div>
                   </l-popup>
-                </transition>
               </l-marker>
             </l-marker-cluster>
             <l-marker
@@ -217,6 +215,7 @@ export default {
         city: '',
         zip: ''
       },
+      loader: false,
       clusterOptions: {},
       isPopupOpen: false,
       selectedPoint: Number,
@@ -365,14 +364,8 @@ export default {
       handler () {
         this.$store.commit('changePageNumber', 1)
         if (!this.isPopupOpen && this.$store.state.radiusOfVisibily !== 1) {
-          this.$store.dispatch('get_points', {
-            lat: `lat=${this.$store.state.lat}`,
-            lng: `&lon=${this.$store.state.lng}`,
-            key: `&key=${this.$store.state.customer.key}`,
-            dist: `&dist=${this.$store.state.radiusOfVisibily}`,
-            filtered: this.filteredPoints(),
-            id: ''
-          })
+          this.loader = true
+          this.throttleFunction(this.apiCalls, 1000)
         }
       }
     },
@@ -392,7 +385,10 @@ export default {
   mounted () {
     setTimeout(() => {
       this.$nextTick(() => {
-        this.clusterOptions = { disableClusteringAtZoom: 11 }
+        this.clusterOptions = {
+          disableClusteringAtZoom: 11,
+          chunkedLoading: true
+        }
       })
     }, 5000)
     EventBus.$on('popupClose', () => {
@@ -413,6 +409,34 @@ export default {
     })
   },
   methods: {
+    apiCalls () {
+      this.$store.dispatch('get_points', {
+        lat: `lat=${this.$store.state.lat}`,
+        lng: `&lon=${this.$store.state.lng}`,
+        key: `&key=${this.$store.state.customer.key}`,
+        dist: `&dist=${this.$store.state.radiusOfVisibily}`,
+        filtered: this.filteredPoints(),
+        id: ''
+      }).then(() => {
+        this.loader = false
+      })
+    },
+    throttleFunction  (func, delay) {
+      const context = this
+      const args = arguments
+      if (!this.lastTime) {
+        func.apply(context, args)
+        this.lastTime = Date.now()
+      } else {
+        clearTimeout(this.lastFunc)
+        this.lastFunc = setTimeout(() => {
+          if ((Date.now() - this.lastTime) >= delay) {
+            func.apply(context, args)
+            this.lastTime = Date.now()
+          }
+        }, delay)
+      }
+    },
     click: (e) => console.log('clusterclick', e),
     ready: (e) => console.log('ready', e),
     getImgUrl (pic) {
@@ -1107,36 +1131,6 @@ export default {
 .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
   opacity: 0;
 }
-
-.bounce-enter-active {
-  animation: bounce-in 0.5s;
-  transition: all 0.3s ease;
-}
-.bounce-leave-active {
-  animation: bounce-out 0.5s reverse;
-}
-.bounce-enter {
-  transition: all 0.3s ease;
-  transform: translateY(20%);
-}
-@keyframes bounce-in {
-  0% {
-    transform: scale(0);
-  }
-  100% {
-    right: 0;
-    transform: scale(1);
-  }
-}
-@keyframes bounce-out {
-  0% {
-    transform: scale(0);
-  }
-  100% {
-    transform: scale(1);
-  }
-}
-
 .fade-in {
   &-down-enter-active,
   &-up-enter-active {
