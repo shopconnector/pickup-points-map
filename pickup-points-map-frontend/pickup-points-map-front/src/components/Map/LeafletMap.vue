@@ -98,8 +98,7 @@
               <l-marker
                 v-for="(marker, name) in pointMarkers"
                 :key="name"
-                :visible="true"
-                :lat-lng="{ lat: marker.lat, lng: marker.lon }"
+                :latLng="{ lat: marker.lat, lng: marker.lon }"
                 class-name="markertype"
                 @click="getPointDetails(marker.lat, marker.lon, marker.pickup_type)"
                 v-on="isMobile ? { click: () => toogleMethod('true') } : {}"
@@ -328,10 +327,12 @@ export default {
       return !this.$store.state.pointMarkers.length
     },
     ...mapGetters({
-      getZoom: 'getZoom'
+      getZoom: 'getZoom',
+      getCurrentLat: 'getCurrentLat',
+      getCurrentLng: 'getCurrentLng'
     }),
     center () {
-      return latLng(this.$store.state.lat, this.$store.state.lng)
+      return latLng(this.getCurrentLat, this.getCurrentLng)
     },
     pointMarkers () {
       return this.$store.state.pointMarkers
@@ -342,11 +343,9 @@ export default {
     isWidgetVersion () {
       return this.$store.state.customer.theme
     },
-    zoomOrCenterUpdateOrFiltersUpdate () {
+    centerUpdateOrFiltersUpdate () {
       return [
-        this.getZoom,
-        this.$store.state.lat,
-        this.$store.state.lng,
+        this.getCurrentLat,
         this.$store.state.storeFilters.features,
         this.$store.state.storeFilters.checkedSuppliers
       ].join()
@@ -356,7 +355,7 @@ export default {
     }
   },
   watch: {
-    zoomOrCenterUpdateOrFiltersUpdate: {
+    centerUpdateOrFiltersUpdate: {
       handler () {
         this.$store.commit('changePageNumber', 1)
         if (this.$store.state.radiusOfVisibily !== 1) {
@@ -368,8 +367,8 @@ export default {
     filtersUpdate: {
       handler () {
         this.$store.dispatch('get_list_points', {
-          lat: `lat=${this.$store.state.lat}`,
-          lng: `&lon=${this.$store.state.lng}`,
+          lat: `lat=${this.getCurrentLat}`,
+          lng: `&lon=${this.getCurrentLng}`,
           key: `&key=${this.$store.state.customer.key}`,
           page: `&page=${this.$store.state.pageNumber}`,
           filtered: this.filteredPoints(),
@@ -400,8 +399,8 @@ export default {
   methods: {
     apiCalls () {
       this.$store.dispatch('get_points', {
-        lat: `lat=${this.$store.state.lat}`,
-        lng: `&lon=${this.$store.state.lng}`,
+        lat: `lat=${this.getCurrentLat}`,
+        lng: `&lon=${this.getCurrentLng}`,
         key: `&key=${this.$store.state.customer.key}`,
         dist: `&dist=${this.$store.state.radiusOfVisibily}`,
         filtered: this.filteredPoints(),
@@ -560,8 +559,8 @@ export default {
       var newPage = this.$store.state.pageNumber + 1
       this.$store.commit('changePageNumber', newPage)
       this.$store.dispatch('get_list_points', {
-        lat: `lat=${this.$store.state.lat}`,
-        lng: `&lon=${this.$store.state.lng}`,
+        lat: `lat=${this.getCurrentLat}`,
+        lng: `&lon=${this.getCurrentLng}`,
         key: `&key=${this.$store.state.customer.key}`,
         page: `&page=${this.$store.state.pageNumber}`,
         filtered: this.filteredPoints(),
@@ -572,8 +571,8 @@ export default {
       this.$store.commit('closeFooterModal')
       this.toogleMap = !this.toogleMap
       this.$store.dispatch('get_list_points', {
-        lat: `lat=${this.$store.state.lat}`,
-        lng: `&lon=${this.$store.state.lng}`,
+        lat: `lat=${this.getCurrentLat}`,
+        lng: `&lon=${this.getCurrentLng}`,
         key: `&key=${this.$store.state.customer.key}`,
         page: `&page=${this.$store.state.pageNumber}`,
         filtered: this.filteredPoints(),

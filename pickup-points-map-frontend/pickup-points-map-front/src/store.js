@@ -266,6 +266,12 @@ export default new Vuex.Store({
     }
   },
   getters: {
+    getCurrentLng: state => {
+      return state.lng
+    },
+    getCurrentLat: state => {
+      return state.lat
+    },
     getZoom: state => {
       return state.zoom
     },
