@@ -83,14 +83,11 @@
       </transition>
       <transition name="fade">
         <l-map
-          :zoom="zoom"
+          :zoom="getZoom"
           :center="center"
           :options="{ zoomControl: true}"
           @update:bounds="boundsUpdated"
           @update:center="centerUpdated"
-          @update:zoom="zoomUpdated"
-          @popupopen="popupOpen"
-          @popupclose="popupClose"
         >
           <l-tile-layer :url="url" :attribution="attribution" />
           <template>
@@ -191,6 +188,7 @@ import ModalDiv from '../features/ModalDiv.vue'
 import { MobileDetected } from '../mobileDetected.ts'
 import EventBus from '../../event-bus'
 import Vue2LeafletMarkercluster from './Vue2LeafletMarkercluster'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'Home',
@@ -217,7 +215,6 @@ export default {
       },
       loader: false,
       clusterOptions: {},
-      isPopupOpen: false,
       selectedPoint: Number,
       toogleMap: false,
       url: 'https://atileosmorg-luldmjs.stackpathdns.com/{z}/{x}/{y}.png',
@@ -330,9 +327,9 @@ export default {
     checkedLength () {
       return !this.$store.state.pointMarkers.length
     },
-    zoom () {
-      return this.$store.state.zoom
-    },
+    ...mapGetters({
+      getZoom: 'getZoom'
+    }),
     center () {
       return latLng(this.$store.state.lat, this.$store.state.lng)
     },
@@ -347,12 +344,11 @@ export default {
     },
     zoomOrCenterUpdateOrFiltersUpdate () {
       return [
-        this.$store.state.zoom,
+        this.getZoom,
         this.$store.state.lat,
         this.$store.state.lng,
         this.$store.state.storeFilters.features,
-        this.$store.state.storeFilters.checkedSuppliers,
-        this.isPopupOpen
+        this.$store.state.storeFilters.checkedSuppliers
       ].join()
     },
     filtersUpdate () {
@@ -363,7 +359,7 @@ export default {
     zoomOrCenterUpdateOrFiltersUpdate: {
       handler () {
         this.$store.commit('changePageNumber', 1)
-        if (!this.isPopupOpen && this.$store.state.radiusOfVisibily !== 1) {
+        if (this.$store.state.radiusOfVisibily !== 1) {
           this.loader = true
           this.throttleFunction(this.apiCalls, 1000)
         }
@@ -391,13 +387,6 @@ export default {
         }
       })
     }, 5000)
-    EventBus.$on('popupClose', () => {
-      this.popupClose()
-      var closePopup = document.getElementsByClassName('leaflet-popup-close-button')[0]
-      if (closePopup) {
-        closePopup.click()
-      }
-    })
     EventBus.$on('toogleMethodBus', bool => {
       if (bool === 'true') {
         this.$store.state.toogleModal = true
@@ -537,16 +526,7 @@ export default {
       var temp = features.concat(pickupTypes)
       return temp.join('')
     },
-    popupOpen () {
-      this.isPopupOpen = true
-    },
-    popupClose () {
-      this.$store.state.toogleModal = false
-      this.isPopupOpen = false
-      this.$store.commit('clear_point_details')
-    },
     getPointDetails (lat, lng, type) {
-      this.centerUpdated({lat, lng}, 7)
       this.$store.dispatch('get_point_details', {
         lat: `lat=${lat}`,
         lng: `&lon=${lng}`,
@@ -556,7 +536,6 @@ export default {
       })
     },
     getPointMobileListDetails (lat, lng, type, id) {
-      this.centerUpdated({lat, lng}, 7)
       this.$store.dispatch('get_point_details', {
         lat: `lat=${lat}`,
         lng: `&lon=${lng}`,
@@ -606,20 +585,18 @@ export default {
     centerUpdated (center) {
       this.$store.commit('updatePosition', [{ lat: center.lat, lng: center.lng, zoom: null }])
     },
-    zoomUpdated (zoom) {
-      this.$store.commit('updatePosition', [{ lat: null, lng: null, zoom: zoom }])
-    },
     boundsUpdated (bounds) {
-      var fromLng = (bounds._northEast.lng / 180.0) * Math.PI
-      var fromLat = (bounds._northEast.lat / 180.0) * Math.PI
-      var pointLng = (bounds._southWest.lng / 180.0) * Math.PI
-      var pointLat = (bounds._southWest.lat / 180.0) * Math.PI
-      var dist = Math.acos(Math.sin(fromLat) * Math.sin(pointLat) + Math.cos(fromLat) * Math.cos(pointLat) * Math.cos(pointLng - fromLng)) * 6371000
-      var rad = Math.round(dist / 2)
+      let fromLng = (bounds._northEast.lng / 180.0) * Math.PI
+      let fromLat = (bounds._northEast.lat / 180.0) * Math.PI
+      let pointLng = (bounds._southWest.lng / 180.0) * Math.PI
+      let pointLat = (bounds._southWest.lat / 180.0) * Math.PI
+      let dist = Math.acos(Math.sin(fromLat) * Math.sin(pointLat) + Math.cos(fromLat) * Math.cos(pointLat) * Math.cos(pointLng - fromLng)) * 6371000
+      let rad = Math.round(dist / 2)
       this.$store.commit('changeRadiusOfVisibility', rad)
     },
     currentPos () {
       this.$vuexGeolocation.getCurrentPosition()
+      this.$store.commit('updateZoom', 15)
       this.$store.commit('updateLocitAddress', '')
       this.$store.commit('updateLinkToRoad', {x: 0, y: 0})
       if (this.IsFooterModalOpen) {

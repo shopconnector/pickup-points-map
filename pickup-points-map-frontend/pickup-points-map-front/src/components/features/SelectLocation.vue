@@ -222,6 +222,7 @@ export default {
     },
     currentPos () {
       this.$vuexGeolocation.getCurrentPosition()
+      this.$store.commit('updateZoom', 15)
       this.$store.commit('updateLocitAddress', '')
       this.$store.commit('updateLinkToRoad', {x: 0, y: 0})
       if (this.IsFooterModalOpen) {

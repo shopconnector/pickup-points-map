@@ -98,8 +98,11 @@ export default new Vuex.Store({
     howManyFiltersApplies (state, n) {
       state.filtersCount = n
     },
+    updateZoom (state, newZoom) {
+      state.zoom = newZoom
+    },
     updatePosition (state, newPosition) {
-      var point = newPosition[0]
+      let point = newPosition[0]
       if (point.zoom) {
         state.zoom = point.zoom
       }
@@ -263,6 +266,9 @@ export default new Vuex.Store({
     }
   },
   getters: {
+    getZoom: state => {
+      return state.zoom
+    },
     clearAPIFilters: state => {
       state.pointMarkers = []
       state.listMarkers = []

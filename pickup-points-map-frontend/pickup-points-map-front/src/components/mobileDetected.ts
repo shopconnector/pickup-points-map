@@ -27,20 +27,11 @@ export const MobileDetected = {
       } else {
         this.isMobile = false
       }
-    },
-    openFooterModal () {
-      this.$store.commit('openFooterModal')
-    },
-    closeFooterModal () {
-      this.$store.commit('closeFooterModal')
     }
   },
   computed: {
     isWidgetVersion () {
       return this.$store.state.customer.theme
-    },
-    IsFooterModalOpen () {
-      return this.$store.state.isFooterModalOpen
     }
   }
 }
