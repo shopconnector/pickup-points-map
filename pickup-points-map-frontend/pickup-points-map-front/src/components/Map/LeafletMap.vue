@@ -81,91 +81,88 @@
           </div>
         </div>
       </transition>
-      <transition name="fade">
-        <l-map
-          :zoom="getZoom"
-          :center="center"
-          :options="{ zoomControl: true}"
-          @update:bounds="boundsUpdated"
-          @update:center="centerUpdated"
-        >
-          <l-tile-layer :url="url" :attribution="attribution" />
-          <template>
-          <div v-if="isMobile" class="locationIconMapBox" @click="currentPos()">
-            <img src="../../assets/icons/gps24px.svg" alt="Select my localization" class="locationIconMap"/>
-          </div>
-            <l-marker-cluster :options="clusterOptions" @clusterclick="click()" @ready="ready">
-              <l-marker
-                v-for="(marker, name) in pointMarkers"
-                :key="name"
-                :latLng="{ lat: marker.lat, lng: marker.lon }"
-                class-name="markertype"
-                @click="getPointDetails(marker.lat, marker.lon, marker.pickup_type)"
-                v-on="isMobile ? { click: () => toogleMethod('true') } : {}"
-              >
-                <l-icon :icon-anchor="[getImgUrl(logosUrl[marker.pickup_type])]" :icon-size="[52, 52]" class-name="someExtraClass">
-                  <img :src="getPinsUrl(pinsUrl[marker.pickup_type])" width="52" height="52" />
-                </l-icon>
-                  <l-popup v-if="!isMobile && $store.state.markerDetails">
-                    <div class="popup-box">
-                      <div v-for="(point, index) in points" :key="'info-' + index">
-                        <div class="popup-info">
-                          <div class="popup-text-box">
-                            <template v-if="point">
-                              <p class="popup-text" v-if="$store.state.markerDetails.length !== 0">
-                                <b><img class="popup-icon" :src="popupIcons[marker.pickup_type]" />{{ point.name }}</b><br />
-                                <b>{{ $store.state.markerDetails.street }}</b><br />
-                                {{ $store.state.markerDetails.zip }} {{ $store.state.markerDetails.city }}, <br />
-                                {{ point.id }}
-                              </p>
-                            </template>
-                          </div>
-                          <div class="popup-img">
-                            <img :src="getImgUrl(logosUrl[marker.pickup_type])" width="100%" height="auto" />
-                          </div>
-                          <template v-if="point && $store.state.markerDetails.length !== 0">
-                            <div class="popup-add">
-                              <p class="popup-time" v-if="point && point.working_hours.length > 0">
-                                Godziny otwarcia: <br />
-                                {{ point.working_hours.join(' ') }}
-                              </p>
-                              <div class="popup-features">
-                                <p class="features-item" v-if="point.features.open_late">Otwarte do pózna</p>
-                                <p class="features-item" v-if="point.features.open_saturday">Otwarte w soboty</p>
-                                <p class="features-item" v-if="point.features.open_sunday">Otwarte w niedziele</p>
-                                <p class="features-item" v-if="point.features.parking">Parking</p>
-                                <p class="features-item" v-if="point.features.disabled_friendly">Ułatwienie dla osób niepełnosprawnych</p>
-                                <p class="features-item" v-if="point.features.cash_on_delivery">Odbiór za pobraniem</p>
-                              </div>
-                            </div>
+      <l-map
+        :zoom="getZoom"
+        :center="center"
+        :options="{ zoomControl: true}"
+        @update:bounds="boundsUpdated"
+        @update:center="centerUpdated"
+      >
+        <l-tile-layer :url="url" :attribution="attribution" />
+        <template>
+        <div v-if="isMobile" class="locationIconMapBox" @click="currentPos()">
+          <img src="../../assets/icons/gps24px.svg" alt="Select my localization" class="locationIconMap"/>
+        </div>
+          <l-marker-cluster :options="clusterOptions" @clusterclick="click()" @ready="ready">
+            <l-marker
+              v-for="(marker, name) in pointMarkers"
+              :key="name"
+              :latLng="{ lat: marker.lat, lng: marker.lon }"
+              class-name="markertype"
+              @click="getPointDetails(marker.lat, marker.lon, marker.pickup_type)"
+              v-on="isMobile ? { click: () => toogleMethod('true') } : {}"
+            >
+              <l-icon :icon-anchor="[26, 52]" :icon-size="[52, 52]" :icon-url="getPinsUrl(pinsUrl[marker.pickup_type])">
+              </l-icon>
+                <l-popup v-if="!isMobile && $store.state.markerDetails">
+                  <div class="popup-box">
+                    <div v-for="(point, index) in points" :key="'info-' + index">
+                      <div class="popup-info">
+                        <div class="popup-text-box">
+                          <template v-if="point">
+                            <p class="popup-text" v-if="$store.state.markerDetails.length !== 0">
+                              <b><img class="popup-icon" :src="popupIcons[marker.pickup_type]" />{{ point.name }}</b><br />
+                              <b>{{ $store.state.markerDetails.street }}</b><br />
+                              {{ $store.state.markerDetails.zip }} {{ $store.state.markerDetails.city }}, <br />
+                              {{ point.id }}
+                            </p>
                           </template>
                         </div>
-                        <div class="popup-action" :key="'btn-' + index">
-                          <div class="road">
-                            <a :href="linkToRoad" target="_blank">Wyznacz trasę dojazdu</a>
-                          </div>
-                          <p id="btn-wybierz" class="popup-button" :style="getBackgroundColor" @click="setPoint($store.state.markerDetails, point)">
-                            Wybierz i wróć do zamówienia
-                          </p>
+                        <div class="popup-img">
+                          <img :src="getImgUrl(logosUrl[marker.pickup_type])" width="100%" height="auto" />
                         </div>
+                        <template v-if="point && $store.state.markerDetails.length !== 0">
+                          <div class="popup-add">
+                            <p class="popup-time" v-if="point && point.working_hours.length > 0">
+                              Godziny otwarcia: <br />
+                              {{ point.working_hours.join(' ') }}
+                            </p>
+                            <div class="popup-features">
+                              <p class="features-item" v-if="point.features.open_late">Otwarte do pózna</p>
+                              <p class="features-item" v-if="point.features.open_saturday">Otwarte w soboty</p>
+                              <p class="features-item" v-if="point.features.open_sunday">Otwarte w niedziele</p>
+                              <p class="features-item" v-if="point.features.parking">Parking</p>
+                              <p class="features-item" v-if="point.features.disabled_friendly">Ułatwienie dla osób niepełnosprawnych</p>
+                              <p class="features-item" v-if="point.features.cash_on_delivery">Odbiór za pobraniem</p>
+                            </div>
+                          </div>
+                        </template>
+                      </div>
+                      <div class="popup-action" :key="'btn-' + index">
+                        <div class="road">
+                          <a :href="linkToRoad" target="_blank">Wyznacz trasę dojazdu</a>
+                        </div>
+                        <p id="btn-wybierz" class="popup-button" :style="getBackgroundColor" @click="setPoint($store.state.markerDetails, point)">
+                          Wybierz i wróć do zamówienia
+                        </p>
                       </div>
                     </div>
-                  </l-popup>
-              </l-marker>
-            </l-marker-cluster>
-            <l-marker
-              v-if="$store.state.geolocation.lat"
-              :lat-lng="{ lat: $store.state.geolocation.lat, lng: $store.state.geolocation.lng }"
-              :visible="true"
-              class-name="markertype"
-            >
-              <l-icon :icon-anchor="[ $store.state.geolocation.lat, $store.state.geolocation.lng]" :icon-size="[52, 52]" class-name="someExtraClass">
-                <span  class="myLocationSpan" :style="getBackgroundColor"><img src="../../assets/icons/gps24px.svg" class="myLocationIcon" /></span>
-              </l-icon>
+                  </div>
+                </l-popup>
             </l-marker>
-          </template>
-        </l-map>
-      </transition>
+          </l-marker-cluster>
+          <l-marker
+            v-if="$store.state.geolocation.lat"
+            :lat-lng="{ lat: $store.state.geolocation.lat, lng: $store.state.geolocation.lng }"
+            :visible="true"
+            class-name="markertype"
+          >
+            <l-icon :icon-anchor="[ $store.state.geolocation.lat, $store.state.geolocation.lng]" :icon-size="[52, 52]" class-name="someExtraClass">
+              <span  class="myLocationSpan" :style="getBackgroundColor"><img src="../../assets/icons/gps24px.svg" class="myLocationIcon" /></span>
+            </l-icon>
+          </l-marker>
+        </template>
+      </l-map>
     </div>
     <div>
       <transition :name="'fade-in-up'">
