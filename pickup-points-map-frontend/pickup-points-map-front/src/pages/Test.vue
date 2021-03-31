@@ -12,35 +12,30 @@
 
 <script>
 import Vue from 'vue'
-import Mapa from '../components/newMap/src/mapa'
+import LMap from '../components/newMap/src/map'
 import { mapGetters } from 'vuex'
-// random coordinates example
 const Points = require('../assets/points.json')
 
-Vue.component('v-map', Mapa.Map)
-Vue.component('v-tilelayer', Mapa.Tile)
-Vue.component('v-markercluster', Mapa.MarkerCluster)
+Vue.component('v-map', LMap.Map)
+Vue.component('v-tilelayer', LMap.Tile)
+Vue.component('v-markercluster', LMap.MarkerCluster)
 
 export default {
   components: {
-    'v-map': Mapa.Map,
-    'v-tilelayer': Mapa.Tile,
-    'v-marker': Mapa.Marker,
-    'v-markercluster': Mapa.MarkerCluster,
-    'v-popup': Mapa.Popup,
-    'v-tooltip': Mapa.Tooltip,
-    'v-geojson': Mapa.GeoJSON
+    'v-map': LMap.Map,
+    'v-tilelayer': LMap.Tile,
+    'v-marker': LMap.Marker,
+    'v-markercluster': LMap.MarkerCluster,
+    'v-popup': LMap.Popup
   },
   data () {
     let points = Points
     let locations = []
     let icon = window.L.icon({iconUrl: require('../assets/inpost.png'), iconSize: [52, 52]})
-    console.log(points)
     for (let i = points.length - 1; i > 0; i--) {
       let point = points[i]
       let coord = [point.lat, point.lon]
       let marker = window.L.marker(coord, {icon: icon})
-      marker.bindTooltip('Hello ' + i)
       locations.push(marker)
     }
     return {
@@ -71,7 +66,7 @@ export default {
   },
   mounted () {
     let vm = this
-    vm.$refs.cluster.add(vm.$refs.map.mapa)
+    vm.$refs.cluster.add(vm.$refs.map.lmap)
     vm.$refs.cluster.update(vm.locations)
     vm.isFetching = false
   }

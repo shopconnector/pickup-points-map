@@ -47,23 +47,23 @@ export default {
   props: props,
   mounted () {
     let vm = this
-    vm.mapa = L.tileLayer(vm.url, vm.options)
+    vm.lmap = L.tileLayer(vm.url, vm.options)
 
-    EventBus.$on('mounted', function (mapa) {
+    EventBus.$on('mounted', function (lmap) {
       if (vm.$parent._isMounted) {
-        if (mapa._leaflet_id === vm.$parent.mapa._leaflet_id) {
+        if (lmap._leaflet_id === vm.$parent.lmap._leaflet_id) {
           if (!vm.bare) {
-            vm.mapa.addTo(vm.$parent.mapa)
+            vm.lmap.addTo(vm.$parent.lmap)
           }
-          EventBus.$emit('mounted', vm.mapa)
+          EventBus.$emit('mounted', vm.lmap)
         }
       }
     })
   },
   methods: {
-    add (mapa) {
+    add (lmap) {
       let vm = this
-      vm.mapa.addTo(mapa)
+      vm.lmap.addTo(lmap)
     }
   }
 }

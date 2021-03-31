@@ -36,17 +36,17 @@ export default {
   props: props,
   mounted () {
     let vm = this
-    vm.mapa = L.popup(vm.options)
-    eventsBinder(vm, vm.mapa, events)
+    vm.lmap = L.popup(vm.options)
+    eventsBinder(vm, vm.lmap, events)
     EventBus.$on('mounted', add)
 
-    function add (mapa) {
+    function add (lmap) {
       if (vm.$parent._isMounted) {
-        if (mapa._leaflet_id === vm.$parent.mapa._leaflet_id) {
+        if (lmap._leaflet_id === vm.$parent.lmap._leaflet_id) {
           if (!vm.bare) {
-            vm.add(vm.$parent.mapa)
+            vm.add(vm.$parent.lmap)
           }
-          EventBus.$emit('mounted', vm.mapa)
+          EventBus.$emit('mounted', vm.lmap)
         }
       }
     }
@@ -58,10 +58,10 @@ export default {
     }
   },
   methods: {
-    add (mapa) {
+    add (lmap) {
       let vm = this
-      vm.mapa.setContent(this.content || this.$el)
-      mapa.bindPopup(vm.mapa)
+      vm.lmap.setContent(this.content || this.$el)
+      lmap.bindPopup(vm.lmap)
     }
   }
 }

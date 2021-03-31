@@ -1,5 +1,5 @@
 <template>
-  <div class="mapa">
+  <div class="lmap">
     <slot></slot>
   </div>
 </template>
@@ -121,15 +121,15 @@ export default {
       options.zoom = vm.zoom
     }
 
-    vm.mapa = L.map(vm.$el, options)
-    eventsBinder(vm, vm.mapa, events)
-    EventBus.$emit('mounted', vm.mapa)
+    vm.lmap = L.map(vm.$el, options)
+    eventsBinder(vm, vm.lmap, events)
+    EventBus.$emit('mounted', vm.lmap)
   }
 }
 </script>
 
 <style>
-  .mapa {
+  .lmap {
     height: 100%;
     width: 100%;
   }

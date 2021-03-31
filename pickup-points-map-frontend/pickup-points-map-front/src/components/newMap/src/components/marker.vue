@@ -75,17 +75,17 @@ export default {
       options.draggable = vm.draggable
     }
 
-    vm.mapa = L.marker(this.latLng, vm.options)
-    eventsBinder(vm, vm.mapa, events)
+    vm.lmap = L.marker(this.latLng, vm.options)
+    eventsBinder(vm, vm.lmap, events)
     EventBus.$on('mounted', add)
 
-    function add (mapa) {
+    function add (lmap) {
       if (vm.$parent._isMounted) {
-        if (mapa._leaflet_id === vm.$parent.mapa._leaflet_id) {
+        if (lmap._leaflet_id === vm.$parent.lmap._leaflet_id) {
           if (!vm.bare) {
-            vm.add(vm.$parent.mapa)
+            vm.add(vm.$parent.lmap)
           }
-          EventBus.$emit('mounted', vm.mapa)
+          EventBus.$emit('mounted', vm.lmap)
         }
       }
     }
@@ -93,13 +93,13 @@ export default {
   beforeDestroy () {
     let vm = this
     if (!vm.bare) {
-      vm.$parent.mapa.removeLayer(vm.mapa)
+      vm.$parent.lmap.removeLayer(vm.lmap)
     }
   },
   methods: {
-    add (mapa) {
+    add (lmap) {
       let vm = this
-      vm.mapa.addTo(mapa)
+      vm.lmap.addTo(lmap)
     }
   }
 }
