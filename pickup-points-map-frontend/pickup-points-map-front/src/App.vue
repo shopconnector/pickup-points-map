@@ -37,6 +37,7 @@ body{
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: $color-black;
+  height: 100%;
 }
 input {
   outline:none;
