@@ -85,18 +85,16 @@
         :zoom="getZoom"
         :center="center"
         :options="{ zoomControl: true}"
-        @update:bounds="boundsUpdated"
-        @update:center="centerUpdated"
       >
         <l-tile-layer :url="url" :attribution="attribution" />
         <template>
         <div v-if="isMobile" class="locationIconMapBox" @click="currentPos()">
           <img src="../../assets/icons/gps24px.svg" alt="Select my localization" class="locationIconMap"/>
         </div>
-          <l-marker-cluster :options="clusterOptions" @clusterclick="click()" @ready="ready">
+          <l-marker-cluster :options="clusterOptions">
             <l-marker
-              v-for="(marker, name, index) in pointMarkers"
-              :key="name + '-' + index"
+              v-for="(marker, name) in pointMarkers"
+              :key="name + marker.lat + marker.lon"
               :lat-lng="[marker.lat, marker.lon]"
               @click="getPointDetails(marker.lat, marker.lon, marker.pickup_type)"
               v-on="isMobile ? { click: () => toogleMethod('true') } : {}"
@@ -200,6 +198,7 @@ export default {
   mixins: [MobileDetected],
   data () {
     return {
+      result: null,
       dataToSend: {
         pickup_type: '',
         points: {},
@@ -208,7 +207,10 @@ export default {
         zip: ''
       },
       loader: false,
-      clusterOptions: {},
+      clusterOptions: {
+        disableClusteringAtZoom: 17,
+        chunkedLoading: true
+      },
       selectedPoint: Number,
       toogleMap: false,
       url: 'https://atileosmorg-luldmjs.stackpathdns.com/{z}/{x}/{y}.png',
@@ -350,15 +352,6 @@ export default {
     }
   },
   watch: {
-    centerUpdateOrFiltersUpdate: {
-      handler () {
-        this.$store.commit('changePageNumber', 1)
-        if (this.$store.state.radiusOfVisibily !== 1) {
-          this.loader = true
-          this.throttleFunction(this.apiCalls, 1000)
-        }
-      }
-    },
     filtersUpdate: {
       handler () {
         this.$store.dispatch('get_list_points', {
@@ -372,15 +365,10 @@ export default {
       }
     }
   },
-  mounted () {
-    setTimeout(() => {
-      this.$nextTick(() => {
-        this.clusterOptions = {
-          disableClusteringAtZoom: 11,
-          chunkedLoading: true
-        }
-      })
-    }, 5000)
+  beforeCreate () {
+    this.$nextTick(() => {
+      this.apiCalls()
+    })
     EventBus.$on('toogleMethodBus', bool => {
       if (bool === 'true') {
         this.$store.state.toogleModal = true
@@ -392,6 +380,9 @@ export default {
     })
   },
   methods: {
+    test (e) {
+      console.log(e)
+    },
     apiCalls () {
       this.$store.dispatch('get_points', {
         lat: `lat=${this.getCurrentLat}`,
@@ -420,8 +411,6 @@ export default {
         }, delay)
       }
     },
-    click: (e) => console.log('clusterclick', e),
-    ready: (e) => console.log('ready', e),
     getImgUrl (pic) {
       if (pic) {
         return require('../../assets/logos/' + pic)
@@ -577,7 +566,8 @@ export default {
       this.$store.commit('closeListFooter')
     },
     centerUpdated (center) {
-      this.$store.commit('updatePosition', [{ lat: center.lat, lng: center.lng, zoom: null }])
+      console.log(center)
+      if (center.lat !== this.getCurrentLat && center.lng !== this.getCurrentLng) this.$store.commit('updatePosition', [{ lat: center.lat, lng: center.lng, zoom: null }])
     },
     boundsUpdated (bounds) {
       let fromLng = (bounds._northEast.lng / 180.0) * Math.PI
@@ -586,7 +576,8 @@ export default {
       let pointLat = (bounds._southWest.lat / 180.0) * Math.PI
       let dist = Math.acos(Math.sin(fromLat) * Math.sin(pointLat) + Math.cos(fromLat) * Math.cos(pointLat) * Math.cos(pointLng - fromLng)) * 6371000
       let rad = Math.round(dist / 2)
-      this.$store.commit('changeRadiusOfVisibility', rad)
+      console.log(rad)
+      if (this.$store.state.radiusOfVisibily !== rad) this.$store.commit('changeRadiusOfVisibility', rad)
     },
     currentPos () {
       this.$vuexGeolocation.getCurrentPosition()

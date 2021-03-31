@@ -17,9 +17,9 @@ export default new Vuex.Store({
     zoom: 7,
     lat: 53.0409,
     lng: 19.2850,
-    radiusOfVisibily: 1,
+    radiusOfVisibily: 492587,
     markerDetails: [],
-    pointMarkers: {},
+    pointMarkers: [],
     appLoader: false,
     closestPunktErrors: '',
     pageNumber: 1,
@@ -117,14 +117,7 @@ export default new Vuex.Store({
     get_points_succ (state, points) {
       state.closestPunktErrors = ''
       state.status = 'success, points loaded'
-      let newPoints = {}
-      points.map(point => {
-        newPoints[point.lon] = point
-      })
-      const result = Object.keys(newPoints).every(val => Object.keys(state.pointMarkers).includes(val))
-      if (!result) {
-        state.pointMarkers = Object.assign({}, state.pointMarkers, newPoints)
-      }
+      if (points && points.length) state.pointMarkers = points
     },
     get_closest_points_succ (state, points) {
       state.pointMarkers = points
