@@ -6,13 +6,13 @@
     <v-map ref="map" :zoom="getZoom" :center="center" :options="{center: center, zoom: getZoom, zoomControl: true }">
       <v-tilelayer :url="url" :attribution="attribution"></v-tilelayer>
       <v-markercluster ref="cluster" @updated="stopFetching" :bare="true" :options="{chunkedLoading: true, maxClusterRadius: 200}">
-        <v-popup v-if="!isMobile && $store.state.markerDetails">
-          <div class="popup-box">
+        <v-popup v-if="!isMobile">
+          <div class="popup-box" v-if="Object.keys($store.state.markerDetails).length !== 0">
             <div v-for="(point, index) in points" :key="'info-' + index">
               <div class="popup-info">
                 <div class="popup-text-box">
                   <template v-if="point">
-                    <p class="popup-text" v-if="$store.state.markerDetails.length !== 0">
+                    <p class="popup-text" v-if="Object.keys($store.state.markerDetails).length !== 0">
                       <b><img class="popup-icon" :src="popupIcons[$store.state.markerDetails.pickup_type]" />{{ point.name }}</b><br />
                       <b>{{ $store.state.markerDetails.street }}</b><br />
                       {{ $store.state.markerDetails.zip }} {{ $store.state.markerDetails.city }}, <br />
@@ -23,9 +23,9 @@
                 <div class="popup-img">
                   <img :src="getImgUrl(logosUrl[$store.state.markerDetails.pickup_type])" width="100%" height="auto" />
                 </div>
-                <template v-if="point && $store.state.markerDetails.length !== 0">
+                <template v-if="point && Object.keys($store.state.markerDetails).length !== 0">
                   <div class="popup-add">
-                    <p class="popup-time" v-if="point && point.working_hours.length > 0">
+                    <p class="popup-time" v-if="point && point.working_hours && point.working_hours.length > 0">
                       Godziny otwarcia: <br />
                       {{ point.working_hours.join(' ') }}
                     </p>
@@ -91,6 +91,13 @@ export default {
       geojson: null,
       icon: null,
       isFetching: true,
+      dataToSend: {
+        pickup_type: '',
+        points: {},
+        street: '',
+        city: '',
+        zip: ''
+      },
       initialLocation: window.L.latLng(-34.9205, -57.953646),
       locations: [],
       url: 'https://atileosmorg-luldmjs.stackpathdns.com/{z}/{x}/{y}.png',
