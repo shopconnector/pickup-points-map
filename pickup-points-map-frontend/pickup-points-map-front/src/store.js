@@ -17,41 +17,23 @@ export default new Vuex.Store({
     zoom: 7,
     lat: 53.0409,
     lng: 19.2850,
-    radiusOfVisibily: 1,
+    radiusOfVisibily: 492587,
     markerDetails: [],
     pointMarkers: [],
     appLoader: false,
     closestPunktErrors: '',
-    // closestPointMarkers: [],
     pageNumber: 1,
-    // zoomClosest: null,
-    // innerFilter: '',
-    // innerAddress: '',
     selectedPoint: null,
     listMarkers: [],
     storeFilters: [],
     autocompleteList: [],
-    pointId: '',
     keyError: false,
     suggestionTextLocit: '',
     linkToRoad: {
       x: 0,
       y: 0
     },
-    // providerToPickupTypeMapping: {
-    //   'In Post': ['In Post'],
-    //   'Poczta Polska': ['Fresh Market', 'Paczka w Ruchu', 'Poczta Polska', 'Żabka', 'Orlen'],
-    //   'DPD Pickup': ['DPD Pickup'],
-    //   'Paczka w Ruchu': ['Paczka w Ruchu']
-    // },
-    customer: {
-      // key: '5DFC0961AB6BEF40736BA3099EE27491',
-      // id: '123123',
-      // name: 'bardotti',
-      // theme: 0,
-      // providers: ['Poczta Polska', 'In Post', 'DPD Pickup'],
-      // url: 'https://dev.bardotti.pl'
-    }
+    customer: {}
   },
   mutations: {
     createLoader (state) {
@@ -71,12 +53,6 @@ export default new Vuex.Store({
     updateLocitAddress (state, payload) {
       state.suggestionTextLocit = payload
     },
-    clearPointId (state) {
-      state.pointId = ''
-    },
-    changePointId (state, payload) {
-      state.pointId = payload
-    },
     changeSelectedPoint (state, payload) {
       state.selectedPoint = payload
     },
@@ -92,10 +68,6 @@ export default new Vuex.Store({
     openFilterMobile (state) {
       state.isFilterMobileOpen = 1
     },
-    // changeZoomClosest (state, payload) {
-    //   state.zoom = payload
-    //   state.closestPointMarkers = []
-    // },
     changeRadiusOfVisibility (state, newRadius) {
       if (newRadius) state.radiusOfVisibily = newRadius
     },
@@ -126,8 +98,11 @@ export default new Vuex.Store({
     howManyFiltersApplies (state, n) {
       state.filtersCount = n
     },
+    updateZoom (state, newZoom) {
+      state.zoom = newZoom
+    },
     updatePosition (state, newPosition) {
-      var point = newPosition[0]
+      let point = newPosition[0]
       if (point.zoom) {
         state.zoom = point.zoom
       }
@@ -139,23 +114,10 @@ export default new Vuex.Store({
       }
     },
     // API CALLS
-    get_points (state) {
-      state.status = 'loading points'
-    },
-    get_pointsById_succ (state, points) {
-      state.pointMarkers = points
-      state.status = 'success, pointsById loaded'
-    },
     get_points_succ (state, points) {
-      // if (state.zoom < 13) {
-      //   state.pointMarkers = []
-      //   console.log('hrll')
-      //   state.status = 'success, but distance too long'
-      // } else {
       state.closestPunktErrors = ''
-      state.pointMarkers = points
       state.status = 'success, points loaded'
-      // }
+      if (points && points.length) state.pointMarkers = points
     },
     get_closest_points_succ (state, points) {
       state.pointMarkers = points
@@ -169,10 +131,6 @@ export default new Vuex.Store({
       state.status = 'loading list points'
     },
     get_list_points_succ (state, points) {
-      // if (state.zoom < 13) {
-      //   state.listMarkers = []
-      //   state.status = 'success, but distance too long for list'
-      // } else {
       if (state.pageNumber === 1) {
         state.listMarkers = points
         state.status = 'success, list points loaded'
@@ -180,7 +138,6 @@ export default new Vuex.Store({
         state.listMarkers = state.listMarkers.concat(points)
         state.status = 'success, more list points loaded'
       }
-      // }
     },
     get_list_points_err (state) {
       state.status = 'error, list points couldnt be loaded'
@@ -223,13 +180,10 @@ export default new Vuex.Store({
   actions: {
     get_points ({commit}, query) {
       return new Promise((resolve, reject) => {
-        commit('get_points')
         APIService.get_points(query)
           .then(res => {
             const points = res.data.response.pickupPoints
-            if (res.data.response_type === 'id') {
-              commit('get_pointsById_succ', points)
-            } else if (res.data.response_type === '10 closest') {
+            if (res.data.response_type === '10 closest') {
               commit('get_closest_points_succ', points)
             } else {
               commit('get_points_succ', points)
@@ -305,6 +259,15 @@ export default new Vuex.Store({
     }
   },
   getters: {
+    getCurrentLng: state => {
+      return state.lng
+    },
+    getCurrentLat: state => {
+      return state.lat
+    },
+    getZoom: state => {
+      return state.zoom
+    },
     clearAPIFilters: state => {
       state.pointMarkers = []
       state.listMarkers = []
