@@ -18,7 +18,7 @@ export default new Vuex.Store({
     lat: 53.0409,
     lng: 19.2850,
     radiusOfVisibily: 492587,
-    markerDetails: [],
+    markerDetails: {},
     pointMarkers: [],
     appLoader: false,
     closestPunktErrors: '',
@@ -153,7 +153,7 @@ export default new Vuex.Store({
       state.status = 'error, details couldnt be loaded'
     },
     clear_point_details (state) {
-      state.markerDetails = []
+      state.markerDetails = {}
     },
     get_autocomplete (state) {
       state.status = 'loading autocomplete points'
