@@ -1,8 +1,8 @@
 <template>
   <div style="width:100%;height:100%;">
-    <div class="loading" v-show="isFetching">
+    <!-- <div class="loading" v-show="isFetching">
       <h2>Loading...</h2>
-    </div>
+    </div> -->
     <v-map ref="map" :zoom="getZoom" :center="center" :options="{center: center, zoom: getZoom, zoomControl: true }">
       <v-tilelayer :url="url" :attribution="attribution"></v-tilelayer>
       <v-markercluster ref="cluster" @updated="stopFetching" :bare="true" :options="{chunkedLoading: true, maxClusterRadius: 200}">
@@ -134,7 +134,7 @@ export default {
       let points = await this.$store.dispatch('get_points', {
         lat: `lat=${this.getCurrentLat}`,
         lng: `&lon=${this.getCurrentLng}`,
-        key: `&key=8C502093A93D00208B82C7D9F5E56614`,
+        key: `&key=${this.$store.state.customer.key}`,
         dist: `&dist=${this.$store.state.radiusOfVisibily}`,
         filtered: this.filteredPoints(),
         id: ''
@@ -178,12 +178,10 @@ export default {
       let lat = e.latlng.lat
       let lng = e.latlng.lng
       let type = e.target.options.title
-      console.log(e, '&*(*&(&*(', lat, lng, type)
       this.getPointDetails(lat, lng, type)
       if (this.isMobile) this.toogleMethod('true')
     },
     stopFetching () {
-      console.log('cluster updated')
       this.isFetching = false
     },
     centerUpdated (center) {
@@ -193,7 +191,7 @@ export default {
       this.$store.dispatch('get_point_details', {
         lat: `lat=${lat}`,
         lng: `&lon=${lng}`,
-        key: `&key=8C502093A93D00208B82C7D9F5E56614`,
+        key: `&key=${this.$store.state.customer.key}`,
         type: `&pickup_type=${type}`,
         id: ''
       })
