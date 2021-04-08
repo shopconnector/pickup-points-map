@@ -363,7 +363,9 @@ export default {
 .leaflet-marker-icon {
   position: absolute;
   top: -52px;
-  left: -20px;
+  left: -26px;
+  margin-top: 0 !important;
+  margin-left: 0 !important;
 }
 .leaflet-popup {
   .leaflet-popup-content-wrapper {
