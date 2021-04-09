@@ -349,6 +349,9 @@ export default {
   color: $white !important;
 }
 .input-tag {
+  div {
+    width: 100%;
+  }
  input {
     height: 29px;
     text-align: center;
@@ -364,7 +367,11 @@ export default {
       border-radius: 5px;
     }
  }
+ input:focus::placeholder {
+    color: transparent;
+  }
 }
+
 .input-tagV2 input{
  padding-right: 25px;
  font-size: 14px;
