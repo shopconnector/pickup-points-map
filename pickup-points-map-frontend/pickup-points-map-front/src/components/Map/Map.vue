@@ -1,9 +1,6 @@
 <template>
   <div style="width:100%;height:100%;">
-    <!-- <div class="loading" v-show="isFetching">
-      <h2>Loading...</h2>
-    </div> -->
-    <v-map ref="map" :zoom="getZoom" :center="center" :options="{center: center, zoom: getZoom, zoomControl: true }">
+    <v-map id="mapId" ref="map" :zoom.sync="getZoom" :center="center" :options="{center: center, zoom: getZoom, zoomControl: true }">
       <v-tilelayer :url="url" :attribution="attribution"></v-tilelayer>
       <v-markercluster ref="cluster" @updated="stopFetching" :bare="true" :options="{chunkedLoading: true, maxClusterRadius: 200}">
         <v-popup v-if="!isMobile">
@@ -136,7 +133,17 @@ export default {
       }
     }
   },
+  watch: {
+    zoomOrCenterUpdate: {
+      handler () {
+        this.updateMap()
+      }
+    }
+  },
   methods: {
+    updateMap () {
+      this.$refs.map.lmap.setView(this.center, this.getZoom)
+    },
     async apiCalls () {
       let points = await this.$store.dispatch('get_points', {
         lat: `lat=${this.getCurrentLat}`,
@@ -235,6 +242,13 @@ export default {
       getCurrentLat: 'getCurrentLat',
       getCurrentLng: 'getCurrentLng'
     }),
+    zoomOrCenterUpdate () {
+      return [
+        // this.$store.state.zoom,
+        this.$store.state.lat,
+        this.$store.state.lng
+      ].join()
+    },
     center () {
       return window.L.latLng(this.getCurrentLat, this.getCurrentLng)
     },
@@ -321,6 +335,10 @@ export default {
         // .bindPopup('My Popup HTML')
         this.locations.push(marker)
       }
+      // let myIcon = window.L.icon({ iconUrl: require('../../assets/icons/gps24px.svg'), iconSize: [52, 52] })
+      // let myMarker = window.L.marker([this.$store.state.geolocation.lat, this.$store.state.geolocation.lng], {icon: myIcon})
+      // this.$refs.map.lmap.push(myMarker)
+
       let cluster = this.$refs.cluster
       cluster.add(this.$refs.map.lmap)
       cluster.update(this.locations)
