@@ -138,9 +138,36 @@ export default {
       handler () {
         this.updateMap()
       }
+    },
+    filtersUpdate: {
+      handler () {
+        this.uploadsMapPoints()
+      }
     }
   },
   methods: {
+    uploadsMapPoints () {
+      this.apiCalls().then((data) => {
+        let points = data.data.response.pickupPoints
+        this.locations = []
+        for (let i = points.length - 1; i > 0; i--) {
+          let point = points[i]
+          let coord = [point.lat, point.lon]
+          let icon = window.L.icon({iconUrl: this.getPinsUrl(this.pinsUrl[point.pickup_type]), iconSize: [52, 52]})
+          let marker = window.L.marker(coord, {icon: icon, title: point.pickup_type, lat: point.lat, lon: point.lon}).on('click', this.onClick)
+          // .bindPopup('My Popup HTML')
+          this.locations.push(marker)
+        }
+        // let myIcon = window.L.icon({ iconUrl: require('../../assets/icons/gps24px.svg'), iconSize: [52, 52] })
+        // let myMarker = window.L.marker([this.$store.state.geolocation.lat, this.$store.state.geolocation.lng], {icon: myIcon})
+        // this.$refs.map.lmap.push(myMarker)
+
+        let cluster = this.$refs.cluster
+        cluster.add(this.$refs.map.lmap)
+        cluster.update(this.locations)
+        this.isFetching = false
+      })
+    },
     updateMap () {
       this.$refs.map.lmap.setView(this.center, this.getZoom)
     },
@@ -189,8 +216,8 @@ export default {
       }
     },
     onClick (e) {
-      let lat = e.latlng.lat
-      let lng = e.latlng.lng
+      let lat = e.target.options.lat
+      let lng = e.target.options.lon
       let type = e.target.options.title
       this.getPointDetails(lat, lng, type)
       if (this.isMobile) this.toogleMethod('true')
@@ -246,7 +273,9 @@ export default {
       return [
         // this.$store.state.zoom,
         this.$store.state.lat,
-        this.$store.state.lng
+        this.$store.state.lng,
+        this.$store.state.storeFilters.features,
+        this.$store.state.storeFilters.checkedSuppliers
       ].join()
     },
     center () {
@@ -303,6 +332,12 @@ export default {
         return url
       }
     },
+    filtersUpdate () {
+      return [
+        this.$store.state.storeFilters.features,
+        this.$store.state.storeFilters.checkedSuppliers
+      ].join()
+    },
     getBackgroundColor () {
       if (this.$store.state.customer.options) {
         return 'background:' + this.$store.state.customer.options.primary_color
@@ -324,26 +359,7 @@ export default {
     })
   },
   mounted () {
-    this.apiCalls().then((data) => {
-      let points = data.data.response.pickupPoints
-      this.locations = []
-      for (let i = points.length - 1; i > 0; i--) {
-        let point = points[i]
-        let coord = [point.lat, point.lon]
-        let icon = window.L.icon({iconUrl: this.getPinsUrl(this.pinsUrl[point.pickup_type]), iconSize: [52, 52]})
-        let marker = window.L.marker(coord, {icon: icon, title: point.pickup_type}).on('click', this.onClick)
-        // .bindPopup('My Popup HTML')
-        this.locations.push(marker)
-      }
-      // let myIcon = window.L.icon({ iconUrl: require('../../assets/icons/gps24px.svg'), iconSize: [52, 52] })
-      // let myMarker = window.L.marker([this.$store.state.geolocation.lat, this.$store.state.geolocation.lng], {icon: myIcon})
-      // this.$refs.map.lmap.push(myMarker)
-
-      let cluster = this.$refs.cluster
-      cluster.add(this.$refs.map.lmap)
-      cluster.update(this.locations)
-      this.isFetching = false
-    })
+    this.uploadsMapPoints()
   }
 }
 </script>
