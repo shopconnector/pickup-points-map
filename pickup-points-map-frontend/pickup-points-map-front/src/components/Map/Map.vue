@@ -116,7 +116,12 @@ export default {
         'AUTOMAT SPOLEM': 'spolem.png',
         'AUTOMAT BIEDRONKA': 'biedronka.png',
         'AUTOMAT CARREFOUR': 'carrefour.png',
-        'AUTOMAT LEWIATAN': 'lewiatan.png'
+        'AUTOMAT LEWIATAN': 'lewiatan.png',
+        'BIEDRONKA': 'biedronka.png',
+        'LEWIATAN': 'lewiatan.png',
+        'ABC': 'abc.jpeg',
+        'DELIKATESY CENTRUM': 'delikatesy.png',
+        'KAUFLAND': 'kaufland.png'
       },
       pinsUrl: {
         'Żabka': 'zabka.png',
@@ -129,7 +134,12 @@ export default {
         'AUTOMAT SPOLEM': 'spolem.png',
         'AUTOMAT BIEDRONKA': 'biedronka.png',
         'AUTOMAT CARREFOUR': 'carrefour.png',
-        'AUTOMAT LEWIATAN': 'lewiatan.png'
+        'AUTOMAT LEWIATAN': 'lewiatan.png',
+        'BIEDRONKA': 'biedronka.png',
+        'LEWIATAN': 'lewiatan.png',
+        'ABC': 'abc.jpeg',
+        'DELIKATESY CENTRUM': 'delikatesy.png',
+        'KAUFLAND': 'kaufland.png'
       }
     }
   },
