@@ -69,7 +69,8 @@ export default {
         'Orlen': 'orlen.png',
         'AUTOMAT SPOLEM': 'spolem.png',
         'AUTOMAT BIEDRONKA': 'biedronka.png',
-        'AUTOMAT CARREFOUR': 'carrefour.png'
+        'AUTOMAT CARREFOUR': 'carrefour.png',
+        'AUTOMAT LEWIATAN': 'lewiatan.png'
       },
       featuresInfo: {
         'open_late': 'Otwarte do późna',
@@ -123,20 +124,25 @@ export default {
       }
     },
     allSuppliers () {
-      return Array.from(new Set(Object.values(this.providerToPickupTypeMapping).flat(1)))
+      let allPunkts = this.providerToPickupTypeMapping
+      let arr = []
+      for (let item of Object.keys(allPunkts)) {
+        arr.push(...allPunkts[item])
+      }
+      return arr
     },
-
     providerToPickupTypeMapping () {
       if (this.$store.state.customer.providers) {
-        let allProviders = []
-        for (let supplier in this.$store.state.customer.providers) {
-          for (let type in this.$store.state.customer.providers[supplier]) {
-            if (allProviders.indexOf(type) === -1) {
-              allProviders.push(type)
-            }
+        let providers = this.$store.state.customer.providers
+        let newObj = {}
+        for (let provider of Object.keys(providers)) {
+          let arr = []
+          for (let item of Object.keys(providers[provider])) {
+            arr.push(item)
           }
+          newObj[provider] = arr
         }
-        return allProviders
+        return newObj
       }
     },
     customerUrl () {
@@ -155,22 +161,18 @@ export default {
       immediate: true,
       handler () {
         if (this.innerFilter) {
-          if (this.allSuppliers.indexOf(this.innerFilter) >= 0) {
-            if (this.filters.checkedSuppliers.indexOf(this.innerFilter) === -1) {
-              // var filter = this.filters.checkedSuppliers.slice()
-              // filter.push(this.innerFilter)
-              this.filters.checkedSuppliers = [this.innerFilter]
-              if (this.$store.state.toogleModal === true) {
-                this.$store.commit('closeToogleModal', false)
-              }
-              var closePopup = document.getElementsByClassName('leaflet-popup-close-button')[0]
-              if (closePopup) {
-                closePopup.click()
-              }
-              var n = this.filters.features.length + this.filters.checkedSuppliers.length
-              this.$store.commit('howManyFiltersApplies', n)
-              return this.selectedFilter()
+          if (this.providerToPickupTypeMapping[this.innerFilter]) {
+            this.filters.checkedSuppliers = this.providerToPickupTypeMapping[this.innerFilter]
+            if (this.$store.state.toogleModal === true) {
+              this.$store.commit('closeToogleModal', false)
             }
+            var closePopup = document.getElementsByClassName('leaflet-popup-close-button')[0]
+            if (closePopup) {
+              closePopup.click()
+            }
+            var n = this.filters.features.length + this.filters.checkedSuppliers.length
+            this.$store.commit('howManyFiltersApplies', n)
+            return this.selectedFilter()
           }
         }
       }

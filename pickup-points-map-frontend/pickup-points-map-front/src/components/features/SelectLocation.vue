@@ -28,26 +28,6 @@
         <span class="span-location" :class="{'span-locationV2' : isWidgetVersion}" @click="clearInput()"><i class="clear-input"/></span>
         <span class="select-icon-location" :class="{'span-locationV2' : isWidgetVersion}" @click="selectedLocation(selectedSuggestion)"><i class="lupa-icon"/></span>
         </div>
-        <!--Wpisz kod odbioru -->
-        <!-- <p class="lub">lub</p>
-        <div class="suggest-box-punkt">
-        <vue-autosuggest
-            class='input-tag'
-            :class="{'input-tagV2' : !isWidgetVersion}"
-            :limit="10"
-            v-model="kodOdbioru"
-            @input="kodOdbioruMethod()"
-            @selected="logKodResult"
-            :get-suggestion-value="getSuggestionCode"
-            :suggestions="[{data:autocompleteList}]"
-            :input-props="{id:'autosuggest__input', placeholder:'Podaj kod odbioru'}"
-        >
-          <template slot-scope="{suggestion}">
-            {{ suggestion.item }}
-          </template>
-        </vue-autosuggest>
-        <span class="span-location" :class="{'span-locationV2' : isWidgetVersion}" @click="clearKodObioru()"><i class="clear-input"/></span>
-        </div> -->
     </div>
     <vue-over-body v-if="isMobile" :dim="false" class="active-modal-footer" :open="IsFooterModalOpen" before="beforeFooterModal" after="afterFooterModal" :transition="0.3">
       <div class="footer-box">
@@ -57,7 +37,6 @@
           <template v-else>Zacznij wpisywać adres</template>
         </div>
         <p :style="getBtnStyle" class='toAppBtn' @click="closeWidget()">Wróc do sklepu</p>
-        <!-- <div class='input-modal-button'>Wpisz kod odbioru</div> -->
       </div>
     </vue-over-body>
     <vue-over-body :dim="false" :open="IsLocitModalOpen" before="beforeLocitModal" after="afterLocitModal" :transition="0.3">
@@ -227,15 +206,10 @@ export default {
         this.$store.commit('updatePosition', [{ lat: Number(value.y), lng: Number(value.x), zoom: 15 }])
         this.$store.commit('updateLinkToRoad', { x: value.y, y: value.x })
         this.$store.commit('updateStateGeo')
-        // this.$store.commit('updateLocitAddress', '')
       }
     },
     emitMethod () {
       EventBus.$emit('popupClose')
-    },
-    clearKodObioru () {
-      this.kodOdbioru = ''
-      this.$store.commit('clearPointId')
     },
     openLocitModal () {
       this.$store.commit('openLocitModal')
@@ -248,6 +222,7 @@ export default {
     },
     currentPos () {
       this.$vuexGeolocation.getCurrentPosition()
+      this.$store.commit('updateZoom', 15)
       this.$store.commit('updateLocitAddress', '')
       this.$store.commit('updateLinkToRoad', {x: 0, y: 0})
       if (this.IsFooterModalOpen) {
@@ -298,34 +273,6 @@ export default {
     },
     sendMessage (point) {
       window.parent.postMessage(point, '*')
-    },
-    logKodResult (item) {
-      this.closeLocitModal()
-      if (item) {
-        this.placeHolder = item.item
-        this.kodOdbioru = item.item
-        this.$store.commit('changePointId', this.kodOdbioru)
-        // this.$http.get(`https://api.pickuppointsmap.dev.beecommerce.pl/pickup-points-map?id=` + this.kodOdbioru).then(res => {
-        //   var mapPoint = res.data.response
-        //   this.$store.commit('updatePosition', [{ lat: Number(mapPoint.pickupPoints[0].lat), lng: Number(mapPoint.pickupPoints[0].lon), zoom: 16 }])
-        //   console.log('Map point: ', mapPoint)
-        // }).catch(error => {
-        //   console.log(error)
-        // })
-        // this.$store.dispatch('get_points', {
-        //   lat: '',
-        //   lng: '',
-        //   dist: '',
-        //   filtered: '',
-        //   id: `id=${this.kodOdbioru}`
-        // })
-        // this.$http.get(`https://api.pickuppointsmap.dev.beecommerce.pl/pickup-points-list?id=` + this.kodOdbioru).then(res => {
-        //   var listPoint = res.data.response
-        //   console.log('List point: ', listPoint)
-        // }).catch(error => {
-        //   console.log(error)
-        // })
-      }
     },
     getSuggestionCode (suggestion) {
       if (suggestion) {
@@ -402,6 +349,9 @@ export default {
   color: $white !important;
 }
 .input-tag {
+  div {
+    width: 100%;
+  }
  input {
     height: 29px;
     text-align: center;
@@ -417,7 +367,11 @@ export default {
       border-radius: 5px;
     }
  }
+ input:focus::placeholder {
+    color: transparent;
+  }
 }
+
 .input-tagV2 input{
  padding-right: 25px;
  font-size: 14px;

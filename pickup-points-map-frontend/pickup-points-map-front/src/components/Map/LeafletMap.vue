@@ -1,40 +1,29 @@
 <template>
   <div :class="{ 'list-background-mobile-fix': isMobile }">
     <div :class="isWidgetVersion ? 'map-v2' : 'map'">
-      <div class="type-actions" :class="{'box-shadow' : !isMobile }">
-        <p class="button-action" :class="{ 'active': !toogleMap }" :style="{ backgroundColor: !toogleMap ? getActive : '' }" @click="toogleMapMethod('show'), openListModal(9999)">Mapa</p>
-        <p
-          class="button-action"
-          :class="{ 'active': toogleMap }"
-          :style="{ backgroundColor: toogleMap ? getActive : '' }"
-          v-on="$store.state.pointMarkers && $store.state.pointMarkers.length > 100 ? {} : { click: () => toogleMapMethod('hide') }"
-        >
+      <div class="type-actions">
+        <p class="button-action" :class="{ 'active': !toogleMap }" :style="{ backgroundColor: !toogleMap ? getActive : '' }" @click="toogleMapMethod(), openListModal(9999)">Mapa</p>
+        <p class="button-action" :class="{ 'active': toogleMap }" :style="{ backgroundColor: toogleMap ? getActive : '' }" @click="toogleMapMethod()">
           Lista
         </p>
       </div>
       <div class="closeWidget">
-        <p class="closeBtn" @click="closeWidget()"></p>
+        <p class="closeBtn" @click="closeWidget()" />
       </div>
-      <div v-if="this.$store.state.geolocation.error.code === 1 && $store.state.pointMarkers && !$store.state.pointMarkers.length" class="first-enter-info">
+      <div v-if="this.$store.state.geolocation.error.code === 1 && !Object.keys(pointMarkers).length" class="first-enter-info">
         <p class="error-text" :style="getColor">
           Wybierz adres/lokalizację aby
           <br />zobaczyć najbliższe punkty odbioru
           <span class="mt10">Uwaga: Lokalizacja dla tej domeny jest zablokowana. <br />Możesz ponownie włączyć w ustawieniach przeglądarki.</span>
         </p>
       </div>
-      <!-- <div v-else-if="$store.state.pointMarkers && !$store.state.pointMarkers.length && $store.state.radiusOfVisibily === 1" class="first-enter-info">
-        <p :style="getColor">Wybierz adres/lokalizację aby<br />zobaczyć najbliższe punkty odbioru</p>
-      </div> -->
       <div
         v-else-if="$store.state.status === 'error, points couldnt be loaded' || $store.state.status === 'error, list points couldnt be loaded'"
         class="first-enter-info"
       >
         <p :style="getColor">Nie znaleziono żadnego punktu. Zmień kryteria wyboru.</p>
       </div>
-      <div v-else-if="$store.state.pointMarkers && $store.state.pointMarkers.length > 100 && !toogleMap" class="error-info">
-        <p :style="getColor">Powiększ zoom żeby zobaczyć punkty</p>
-      </div>
-      <div v-else-if="$store.state.closestPunktErrors.length > 0 && $store.state.pointMarkers.length === 10 && !toogleMap" class="error-info">
+      <div v-else-if="$store.state.closestPunktErrors.length > 0 && Object.keys(pointMarkers).length === 10 && !toogleMap" class="error-info">
         <p class="closest-error" :style="getColor">ODDAL MAPĘ, ŻEBY POKAZAĆ PUNKTY ODBIORU.</p>
       </div>
       <transition name="fade">
@@ -65,18 +54,15 @@
               </div>
               <div class="list-elem btn-elem">
                 <p class="list-button" :style="getBackgroundColor" @click="getPointListDetails(listMarker.lat, listMarker.lon, listMarker.pickup_point_type, listMarker.id)">Wybierz i wróć do zamówienia</p>
-                <!-- Wybierz {{ listMarker.pickup_point_type }} i zamknij -->
                 <a class="list-link" :style="getDecorationColor" :href="linkToRoadMap(listMarker)" target="_blank">Wyznacz trasę dojazdu</a>
               </div>
               <transition name="fade">
                 <div class="list-modal" v-if="isOpenListModal(index) && isMobile && $store.state.markerDetails">
-                  <template v-if="typeof $store.state.markerDetails.points !== 'undefined'">
+                  <template v-if="$store.state.markerDetails.points">
                     <div class="list-modal-hours" v-if="$store.state.markerDetails.points[0].working_hours.length > 0">
                       <b>Godziny otwarcia:</b>
-                      <div>
-                        <template v-for="(day, index) in $store.state.markerDetails.points[0].working_hours">
-                          <p class="day-mobile" :key="index">{{ day }}</p>
-                        </template>
+                      <div v-for="(day, index) in $store.state.markerDetails.points[0].working_hours" :key="index">
+                        <p class="day-mobile">{{ day }}</p>
                       </div>
                     </div>
                     <div class="list-modal-additional">
@@ -95,131 +81,28 @@
           </div>
         </div>
       </transition>
-      <transition name="fade">
-        <l-map
-          :zoom="zoom"
-          :center="center"
-          :options="{ zoomControl: true}"
-          @update:bounds="boundsUpdated"
-          @update:center="centerUpdated"
-          @update:zoom="zoomUpdated"
-          @popupopen="popupOpen"
-          @popupclose="popupClose"
-        >
-          <l-tile-layer :url="url" :attribution="attribution" />
-          <template>
-          <div v-if="isMobile" class="locationIconMapBox" @click="currentPos()">
-            <img src="../../assets/icons/gps24px.svg" alt="Select my localization" class="locationIconMap"/>
-          </div>
-            <l-marker
-              v-for="marker in pointMarkers"
-              :key="marker.id"
-              :visible="true"
-              :lat-lng="{ lat: marker.lat, lng: marker.lon }"
-              class-name="markertype"
-              @click="getPointDetails(marker.lat, marker.lon, marker.pickup_type)"
-              v-on="isMobile ? { click: () => toogleMethod('true') } : {}"
-            >
-              <l-icon :icon-anchor="[getImgUrl(logosUrl[marker.pickup_type])]" :icon-size="[52, 52]" class-name="someExtraClass">
-                <img :src="getPinsUrl(pinsUrl[marker.pickup_type])" width="52" height="52" />
-              </l-icon>
-              <transition name="bounce">
-                <l-popup v-if="!isMobile && $store.state.markerDetails">
-                  <div class="popup-box">
-                    <template v-for="(point, index) in points">
-                      <div class="popup-info" :key="'info-' + index">
-                        <div class="popup-text-box">
-                          <template v-if="typeof point !== 'undefined'">
-                            <p class="popup-text" v-if="$store.state.markerDetails.length !== 0">
-                              <b><img class="popup-icon" :src="popupIcons[marker.pickup_type]" />{{ point.name }}</b
-                              ><br />
-                              <b>{{ $store.state.markerDetails.street }}</b
-                              ><br />
-                              {{ $store.state.markerDetails.zip }} {{ $store.state.markerDetails.city }}, <br />
-                              {{ point.id }}
-                            </p>
-                          </template>
-                        </div>
-                        <div class="popup-img">
-                          <img :src="getImgUrl(logosUrl[marker.pickup_type])" width="100%" height="auto" />
-                        </div>
-                        <template v-if="typeof point !== 'undefined' && $store.state.markerDetails.length !== 0">
-                          <div class="popup-add">
-                            <p class="popup-time" v-if="point && point.working_hours.length > 0">
-                              Godziny otwarcia: <br />
-                              {{ point.working_hours.join(' ') }}
-                            </p>
-                            <div class="popup-features">
-                              <p class="features-item" v-if="point.features.open_late">Otwarte do pózna</p>
-                              <p class="features-item" v-if="point.features.open_saturday">Otwarte w soboty</p>
-                              <p class="features-item" v-if="point.features.open_sunday">Otwarte w niedziele</p>
-                              <p class="features-item" v-if="point.features.parking">Parking</p>
-                              <p class="features-item" v-if="point.features.disabled_friendly">Ułatwienie dla osób niepełnosprawnych</p>
-                              <p class="features-item" v-if="point.features.cash_on_delivery">Odbiór za pobraniem</p>
-                            </div>
-                          </div>
-                        </template>
-                      </div>
-                      <div class="popup-action" :key="'btn-' + index">
-                        <div class="road">
-                          <a :href="linkToRoad" target="_blank">Wyznacz trasę dojazdu</a>
-                        </div>
-                        <p id="btn-wybierz" class="popup-button" :style="getBackgroundColor" @click="setPoint($store.state.markerDetails, point)">
-                          <!-- Wybierz {{ $store.state.markerDetails.pickup_type }} i zamknij -->
-                          Wybierz i wróć do zamówienia
-                        </p>
-                      </div>
-                    </template>
-                  </div>
-                </l-popup>
-              </transition>
-            </l-marker>
-            <l-marker
-              v-if="$store.state.geolocation.lat"
-              :lat-lng="{ lat: $store.state.geolocation.lat, lng: $store.state.geolocation.lng }"
-              :visible="true"
-              class-name="markertype"
-            >
-              <l-icon :icon-anchor="[ $store.state.geolocation.lat, $store.state.geolocation.lng]" :icon-size="[52, 52]" class-name="someExtraClass">
-                <span  class="myLocationSpan" :style="getBackgroundColor"><img src="../../assets/icons/gps24px.svg" class="myLocationIcon" /></span>
-              </l-icon>
-            </l-marker>
-          </template>
-        </l-map>
-      </transition>
-    </div>
-    <div>
-      <transition :name="'fade-in-up'">
-        <div class="modal-position" :class="{ 'modal-positionV2': !isWidgetVersion }" v-if="$store.state.toogleModal">
-          <ModalDiv @closed="onCloseChild" />
-        </div>
-      </transition>
+      <LeafletMap />
     </div>
   </div>
 </template>
 
 <script>
-import { LMap, LTileLayer, LMarker, LPopup, LTooltip, LControlZoom, LIcon } from 'vue2-leaflet'
-import { latLng } from 'leaflet'
 import 'leaflet/dist/leaflet.css'
-import ModalDiv from '../features/ModalDiv.vue'
+import 'leaflet.markercluster/dist/MarkerCluster.css'
+import 'leaflet.markercluster/dist/MarkerCluster.Default.css'
 import { MobileDetected } from '../mobileDetected.ts'
-import EventBus from '../../event-bus'
+import { mapGetters } from 'vuex'
+import LeafletMap from './Map'
+
 export default {
   name: 'Home',
   components: {
-    ModalDiv,
-    LMap,
-    LTileLayer,
-    LMarker,
-    LPopup,
-    LTooltip,
-    LControlZoom,
-    LIcon
+    LeafletMap
   },
   mixins: [MobileDetected],
   data () {
     return {
+      result: null,
       dataToSend: {
         pickup_type: '',
         points: {},
@@ -227,18 +110,14 @@ export default {
         city: '',
         zip: ''
       },
-      isPopupOpen: false,
+      loader: false,
+      clusterOptions: {
+        disableClusteringAtZoom: 17,
+        chunkedLoading: true
+      },
       selectedPoint: Number,
       toogleMap: false,
-      url: 'https://atileosmorg-luldmjs.stackpathdns.com/{z}/{x}/{y}.png',
-      attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
       closeButton: false,
-      popupIcons: {
-        'DPD Pickup': require('../../assets/popup-icons/dpd16x16.png'),
-        'In Post': require('../../assets/popup-icons/paczkomaty-16x16.png'),
-        'Poczta Polska': require('../../assets/popup-icons/poczta-16x16.png'),
-        'Paczka w RUCHu': require('../../assets/popup-icons/ruch16x16.png')
-      },
       logosUrl: {
         'Żabka': 'żabka.png',
         'DPD Pickup': 'dpd-pickup.png',
@@ -249,19 +128,8 @@ export default {
         'Orlen': 'orlen.png',
         'AUTOMAT SPOLEM': 'spolem.png',
         'AUTOMAT BIEDRONKA': 'biedronka.png',
-        'AUTOMAT CARREFOUR': 'carrefour.png'
-      },
-      pinsUrl: {
-        'Żabka': 'zabka.png',
-        'DPD Pickup': 'dpdpickup.png',
-        'Fresh Market': 'fresh.png',
-        'In Post': 'inpost.png',
-        'Poczta Polska': 'poczta-polska.png',
-        'Paczka w RUCHu': 'paczka-w-ruchu.png',
-        'Orlen': 'orlen.png',
-        'AUTOMAT SPOLEM': 'spolem.png',
-        'AUTOMAT BIEDRONKA': 'biedronka.png',
-        'AUTOMAT CARREFOUR': 'carrefour.png'
+        'AUTOMAT CARREFOUR': 'carrefour.png',
+        'AUTOMAT LEWIATAN': 'lewiatan.png'
       }
     }
   },
@@ -277,9 +145,7 @@ export default {
       }
     },
     getActive () {
-      if (this.$store.state.customer.options) {
-        return this.$store.state.customer.options.primary_color
-      }
+      return this.$store.state.customer.options.primary_color
     },
     getBackgroundColor () {
       if (this.$store.state.customer.options) {
@@ -340,18 +206,13 @@ export default {
     checkedLength () {
       return !this.$store.state.pointMarkers.length
     },
-    zoom () {
-      return this.$store.state.zoom
-    },
-    center () {
-      return latLng(this.$store.state.lat, this.$store.state.lng)
-    },
+    ...mapGetters({
+      getZoom: 'getZoom',
+      getCurrentLat: 'getCurrentLat',
+      getCurrentLng: 'getCurrentLng'
+    }),
     pointMarkers () {
-      if (this.$store.state.pointMarkers && this.$store.state.pointMarkers.length > 100) {
-        return []
-      } else {
-        return this.$store.state.pointMarkers
-      }
+      return this.$store.state.pointMarkers
     },
     listMarkers () {
       return this.$store.state.listMarkers
@@ -359,97 +220,30 @@ export default {
     isWidgetVersion () {
       return this.$store.state.customer.theme
     },
-    zoomOrCenterUpdateOrFiltersUpdate () {
+    centerUpdateOrFiltersUpdate () {
       return [
-        this.$store.state.zoom,
-        this.$store.state.lat,
-        this.$store.state.lng,
+        this.getCurrentLat,
         this.$store.state.storeFilters.features,
-        this.$store.state.storeFilters.checkedSuppliers,
-        this.$store.state.pointId,
-        this.isPopupOpen
+        this.$store.state.storeFilters.checkedSuppliers
       ].join()
     },
     filtersUpdate () {
       return [this.$store.state.storeFilters.features, this.$store.state.storeFilters.checkedSuppliers].join()
-    },
-    pointIdUpdate () {
-      return [this.$store.state.pointId].join()
     }
   },
   watch: {
-    zoomOrCenterUpdateOrFiltersUpdate: {
-      handler () {
-        this.$store.commit('changePageNumber', 1)
-        if (this.$store.state.pointId) {
-          this.$store.dispatch('get_points', {
-            lat: '',
-            lng: '',
-            dist: '',
-            filtered: '',
-            id: `id=${this.$store.state.pointId}`,
-            key: `&key=${this.$store.state.customer.key}`
-          })
-        } else if (!this.isPopupOpen && this.$store.state.radiusOfVisibily !== 1) {
-          this.$store.dispatch('get_points', {
-            lat: `lat=${this.$store.state.lat}`,
-            lng: `&lon=${this.$store.state.lng}`,
-            key: `&key=${this.$store.state.customer.key}`,
-            dist: `&dist=${this.$store.state.radiusOfVisibily}`,
-            filtered: this.filteredPoints(),
-            id: ''
-          })
-        }
-      }
-    },
-    pointIdUpdate: {
-      handler () {
-        setTimeout(() => {
-          this.$store.commit('updatePosition', [{ lat: this.$store.state.pointMarkers[0].lat, lng: this.$store.state.pointMarkers[0].lon, zoom: 16 }])
-        }, 100)
-      }
-    },
     filtersUpdate: {
       handler () {
-        if (this.$store.state.pointId) {
-          this.$store.dispatch('get_list_points', {
-            lat: '',
-            lng: '',
-            page: '',
-            filtered: '',
-            id: `id=${this.$store.state.pointId}`,
-            key: `&key=${this.$store.state.customer.key}`
-          })
-        } else {
-          this.$store.dispatch('get_list_points', {
-            lat: `lat=${this.$store.state.lat}`,
-            lng: `&lon=${this.$store.state.lng}`,
-            key: `&key=${this.$store.state.customer.key}`,
-            page: `&page=${this.$store.state.pageNumber}`,
-            filtered: this.filteredPoints(),
-            id: ''
-          })
-        }
+        this.$store.dispatch('get_list_points', {
+          lat: `lat=${this.getCurrentLat}`,
+          lng: `&lon=${this.getCurrentLng}`,
+          key: `&key=${this.$store.state.customer.key}`,
+          page: `&page=${this.$store.state.pageNumber}`,
+          filtered: this.filteredPoints(),
+          id: ''
+        })
       }
     }
-  },
-  mounted () {
-    EventBus.$on('popupClose', () => {
-      this.popupClose()
-      var closePopup = document.getElementsByClassName('leaflet-popup-close-button')[0]
-      if (closePopup) {
-        closePopup.click()
-      }
-    })
-    EventBus.$on('toogleMethodBus', bool => {
-      if (bool === 'true') {
-        this.$store.state.toogleModal = true
-      } else if (bool === 'false') {
-        this.$store.state.toogleModal = false
-      } else {
-        this.$store.state.toogleModal = !this.$store.state.toogleModal
-      }
-    })
   },
   methods: {
     getImgUrl (pic) {
@@ -457,13 +251,6 @@ export default {
         return require('../../assets/logos/' + pic)
       } else {
         return require('../../assets/logos/404.png')
-      }
-    },
-    getPinsUrl (pic) {
-      if (pic) {
-        return require('../../assets/' + pic)
-      } else {
-        return require('../../assets/404.png')
       }
     },
     linkToRoadMap (listMarker) {
@@ -519,14 +306,6 @@ export default {
       this.dataToSend.points = listData.points[0]
       this.sendMessage(this.dataToSend)
     },
-    setPoint (points, selectedPoint) {
-      this.dataToSend.pickup_type = points.pickup_type
-      this.dataToSend.street = points.street
-      this.dataToSend.city = points.city
-      this.dataToSend.zip = points.zip
-      this.dataToSend.points = selectedPoint
-      this.sendMessage(this.dataToSend)
-    },
     sendMessage (point) {
       window.parent.postMessage(point, '*')
     },
@@ -550,26 +329,7 @@ export default {
       var temp = features.concat(pickupTypes)
       return temp.join('')
     },
-    popupOpen () {
-      this.isPopupOpen = true
-    },
-    popupClose () {
-      this.$store.state.toogleModal = false
-      this.isPopupOpen = false
-      this.$store.commit('clear_point_details')
-    },
-    getPointDetails (lat, lng, type) {
-      this.centerUpdated({lat, lng}, 7)
-      this.$store.dispatch('get_point_details', {
-        lat: `lat=${lat}`,
-        lng: `&lon=${lng}`,
-        key: `&key=${this.$store.state.customer.key}`,
-        type: `&pickup_type=${type}`,
-        id: ''
-      })
-    },
     getPointMobileListDetails (lat, lng, type, id) {
-      this.centerUpdated({lat, lng}, 7)
       this.$store.dispatch('get_point_details', {
         lat: `lat=${lat}`,
         lng: `&lon=${lng}`,
@@ -594,85 +354,30 @@ export default {
       var newPage = this.$store.state.pageNumber + 1
       this.$store.commit('changePageNumber', newPage)
       this.$store.dispatch('get_list_points', {
-        lat: `lat=${this.$store.state.lat}`,
-        lng: `&lon=${this.$store.state.lng}`,
+        lat: `lat=${this.getCurrentLat}`,
+        lng: `&lon=${this.getCurrentLng}`,
         key: `&key=${this.$store.state.customer.key}`,
         page: `&page=${this.$store.state.pageNumber}`,
         filtered: this.filteredPoints(),
         id: ''
       })
     },
-    toogleMapMethod (text) {
+    toogleMapMethod () {
       this.$store.commit('closeFooterModal')
-      if (text === 'show') {
-        this.toogleMap = false
-      } else if (text === 'hide') {
-        this.toogleMap = true
-      }
-      if (this.$store.state.pointId) {
-        this.$store.dispatch('get_list_points', {
-          lat: '',
-          lng: '',
-          page: '',
-          filtered: '',
-          id: `id=${this.$store.state.pointId}`,
-          key: `&key=${this.$store.state.customer.key}`
-        })
-      } else {
-        this.$store.dispatch('get_list_points', {
-          lat: `lat=${this.$store.state.lat}`,
-          lng: `&lon=${this.$store.state.lng}`,
-          key: `&key=${this.$store.state.customer.key}`,
-          page: `&page=${this.$store.state.pageNumber}`,
-          filtered: this.filteredPoints(),
-          id: ''
-        })
-      }
+      this.toogleMap = !this.toogleMap
+      this.$store.dispatch('get_list_points', {
+        lat: `lat=${this.getCurrentLat}`,
+        lng: `&lon=${this.getCurrentLng}`,
+        key: `&key=${this.$store.state.customer.key}`,
+        page: `&page=${this.$store.state.pageNumber}`,
+        filtered: this.filteredPoints(),
+        id: ''
+      })
       this.toogleMethod('false')
       this.$store.commit('closeListFooter')
     },
     centerUpdated (center) {
-      this.$store.commit('updatePosition', [{ lat: center.lat, lng: center.lng, zoom: null }])
-    },
-    zoomUpdated (zoom) {
-      this.$store.commit('updatePosition', [{ lat: null, lng: null, zoom: zoom }])
-    },
-    boundsUpdated (bounds) {
-      var fromLng = (bounds._northEast.lng / 180.0) * Math.PI
-      var fromLat = (bounds._northEast.lat / 180.0) * Math.PI
-      var pointLng = (bounds._southWest.lng / 180.0) * Math.PI
-      var pointLat = (bounds._southWest.lat / 180.0) * Math.PI
-      var dist = Math.acos(Math.sin(fromLat) * Math.sin(pointLat) + Math.cos(fromLat) * Math.cos(pointLat) * Math.cos(pointLng - fromLng)) * 6371000
-      var rad = Math.round(dist / 2)
-      this.$store.commit('changeRadiusOfVisibility', rad)
-    },
-    // zoomClosest () {
-    //   let pins = this.$store.state.pointMarkers
-    //   var dist = Math.max.apply(Math, pins.map((pin) => {
-    //     var fromLng = this.$store.state.lng / 180.0 * Math.PI
-    //     var fromLat = this.$store.state.lat / 180.0 * Math.PI
-    //     var pointLng = pin.lon / 180.0 * Math.PI
-    //     var pointLat = pin.lat / 180.0 * Math.PI
-    //     var dist = Math.acos(Math.sin(fromLat) * Math.sin(pointLat) + (Math.cos(fromLat) * Math.cos(pointLat) * Math.cos(pointLng - fromLng))) * 6371000
-    //     return dist
-    //   }))
-    //   var x = Math.pow(dist, 2)
-    //   var C = 2 * Math.PI * 6378137.000
-    //   var temp = Math.abs((C * Math.cos(53.06616)) / x)
-    //   var zoom = Math.round(Math.log2(temp) + 10)
-    //   this.$store.commit('changeZoomClosest', zoom)
-    //   setTimeout(() => {
-    //     this.$store.commit('changeZoomClosest', zoom)
-    //   }, 100)
-    //   console.log('hello', zoom)
-    // },
-    currentPos () {
-      this.$vuexGeolocation.getCurrentPosition()
-      this.$store.commit('updateLocitAddress', '')
-      this.$store.commit('updateLinkToRoad', {x: 0, y: 0})
-      if (this.IsFooterModalOpen) {
-        this.closeFooterModal()
-      }
+      if (center.lat !== this.getCurrentLat && center.lng !== this.getCurrentLng) this.$store.commit('updatePosition', [{ lat: center.lat, lng: center.lng, zoom: null }])
     },
     toogleMethod (bool, num) {
       this.$store.commit('changeSelectedPoint', num)
@@ -683,9 +388,6 @@ export default {
       } else {
         this.$store.state.toogleModal = !this.$store.state.toogleModal
       }
-    },
-    onCloseChild () {
-      this.$store.state.toogleModal = false
     },
     openListModal (index) {
       this.selectedPoint = index
@@ -701,87 +403,6 @@ export default {
   }
 }
 </script>
-
-<style lang="scss">
-.leaflet-popup-content {
-  width: 350px !important;
-  max-height: 400px;
-  overflow-y: auto;
-  overflow-x: hidden;
-  margin-right: 10px;
-}
-.leaflet-popup-content>div {
-  padding-right: 10px;
-}
-.leaflet-top {
-  z-index: 999;
-}
-.leaflet-touch .leaflet-bar a {
-  width: 35px;
-  height: 35px;
-  line-height: 36px;
-}
-.leaflet-touch .leaflet-control-zoom-in,
-.leaflet-touch .leaflet-control-zoom-out {
-  font-size: 18px;
-  box-shadow: 5px 6px 9px 4px rgba(0, 0, 0, 0.4);
-}
-.mt10 {
-  margin-top: 10px;
-}
-.leaflet-marker-icon {
-  position: absolute;
-  top: -52px;
-  left: -20px;
-}
-.leaflet-popup {
-  .leaflet-popup-content-wrapper {
-    box-shadow: 5px 6px 9px 4px rgba(0, 0, 0, 0.4);
-  }
-  .leaflet-popup-tip-container {
-    display: none;
-  }
-  a.leaflet-popup-close-button {
-    right: 220px;
-    top: 5px;
-    color: #333333;
-    @media (max-width: 767px) {
-      display: none;
-    }
-  }
-  padding-right: 210px !important;
-  margin-left: 115px !important;
-  margin-bottom: 55px !important;
-}
-.leaflet-right .leaflet-control {
-  margin-right: 0;
-}
-.leaflet-bottom .leaflet-control {
-  margin-bottom: 0;
-}
-.leaflet-control-attribution,
-.leaflet-control-scale-line {
-  font-size: 11px;
-  background: rgba(255, 255, 255, 0.7);
-  margin: 0;
-}
-.leaflet-control-attribution a {
-  color: #0078a8;
-}
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-@media (max-width: 767px) {
-  .leaflet-popup .leaflet-popup-content-wrapper {
-    display: none;
-  }
-}
-@media (max-width: 767px) {
-  .leaflet-touch .leaflet-control-layers, .leaflet-touch .leaflet-bar {
-    margin-top: 70px !important;
-  }
-}
-</style>
 
 <style lang="scss" scoped>
 @import '@/assets/_variables.scss';
@@ -992,62 +613,6 @@ export default {
     box-shadow: 5px 6px 9px 4px rgba(0, 0, 0, 0.4);
   }
 }
-.popup-info {
-  min-width: 350px;
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  .popup-text-box {
-    width: 70%;
-    .popup-text {
-      margin: 0;
-      .popup-icon {
-        margin-right: 5px;
-      }
-    }
-  }
-  .popup-img {
-    width: 30%;
-  }
-  .popup-add {
-    display: flex;
-    width: 100%;
-    margin: 0;
-    .popup-time {
-      margin: 0;
-      width: 50%;
-    }
-    .popup-features {
-      margin: 0;
-      padding-left: 5%;
-      width: 45%;
-      .features-item {
-        margin: 0 0 10px 0;
-      }
-    }
-  }
-}
-.popup-action {
-  .popup-button {
-    margin: 7px 0;
-    background-color: $main-color; // over
-    padding: 6px 8px;
-    border-radius: 9px;
-    text-transform: uppercase;
-    color: $white;
-    display: inline;
-    text-align: center;
-    font-weight: 700;
-    font-size: 11px;
-    cursor: pointer;
-    @media (max-width: 1100px) {
-      font-size: 11px;
-    }
-  }
-  justify-content: space-between;
-  align-items: center;
-  display: flex;
-}
 .type-actions {
   .button-action {
     &.active {
@@ -1071,15 +636,14 @@ export default {
   display: flex;
   border-radius: 15px;
   overflow: hidden;
+  box-shadow: 5px 6px 9px 4px rgba(0, 0, 0, 0.4);
   @media (max-width: 767px) {
+    box-shadow: none;
     position: fixed;
     right: 45px;
     left: auto;
     top: 12px;
   }
-}
-.box-shadow {
-  box-shadow: 5px 6px 9px 4px rgba(0, 0, 0, 0.4);
 }
 .list-box {
   .list-title {
@@ -1180,36 +744,6 @@ export default {
 .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
   opacity: 0;
 }
-
-.bounce-enter-active {
-  animation: bounce-in 0.5s;
-  transition: all 0.3s ease;
-}
-.bounce-leave-active {
-  animation: bounce-out 0.5s reverse;
-}
-.bounce-enter {
-  transition: all 0.3s ease;
-  transform: translateY(20%);
-}
-@keyframes bounce-in {
-  0% {
-    transform: scale(0);
-  }
-  100% {
-    right: 0;
-    transform: scale(1);
-  }
-}
-@keyframes bounce-out {
-  0% {
-    transform: scale(0);
-  }
-  100% {
-    transform: scale(1);
-  }
-}
-
 .fade-in {
   &-down-enter-active,
   &-up-enter-active {
@@ -1252,71 +786,6 @@ export default {
         img {
           height: 65px;
         }
-      }
-    }
-  }
-}
-
-@media (max-width: 767px) {
-  .modal-position {
-    width: 100%;
-    bottom: 0;
-    z-index: 1001;
-  }
-  .list-box {
-    padding: 0;
-    margin-top: 70px;
-    background: #f5f5f5;
-    .scroll-box {
-      height: calc(100vh - 160px);
-      border: 0;
-    }
-    .list-row-modal {
-      background: $white;
-    }
-    .list-row {
-      border-bottom: 1.5px solid $light-grey;
-      &:last-child {
-        border-bottom: none;
-        margin-bottom: 15px;
-      }
-      .list-elem {
-        flex-basis: 50%;
-        max-width: 50%;
-        justify-content: normal;
-        .img-modal {
-          filter: none;
-          height: 65px;
-        }
-        img {
-          filter: grayscale(1) opacity(0.6);
-          height: 55px;
-          padding-right: 20px;
-        }
-      }
-      .list-elem-address {
-        width: 60%;
-        flex-basis: 60%;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: end;
-        .address-parag {
-          margin: 0;
-          padding-top: 5px;
-          text-align: left;
-        }
-      }
-      .list-elem-img {
-        justify-content: flex-end;
-        width: 40%;
-        flex-basis: 40%;
-      }
-      .hours-elem {
-        display: none;
-      }
-      .btn-elem {
-        display: none;
       }
     }
   }
