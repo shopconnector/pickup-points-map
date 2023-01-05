@@ -97,7 +97,7 @@ export default {
       },
       initialLocation: window.L.latLng(-34.9205, -57.953646),
       locations: [],
-      url: 'https://atileosmorg-luldmjs.stackpathdns.com/{z}/{x}/{y}.png',
+      url: 'https://tiles.pickuppoints.pl/{z}/{x}/{y}.png',
       attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
       popupIcons: {
         'DPD Pickup': require('../../assets/popup-icons/dpd16x16.png'),
