@@ -166,7 +166,7 @@ export default {
       this.apiCalls().then((data) => {
         let points = data.data.response.pickupPoints
         this.locations = []
-        for (let i = points.length - 1; i > 0; i--) {
+        for (let i = 0; i < points.length; i++) {
           let point = points[i]
           let coord = [point.lat, point.lon]
           let icon = window.L.icon({iconUrl: this.getPinsUrl(this.pinsUrl[point.pickup_type]), iconSize: [52, 52]})
