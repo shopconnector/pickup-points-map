@@ -27,10 +27,10 @@
         </div>
       </div>
       <!-- Filters Menu -->
-      <div class="header">
+      <div v-if="!isWidgetWshWsh" class="header">
         <h2 class="title" :class="{'titleV2' : !isWidgetVersion}">Filtry</h2>
       </div>
-      <div class="filters-menu">
+      <div v-if="!isWidgetWshWsh" class="filters-menu">
         <div class="checkbox-container" v-for="(box, index) in customerFeatures" :key="index">
           <input class="custom-checkbox" :class="{'custom-checkboxV2' : !isWidgetVersion}" type="checkbox" :id="box" :value="box" @click="selectedFilter()" v-model="filters.features">
           <label class="custom-icon" :class="box" :for="box">{{featuresInfo[box]}}</label>
