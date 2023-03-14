@@ -11,7 +11,7 @@
         </div>
       </div>
       <!-- Select suppliers second version -->
-      <div v-if="!isWidgetVersion || isMobile">
+      <div v-if="(!isWidgetVersion || isMobile) && !isWidgetWshWsh">
         <div class="header">
           <h2 class="title-dostawcow">Wybierz dostawców</h2><p v-if="filters.checkedSuppliers.length > 0 || filters.features.length > 0" :class="isWidgetVersion ? 'subtitle' : 'subtitleV2'" @click="clearAPIFilter()">
             Wyczyść filtry<span :class="isWidgetVersion ? 'clear' : 'clearV2'">X</span></p>
@@ -97,6 +97,9 @@ export default {
     }
   },
   computed: {
+    isWidgetWshWsh () {
+      return this.$store.getters.isWidgetWshWsh
+    },
     getColor () {
       if (this.$store.state.customer.options) {
         return 'color:' + this.$store.state.customer.options.primary_color
@@ -170,7 +173,11 @@ export default {
       handler () {
         if (this.innerFilter) {
           if (this.providerToPickupTypeMapping[this.innerFilter]) {
-            this.filters.checkedSuppliers = this.providerToPickupTypeMapping[this.innerFilter]
+            if (this.isWidgetWshWsh) {
+              this.filters.checkedSuppliers = ['Żabka']
+            } else {
+              this.filters.checkedSuppliers = this.providerToPickupTypeMapping[this.innerFilter]
+            }
             if (this.$store.state.toogleModal === true) {
               this.$store.commit('closeToogleModal', false)
             }

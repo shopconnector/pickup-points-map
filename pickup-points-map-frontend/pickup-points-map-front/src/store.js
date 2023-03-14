@@ -33,9 +33,14 @@ export default new Vuex.Store({
       x: 0,
       y: 0
     },
+    key: '',
+    wshWoshKeys: ['68B6B90E863ECDA825D65FCD0E4FCA55', '5CAC360F679675CC9A1E7BD83A3BCDC1 '],
     customer: {}
   },
   mutations: {
+    setWidgetKey (state, payload) {
+      state.key = payload
+    },
     createLoader (state) {
       state.appLoader = true
     },
@@ -243,6 +248,7 @@ export default new Vuex.Store({
         APIService.get_essentials(query)
           .then(res => {
             if (query.origin.includes(res.data.response.domain)) {
+              commit('setWidgetKey', res.data.response.key)
               const customer = res.data.response
               commit('get_essentials_succ', customer)
             } else {
@@ -259,6 +265,9 @@ export default new Vuex.Store({
     }
   },
   getters: {
+    isWidgetWshWsh: state => {
+      return state.wshWoshKeys.includes(state.key)
+    },
     getCurrentLng: state => {
       return state.lng
     },
