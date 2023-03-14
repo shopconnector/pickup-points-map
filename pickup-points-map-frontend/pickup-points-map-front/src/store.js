@@ -34,7 +34,7 @@ export default new Vuex.Store({
       y: 0
     },
     key: '',
-    wshWoshKeys: ['68B6B90E863ECDA825D65FCD0E4FCA55', '5CAC360F679675CC9A1E7BD83A3BCDC1 '],
+    wshWoshKeys: ['68B6B90E863ECDA825D65FCD0E4FCA55', '5CAC360F679675CC9A1E7BD83A3BCDC1'],
     customer: {}
   },
   mutations: {
