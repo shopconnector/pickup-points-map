@@ -40,7 +40,7 @@
       </div>
       <div class="container-map">
         <div class="mobile-header" v-if="isMobile">
-          <div class="mobile-container">
+          <div v-show="!isWidgetWshWsh" class="mobile-container">
             <i class="lejek-icon" @click="openFilterMobile"  :data-content="filtersCount"></i>
           </div>
         </div>
@@ -114,6 +114,11 @@ export default {
   },
   destroyed () {
     window.removeEventListener('message', this.filterApply)
+  },
+  computed: {
+    isWidgetWshWsh () {
+      return this.$store.getters.isWidgetWshWsh
+    }
   },
   methods: {
     filterApply: function (event) {
