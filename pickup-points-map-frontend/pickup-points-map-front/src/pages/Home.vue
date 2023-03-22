@@ -115,11 +115,6 @@ export default {
   destroyed () {
     window.removeEventListener('message', this.filterApply)
   },
-  computed: {
-    isWidgetWshWsh () {
-      return this.$store.getters.isWidgetWshWsh
-    }
-  },
   methods: {
     filterApply: function (event) {
       if (event.data.content && event.data.content.hasOwnProperty('key')) {
@@ -155,6 +150,9 @@ export default {
     }
   },
   computed: {
+    isWidgetWshWsh () {
+      return this.$store.getters.isWidgetWshWsh
+    },
     isLoader () {
       return this.$store.state.appLoader
     },
